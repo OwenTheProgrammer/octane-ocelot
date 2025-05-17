@@ -1,0 +1,11 @@
+
+# Ignore any oct files
+*.oct
+
+# Ignore all build files
+bin/*
+obj/*
+.cache/*
+
+# Ignore bear output
+compile_commands.json
