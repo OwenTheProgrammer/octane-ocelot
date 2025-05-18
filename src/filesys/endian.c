@@ -43,7 +43,7 @@ void endian_set_target(endian_t e)
     }
 
     _target_endian = e;
-    printf("Endian Target: %s\n", _ENDIAN_PRINT_TABLE[_target_endian]);
+    //printf("Endian Target: %s\n", _ENDIAN_PRINT_TABLE[_target_endian]);
 }
 
 void endian_set_context(endian_t e)
@@ -55,7 +55,7 @@ void endian_set_context(endian_t e)
     }
 
     _ctx_endian = e;
-    printf("Endian Context: %s\n", _ENDIAN_PRINT_TABLE[_ctx_endian]);
+    //printf("Endian Context: %s\n", _ENDIAN_PRINT_TABLE[_ctx_endian]);
 }
 
 uint32_t endian_swap_uvar(uint32_t v, unsigned int stride)
@@ -83,12 +83,50 @@ bool endian_should_convert()
 
 uint16_t endian_swap_u16(uint16_t v)
 {
-    return (_ctx_endian == _target_endian) ? v : _eswap_u16(v);
+    return endian_should_convert() ? _eswap_u16(v) : v;
 }
 
 uint32_t endian_swap_u32(uint32_t v)
 {
-    return (_ctx_endian == _target_endian) ? v : _eswap_u32(v);
+    return endian_should_convert() ? _eswap_u32(v) : v;
+}
+
+uint16_t* endian_swap_u16_array(uint16_t* const values, size_t count)
+{
+    if(values == NULL || count == 0)
+        return NULL;
+
+    uint16_t* result = calloc(count, sizeof(uint16_t));
+    memcpy(result, values, count * sizeof(uint16_t));
+
+    if(!endian_should_convert())
+        return result;
+
+    for(size_t i = 0; i < count; i++)
+    {
+        result[i] = _eswap_u16(result[i]);
+    }
+
+    return result;
+}
+
+uint32_t* endian_swap_u32_array(uint32_t* const values, size_t count)
+{
+    if(values == NULL || count == 0)
+        return NULL;
+
+    uint32_t* result = calloc(count, sizeof(uint32_t));
+    memcpy(result, values, count * sizeof(uint32_t));
+
+    if(!endian_should_convert())
+        return result;
+
+    for(size_t i = 0; i < count; i++)
+    {
+        result[i] = _eswap_u32(result[i]);
+    }
+
+    return result;
 }
 
 uint16_t* endian_read_array_u16(void* const ptr, size_t count)

@@ -28,7 +28,7 @@ static uint32_t _oct_get_atom_array_size(io_dbuf* const buffer, unsigned int len
 }
 
 /* Parses the header section from the current pointer position */
-static oct_header _oct_read_header(io_dbuf* const buffer) {
+static void _oct_read_header(io_dbuf* const buffer, oct_file* const oct) {
     oct_header header = (oct_header){0};
 
     // Read the input buffers magic section
@@ -37,7 +37,9 @@ static oct_header _oct_read_header(io_dbuf* const buffer) {
     if(buffer_magic == ENDIAN_UNKNOWN)
     {
         fprintf(stderr, "Unknown magic!\n");
-        return header;
+        oct->header = header;
+        oct->file_endian = ENDIAN_UNKNOWN;
+        return;
     }
 
     // Seek forward past the magic section
@@ -47,7 +49,12 @@ static oct_header _oct_read_header(io_dbuf* const buffer) {
     endian_set_context(buffer_magic);
 
     // Set the new endian to the target endian
-    header.file_endian = endian_get_target();
+    oct->file_endian = endian_get_target();
+
+    printf("Reading oct file (endian: %s -> %s)\n", 
+           _ENDIAN_PRINT_TABLE[(int)buffer_magic], 
+           _ENDIAN_PRINT_TABLE[(int)oct->file_endian]
+    );
 
     // Ignore the padding bytes
     io_ptr_advance(buffer, 4);
@@ -61,7 +68,7 @@ static oct_header _oct_read_header(io_dbuf* const buffer) {
     // Ignore 40 bytes of padding
     io_ptr_advance(buffer, 40);
 
-    return header;
+    oct->header = header;
 }
 
 /* Reads an oct_atomNode from an oct data buffer */
@@ -182,7 +189,7 @@ oct_file oct_read_buffer(io_dbuf* const buffer)
     oct_file oct = (oct_file){0};
 
     // Read the header first
-    oct.header = _oct_read_header(buffer);
+    _oct_read_header(buffer, &oct);
 
     // Read the string table
     _oct_read_string_table(buffer, &oct);
@@ -194,8 +201,12 @@ oct_file oct_read_buffer(io_dbuf* const buffer)
 }
 
 
-oct_file oct_read_file(const char* oct_path)
+oct_file oct_read_file(const char* oct_path, endian_t target_endian)
 {
+    //Switch the current target endian
+    endian_t prev_endian = endian_get_target();
+    endian_set_target(target_endian);
+
     //Read the file data
     io_dbuf dbuf = io_load_file(oct_path);
 
@@ -205,5 +216,7 @@ oct_file oct_read_file(const char* oct_path)
     //Dispose of the file buffer
     io_free_dbuf(&dbuf);
 
+    //Revert back to the original endian
+    endian_set_target(prev_endian);
     return oct;
 }

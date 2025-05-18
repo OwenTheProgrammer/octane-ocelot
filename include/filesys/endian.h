@@ -37,6 +37,12 @@ uint32_t endian_swap_u32(uint32_t v);
 /* Swaps the endianness of an unsigned value with variable stride */
 uint32_t endian_swap_uvar(uint32_t v, unsigned int stride);
 
+/* Swaps the endianness of a uint16 array */
+uint16_t* endian_swap_u16_array(uint16_t* const values, size_t count);
+
+/* Swaps the endianness of a uint32 array */
+uint32_t* endian_swap_u32_array(uint32_t* const values, size_t count);
+
 /* Reads an array of uint16 values */
 uint16_t* endian_read_array_u16(void* const ptr, size_t count);
 

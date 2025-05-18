@@ -4,6 +4,7 @@
 #include <stdbool.h>
 #include "endian.h"
 #include "file_io.h"
+#include "ocelot/memory.h"
 
 //Type
 typedef enum
@@ -70,11 +71,6 @@ struct oct_header
 
     /* 40 byte padding */
     //char _pad[40];
-
-    // == NOT STORED == //
-
-    /* The endianness of the file */
-    endian_t file_endian;
 };
 
 struct oct_string
@@ -128,6 +124,8 @@ struct oct_file
 {
     oct_header header;
 
+    endian_t file_endian;
+
     /* Amount of elements in the string table */
     size_t string_table_length;
 
@@ -145,7 +143,10 @@ struct oct_file
 oct_file oct_read_buffer(io_dbuf* const buffer);
 
 /* Reads an oct file from a given filepath */
-oct_file oct_read_file(const char* oct_path);
+oct_file oct_read_file(const char* oct_path, endian_t target_endian);
+
+/* Encodes and oct file to a data buffer */
+ocl_dbuf oct_write_buffer(oct_file* const oct);
 
 /* Dispose of an oct files allocated memory */
 void oct_free_file(oct_file* const oct);
