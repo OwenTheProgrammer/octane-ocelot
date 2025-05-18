@@ -91,6 +91,9 @@ void ocl_dbuf_writens_bytes(ocl_dbuf* const buffer, void* const src, size_t src_
     if(region_end >= buffer->size)
     {
         buffer->memory = reallocarray(buffer->memory, region_end, sizeof(char));
+        //reallocarray moves the memory address of the buffer
+        buffer->ptr = buffer->memory + ptr_offset;
+
         buffer->size = region_end;
     }
 
@@ -142,7 +145,7 @@ ocl_dbuf ocl_dbuf_fullcopy_buffer(ocl_dbuf* const buffer)
     return result;
 }
 
-ocl_dbuf ocl_dbuf_merge_buffers(ocl_dbuf* const lhs, ocl_dbuf* const rhs, bool combine_from_ptr)
+ocl_dbuf ocl_dbuf_merge_buffers(ocl_dbuf* const lhs, ocl_dbuf* const rhs, bool combine_from_ptr, bool free_origins)
 {
     ocl_dbuf result = (ocl_dbuf){0};
 
@@ -161,6 +164,12 @@ ocl_dbuf ocl_dbuf_merge_buffers(ocl_dbuf* const lhs, ocl_dbuf* const rhs, bool c
     // Write the right-hand-side buffer if its valid
     if(ocl_dbuf_is_valid(rhs))
         ocl_dbuf_write_bytes(&result, rhs->memory, rhs->size);
+
+    if(free_origins)
+    {
+        ocl_dbuf_free(lhs);
+        ocl_dbuf_free(rhs);
+    }
 
     return result;
 }
