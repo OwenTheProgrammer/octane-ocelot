@@ -1,4 +1,4 @@
-#include "math_utils.h"
+#include "ocelot/math_utils.h"
 #include <stdio.h>
 
 #define __USE_GNU

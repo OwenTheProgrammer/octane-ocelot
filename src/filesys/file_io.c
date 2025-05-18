@@ -1,8 +1,9 @@
-#include "file_io.h"
-#include "endian.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#include "filesys/file_io.h"
+#include "filesys/endian.h"
 
 io_dbuf io_load_file(const char* path)
 {
@@ -36,23 +37,10 @@ io_dbuf io_load_file(const char* path)
     return result;
 }
 
-void io_free_dbuf(io_dbuf* const buffer)
-{
-    if(buffer == NULL)
-        return;
-
-    if(buffer->data != NULL)
-        free(buffer->data);
-
-    *buffer = (io_dbuf){0};
-}
-
-
 void io_ptr_advance(io_dbuf* const buffer, size_t bytes)
 {
     buffer->ptr += bytes;
 }
-
 
 size_t io_get_ptr_offset(io_dbuf* const buffer)
 {
@@ -72,7 +60,6 @@ char* io_read_seek(io_dbuf* const buffer, size_t size)
 
     return prev;
 }
-
 
 uint16_t io_read_u16(io_dbuf* const buffer)
 {
@@ -132,13 +119,6 @@ int32_t* io_read_s32_array(io_dbuf* const buffer, size_t count)
     return (int32_t*)mem;
 }
 
-float* io_read_f32_array(io_dbuf* const buffer, size_t count)
-{
-    float* data = endian_read_array_f32(buffer->ptr, count);
-    io_ptr_advance(buffer, count * sizeof(float));
-    return data;
-}
-
 int32_t* io_read_svar_array(io_dbuf* const buffer, size_t count, size_t stride)
 {
     int32_t* data = endian_read_array_svar(buffer->ptr, count, stride);
@@ -146,3 +126,20 @@ int32_t* io_read_svar_array(io_dbuf* const buffer, size_t count, size_t stride)
     return data;
 }
 
+float* io_read_f32_array(io_dbuf* const buffer, size_t count)
+{
+    float* data = endian_read_array_f32(buffer->ptr, count);
+    io_ptr_advance(buffer, count * sizeof(float));
+    return data;
+}
+
+void io_free_dbuf(io_dbuf* const buffer)
+{
+    if(buffer == NULL)
+        return;
+
+    if(buffer->data != NULL)
+        free(buffer->data);
+
+    *buffer = (io_dbuf){0};
+}

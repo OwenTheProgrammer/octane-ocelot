@@ -14,19 +14,19 @@ typedef enum
 extern const char* _ENDIAN_PRINT_TABLE[ENDIAN_MAX];
 
 /* Set the target global endian type (the endian you wish to have) */
-void set_endian_target(endian_t e);
+void endian_set_target(endian_t e);
 
 /* Gets the target global endian type */
-endian_t get_endian_target();
+endian_t endian_get_target();
 
 /* Set the global context endian type (the endian files are stored with) */
-void set_endian_context(endian_t e);
+void endian_set_context(endian_t e);
 
 /* Gets the global context endian type */
-endian_t get_endian_context();
+endian_t endian_get_context();
 
 /* Returns true if the endian context does not match the endian target */
-bool io_different_endian();
+bool endian_should_convert();
 
 /* Swap the endianness of a uint16 value */
 uint16_t endian_swap_u16(uint16_t v);

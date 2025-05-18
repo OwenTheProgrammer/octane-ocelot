@@ -3,15 +3,20 @@ CFLAGS	= -Wall -Werror -std=gnu17 -I$(INC_DIR)
 CLIBS	= -lm
 
 SRC_DIR	= src
-OBJ_DIR = obj
+OBJ_DIR	= obj
 
-INC_DIR = include
-BIN_DIR = bin
+INC_DIR	= include
+BIN_DIR	= bin
 
 BINARY	= $(BIN_DIR)/ocelot
 
-SRC_FILES = $(wildcard $(SRC_DIR)/*.c)
+SRC_FILES = $(wildcard $(SRC_DIR)/*.c $(SRC_DIR)/engine/*.c $(SRC_DIR)/filesys/*.c)
 OBJ_FILES = $(SRC_FILES:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
+
+# Finds all subdirectories that need to be created for the
+# object directory tree when compiling src
+get_obj_subdirs = $(patsubst $(1)/%,$(2)/%,$(shell find $(1) -mindepth 1 -type d))
+
 
 .PHONY: debug release clean buildfs run
 
@@ -31,7 +36,7 @@ run: $(BINARY)
 	./bin/ocelot
 
 buildfs:
-	mkdir -p $(BIN_DIR) $(OBJ_DIR)
+	mkdir -p $(BIN_DIR) $(OBJ_DIR) $(call get_obj_subdirs,$(SRC_DIR),$(OBJ_DIR))
 
 clean:
 	rm -rf $(OBJ_DIR)

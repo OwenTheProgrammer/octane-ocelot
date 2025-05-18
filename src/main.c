@@ -1,7 +1,7 @@
-#include "file_io.h"
-#include "endian.h"
-#include "oct.h"
-#include "math_utils.h"
+#include "filesys/file_io.h"
+#include "filesys/endian.h"
+#include "filesys/oct.h"
+#include "ocelot/math_utils.h"
 
 static void _test_math_utils()
 {

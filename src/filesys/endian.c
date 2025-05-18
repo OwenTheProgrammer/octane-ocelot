@@ -1,4 +1,4 @@
-#include "endian.h"
+#include "filesys/endian.h"
 #include "utils.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -7,35 +7,13 @@
 static endian_t _target_endian = ENDIAN_LITTLE;
 static endian_t _ctx_endian = ENDIAN_LITTLE;
 
-void set_endian_target(endian_t e)
-{
-    if(e == ENDIAN_UNKNOWN)
-    {
-        fprintf(stderr, "Unknown endian type is invalid.\n");
-        return;
-    }
-
-    _target_endian = e;
-    printf("Endian Target: %s\n", _ENDIAN_PRINT_TABLE[_target_endian]);
-}
-
-void set_endian_context(endian_t e)
-{
-    if(e == ENDIAN_UNKNOWN)
-    {
-        fprintf(stderr, "Unknown endian type is invalid.\n");
-        return;
-    }
-
-    _ctx_endian = e;
-    printf("Endian Context: %s\n", _ENDIAN_PRINT_TABLE[_ctx_endian]);
-}
-
+/* Endian swaps a uint16 value */
 static uint16_t _eswap_u16(uint16_t v)
 {
     return (v >> 8) | (v << 8);
 }
 
+/* Endian swaps a uint32 value */
 static uint32_t _eswap_u32(uint32_t v)
 {
     // Not efficient, I dont care.
@@ -47,6 +25,39 @@ static uint32_t _eswap_u32(uint32_t v)
     return r;
 }
 
+/* Extends the signature of a variable stride integer */
+static int32_t _esignextend_svar(uint32_t v, size_t stride)
+{
+    uint32_t sign_bit = 1 << (stride * 8 - 1);
+    uint32_t ext = 0xFFFFFFFF * (v & sign_bit);
+    return (int32_t)(v | ext);
+}
+
+
+void endian_set_target(endian_t e)
+{
+    if(e == ENDIAN_UNKNOWN)
+    {
+        fprintf(stderr, "Unknown endian type is invalid.\n");
+        return;
+    }
+
+    _target_endian = e;
+    printf("Endian Target: %s\n", _ENDIAN_PRINT_TABLE[_target_endian]);
+}
+
+void endian_set_context(endian_t e)
+{
+    if(e == ENDIAN_UNKNOWN)
+    {
+        fprintf(stderr, "Unknown endian type is invalid.\n");
+        return;
+    }
+
+    _ctx_endian = e;
+    printf("Endian Context: %s\n", _ENDIAN_PRINT_TABLE[_ctx_endian]);
+}
+
 uint32_t endian_swap_uvar(uint32_t v, unsigned int stride)
 {
     uint32_t shift = 32 - stride * 8;
@@ -55,22 +66,17 @@ uint32_t endian_swap_uvar(uint32_t v, unsigned int stride)
     return swap;
 }
 
-static int32_t _esignextend_svar(uint32_t v, size_t stride)
-{
-    uint32_t sign_bit = 1 << (stride * 8 - 1);
-    uint32_t ext = 0xFFFFFFFF * (v & sign_bit);
-    return (int32_t)(v | ext);
-}
-
-endian_t get_endian_target()
+endian_t endian_get_target()
 {
     return _target_endian;
 }
-endian_t get_endian_context()
+
+endian_t endian_get_context()
 {
     return _ctx_endian;
 }
-bool io_different_endian()
+
+bool endian_should_convert()
 {
     return _ctx_endian != _target_endian;
 }
@@ -144,7 +150,6 @@ float* endian_read_array_f32(void* const ptr, size_t count)
     return result;
 }
 
-
 int32_t* endian_read_array_svar(void* const ptr, size_t count, size_t stride)
 {
     if(ptr == NULL || count == 0 || stride == 0)
@@ -168,7 +173,6 @@ int32_t* endian_read_array_svar(void* const ptr, size_t count, size_t stride)
 
     return result;
 }
-
 
 const char* _ENDIAN_PRINT_TABLE[ENDIAN_MAX] =
 {

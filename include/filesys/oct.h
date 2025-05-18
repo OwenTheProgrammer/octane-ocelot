@@ -15,7 +15,6 @@ typedef enum
     OCT_ATOM_TYPE_MAX
 } oct_atomType;
 
-extern const char* _OCT_ATOM_TYPE_TABLE[OCT_ATOM_TYPE_MAX];
 
 //DataType
 typedef enum
@@ -28,7 +27,6 @@ typedef enum
     OCT_DATA_TYPE_MAX
 } oct_dataType;
 
-extern const char* _OCT_DATA_TYPE_TABLE[OCT_DATA_TYPE_MAX];
 
 #define NODE_TYPE(AT, DT) ( (OCT_ATOM_TYPE_##AT) | ((OCT_DATA_TYPE_##DT)<<2) )
 
@@ -58,8 +56,8 @@ typedef struct oct_file     oct_file;
 
 struct oct_header
 {
-    /* File magic ID */
-    uint8_t magic[8];
+    /* File magic ID [8 bytes] */
+    uint8_t* magic;
 
     /* 4 byte padding */
     //char _pad[4];
