@@ -11,14 +11,16 @@ ocl_dbuf ocl_dbuf_create(size_t size, void* data)
     buffer.size = size;
 
     if(size != 0)
+    {
         buffer.memory = calloc(size, sizeof(char));
+        buffer.ptr = buffer.memory;
+    }
 
     if(data != NULL && size != 0 && buffer.memory != NULL)
     {
         memcpy(buffer.memory, data, size);
+        buffer.ptr += size;
     }
-
-    buffer.ptr = buffer.memory;
 
     return buffer;
 }
@@ -128,6 +130,39 @@ void ocl_dbuf_write_u32_array(ocl_dbuf* const buffer, uint32_t* const data, size
 
     // Dispose of the temporary buffer data
     free(memory);
+}
+
+ocl_dbuf ocl_dbuf_fullcopy_buffer(ocl_dbuf* const buffer)
+{
+    ocl_dbuf result = (ocl_dbuf){0};
+    if(!ocl_dbuf_is_valid(buffer))
+        return result;
+
+    result = ocl_dbuf_create(buffer->size, buffer->memory);
+    return result;
+}
+
+ocl_dbuf ocl_dbuf_merge_buffers(ocl_dbuf* const lhs, ocl_dbuf* const rhs, bool combine_from_ptr)
+{
+    ocl_dbuf result = (ocl_dbuf){0};
+
+    if(!ocl_dbuf_is_valid(lhs) && !ocl_dbuf_is_valid(rhs))
+        return result;
+
+    size_t lsize = combine_from_ptr ? ocl_dbuf_get_ptr_offset(lhs) : lhs->size;
+    size_t new_size = lsize + rhs->size;
+
+    result = ocl_dbuf_create(new_size, NULL);
+
+    // Write the left-hand-side buffer if its valid
+    if(ocl_dbuf_is_valid(lhs))
+        ocl_dbuf_write_bytes(&result, lhs->memory, lsize);
+
+    // Write the right-hand-side buffer if its valid
+    if(ocl_dbuf_is_valid(rhs))
+        ocl_dbuf_write_bytes(&result, rhs->memory, rhs->size);
+
+    return result;
 }
 
 

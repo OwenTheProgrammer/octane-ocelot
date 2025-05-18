@@ -75,8 +75,8 @@ struct oct_header
 
 struct oct_string
 {
-    /* Pointer to the string location */
-    char* ptr;
+    /* The string data (allocated) */
+    char* data;
 
     /* Length of the string */
     size_t len;
@@ -156,3 +156,5 @@ void oct_free_atom_node(oct_atomNode* const node);
 void oct_print_header(oct_header header);
 void oct_print_atom_header(oct_atomHeader header);
 void oct_print_atom_node(oct_atomNode node, oct_file* const oct);
+
+void oct_print_string_table_element(oct_file* const oct, size_t index);

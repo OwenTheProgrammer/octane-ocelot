@@ -65,7 +65,14 @@ void oct_free_file(oct_file* const oct)
     if(oct != NULL)
     {
         if(oct->string_table != NULL)
+        {
+            for(size_t i = 0; i < oct->string_table_length; i++)
+            {
+                free(oct->string_table[i].data);
+            }
+
             free(oct->string_table);
+        }
 
         if(oct->data_tree != NULL)
         {
@@ -95,7 +102,7 @@ void oct_free_atom_node(oct_atomNode* const node)
 void oct_print_header(oct_header header)
 {
     printf("OCT Header:\n");
-    printf("|\tEndian: %s\n", _ENDIAN_PRINT_TABLE[header.file_endian]);
+    //printf("|\tEndian: %s\n", _ENDIAN_PRINT_TABLE[header.file_endian]);
     printf("|\tString table size: %u\n", header.string_table_size);
     printf("|\tData tree size: %u\n", header.data_tree_size);
 }
@@ -113,7 +120,12 @@ void oct_print_atom_header(oct_atomHeader header)
 
 void oct_print_atom_node(oct_atomNode node, oct_file* const oct)
 {
-    printf("Node[%u]: \"%s\" %s\n", node.header.level, oct->string_table[node.st_key].ptr, oct->string_table[node.name_key].ptr);
+    printf("Node L%u: \"%s\" %s\n",
+           node.header.level,
+           oct->string_table[node.st_key].data,
+           oct->string_table[node.name_key].data
+    );
+
     printf("|\tType: ");
     switch(node.node_type)
     {
@@ -140,7 +152,7 @@ void oct_print_atom_node(oct_atomNode node, oct_file* const oct)
         {
             case OCT_NODE_TYPE_STRING:
             case OCT_NODE_TYPE_STRING_ARRAY:
-                printf("|\t\"%s\"\n", oct->string_table[ ((uint16_t*)node.node_data)[i] ].ptr);
+                printf("|\t\"%s\"\n", oct->string_table[ ((uint16_t*)node.node_data)[i] ].data);
                 break;
             case OCT_NODE_TYPE_FLOAT:
             case OCT_NODE_TYPE_FLOAT_ARRAY:
@@ -159,6 +171,25 @@ void oct_print_atom_node(oct_atomNode node, oct_file* const oct)
     }
 
     printf("------------------\n");
+}
+
+
+void oct_print_string_table_element(oct_file* const oct, size_t index)
+{
+    if(oct == NULL)
+        return;
+
+    if(index >= oct->string_table_length)
+    {
+        fprintf(stderr, "StringTable index out of bounds. %zu > %zu\n", index, oct->string_table_length);
+        return;
+    }
+
+    printf("StringTable[%zu]: \"%s\" (%zu chars)\n", 
+           index,
+           oct->string_table[index].data,
+           oct->string_table[index].len
+    );
 }
 
 static const char* _OCT_ATOM_TYPE_TABLE[OCT_ATOM_TYPE_MAX] =

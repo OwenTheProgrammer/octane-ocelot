@@ -27,10 +27,12 @@ int main()
     //Read and convert the oct file to little endian
     oct_file oct = oct_read_file("oilrig.oct", ENDIAN_LITTLE);
 
+    oct_print_string_table_element(&oct, 40);
+
     //oct_print_header(oct.header);
 
     //We want to export as big endian
-    endian_set_target(ENDIAN_LITTLE);
+    endian_set_target(ENDIAN_BIG);
     ocl_dbuf header = oct_write_buffer(&oct);
 
     ocl_dbuf_export(&header, "bin/oilrig_exported.oct");

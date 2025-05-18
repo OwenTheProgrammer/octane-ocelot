@@ -44,3 +44,8 @@ void ocl_dbuf_write_bytes(ocl_dbuf* const buffer, void* const src, size_t src_si
 void ocl_dbuf_write_u32(ocl_dbuf* const buffer, uint32_t value);
 
 void ocl_dbuf_write_u32_array(ocl_dbuf* const buffer, uint32_t* const data, size_t count);
+
+ocl_dbuf ocl_dbuf_fullcopy_buffer(ocl_dbuf* const buffer);
+
+ocl_dbuf ocl_dbuf_merge_buffers(ocl_dbuf* const lhs, ocl_dbuf* const rhs, bool combine_from_ptr);
+

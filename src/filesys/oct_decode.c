@@ -152,8 +152,10 @@ static void _oct_read_string_table(io_dbuf* const buffer, oct_file* const oct)
     {
         oct_string str = (oct_string){0};
 
-        str.ptr = buffer->ptr;
-        str.len = strlen(str.ptr);
+        str.len = strlen(buffer->ptr);
+
+        str.data = calloc(str.len + 1, sizeof(char));
+        memcpy(str.data, buffer->ptr, str.len);
 
         // Go past the nullterm
         io_ptr_advance(buffer, str.len + 1);
