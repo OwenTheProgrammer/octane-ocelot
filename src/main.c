@@ -33,10 +33,10 @@ int main()
 
     //We want to export as big endian
     endian_set_target(ENDIAN_BIG);
-    ocl_dbuf header = oct_write_buffer(&oct);
+    ocl_dbuf oct_export = oct_write_buffer(&oct);
 
-    ocl_dbuf_export(&header, "bin/oilrig_exported.oct");
-    ocl_dbuf_free(&header);
+    ocl_dbuf_export(&oct_export, "bin/oilrig_exported.oct");
+    ocl_dbuf_free(&oct_export);
 
 
     oct_free_file(&oct);

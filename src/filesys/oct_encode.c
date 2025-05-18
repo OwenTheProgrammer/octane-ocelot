@@ -55,17 +55,25 @@ static ocl_dbuf _oct_encode_string_table(oct_file* const oct)
     return buffer;
 }
 
+static ocl_dbuf _oct_encode_data_tree(oct_file* const oct)
+{
+    ocl_dbuf buffer = ocl_dbuf_create(oct->header.data_tree_size, NULL);
+
+    return buffer;
+}
+
 ocl_dbuf oct_write_buffer(oct_file* const oct)
 {
     // Set the context endian to the oct file
     endian_t prev_context_endian = endian_get_context();
     endian_set_context(oct->file_endian);
 
-    ocl_dbuf buffer = _oct_encode_header_section(oct);
+    ocl_dbuf header = _oct_encode_header_section(oct);
 
     ocl_dbuf string_table = _oct_encode_string_table(oct);
 
-    ocl_dbuf combined = ocl_dbuf_merge_buffers(&buffer, &string_table, false, true);
+    // This combine function frees the inputs as set by true
+    ocl_dbuf combined = ocl_dbuf_merge_buffers(false, true, 2, &header, &string_table);
 
     // Reset the endian context
     endian_set_context(prev_context_endian);

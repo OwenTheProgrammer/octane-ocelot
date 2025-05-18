@@ -36,6 +36,9 @@ void ocl_dbuf_seek(ocl_dbuf* const buffer, int bytes);
 
 size_t ocl_dbuf_get_ptr_offset(ocl_dbuf* const buffer);
 
+void ocl_dbuf_shrink_to_fit(ocl_dbuf* const buffer);
+
+
 
 void ocl_dbuf_writens_bytes(ocl_dbuf* const buffer, void* const src, size_t src_size);
 
@@ -47,5 +50,7 @@ void ocl_dbuf_write_u32_array(ocl_dbuf* const buffer, uint32_t* const data, size
 
 ocl_dbuf ocl_dbuf_fullcopy_buffer(ocl_dbuf* const buffer);
 
-ocl_dbuf ocl_dbuf_merge_buffers(ocl_dbuf* const lhs, ocl_dbuf* const rhs, bool combine_from_ptr, bool free_origins);
+ocl_dbuf ocl_dbuf_merge_buffers(bool end_at_ptr, bool free_inputs, size_t count, ...);
+
+//ocl_dbuf ocl_dbuf_merge_buffers(ocl_dbuf* const lhs, ocl_dbuf* const rhs, bool combine_from_ptr, bool free_origins);
 

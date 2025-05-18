@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdarg.h>
 #include "ocelot/memory.h"
 #include "filesys/endian.h"
 
@@ -69,6 +70,13 @@ size_t ocl_dbuf_get_ptr_offset(ocl_dbuf* const buffer)
         return (size_t)(buffer->ptr - buffer->memory);
 
     return 0;
+}
+
+
+void ocl_dbuf_shrink_to_fit(ocl_dbuf* const buffer)
+{
+    if(buffer != NULL)
+        buffer->size = ocl_dbuf_get_ptr_offset(buffer);
 }
 
 
@@ -145,32 +153,49 @@ ocl_dbuf ocl_dbuf_fullcopy_buffer(ocl_dbuf* const buffer)
     return result;
 }
 
-ocl_dbuf ocl_dbuf_merge_buffers(ocl_dbuf* const lhs, ocl_dbuf* const rhs, bool combine_from_ptr, bool free_origins)
+
+ocl_dbuf ocl_dbuf_merge_buffers(bool end_at_ptr, bool free_inputs, size_t count, ...)
 {
-    ocl_dbuf result = (ocl_dbuf){0};
+    // Make a reference pool for all the valid buffers
+    ocl_dbuf** pool = calloc(count, sizeof(ocl_dbuf*));
 
-    if(!ocl_dbuf_is_valid(lhs) && !ocl_dbuf_is_valid(rhs))
-        return result;
+    // Keep track of the total size
+    size_t valid_count = 0;
+    size_t final_size = 0;
 
-    size_t lsize = combine_from_ptr ? ocl_dbuf_get_ptr_offset(lhs) : lhs->size;
-    size_t new_size = lsize + rhs->size;
+    va_list args;
+    va_start(args, count);
 
-    result = ocl_dbuf_create(new_size, NULL);
-
-    // Write the left-hand-side buffer if its valid
-    if(ocl_dbuf_is_valid(lhs))
-        ocl_dbuf_write_bytes(&result, lhs->memory, lsize);
-
-    // Write the right-hand-side buffer if its valid
-    if(ocl_dbuf_is_valid(rhs))
-        ocl_dbuf_write_bytes(&result, rhs->memory, rhs->size);
-
-    if(free_origins)
+    for(size_t i = 0; i < count; i++)
     {
-        ocl_dbuf_free(lhs);
-        ocl_dbuf_free(rhs);
+        ocl_dbuf* entry = va_arg(args, ocl_dbuf*);
+
+        if(ocl_dbuf_is_valid(entry))
+        {
+            pool[valid_count++] = entry;
+            final_size += end_at_ptr ? ocl_dbuf_get_ptr_offset(entry) : entry->size;
+        }
     }
 
+    va_end(args);
+
+    // Combine all the buffers together
+    ocl_dbuf result = (ocl_dbuf){0};
+    result.size = final_size;
+    result.memory = calloc(final_size, sizeof(char));
+    result.ptr = result.memory;
+
+    for(size_t i = 0; i < count; i++)
+    {
+        size_t len = end_at_ptr ? ocl_dbuf_get_ptr_offset(pool[i]) : pool[i]->size;
+        memcpy(result.ptr, pool[i]->memory, len);
+        result.ptr += len;
+
+        if(free_inputs)
+            ocl_dbuf_free(pool[i]);
+    }
+
+    free(pool);
     return result;
 }
 
