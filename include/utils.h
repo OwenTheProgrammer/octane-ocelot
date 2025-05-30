@@ -1,8 +1,19 @@
 #pragma once
 
+#include <stdint.h>
 
-#define _OCT_BITMASK(x) ((1u<<(x))-1u)
+#define BITMASK(x) ((1 << (x)) - 1)
 
-#define _OCT_MASK_N(v, x) ((v) & _OCT_BITMASK(x))
+#define NMASK(value, bits) ((value) & BITMASK(bits))
 
-#define _OCT_TYPEOF(x) typeof(x)
+typedef unsigned int    bool_t;
+
+#define TRUE 1
+#define FALSE 0
+
+
+void phex_u8(uint8_t value);
+
+void phex_u16(uint16_t value);
+
+void phex_u8_array(void* const src, uint32_t count);
