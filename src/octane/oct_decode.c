@@ -186,7 +186,8 @@ static void _read_string_table(oct_file* const oct, ocl_dbuf* const buffer)
     }
 
     // Shrink the string table to the amount of strings loaded
-    oct->string_table = reallocarray(oct->string_table, oct->string_table_length, sizeof(oct_string));
+    //oct->string_table = reallocarray(oct->string_table, oct->string_table_length, sizeof(oct_string));
+    oct->string_table = realloc(oct->string_table, oct->string_table_length * sizeof(oct_string));
     printf("StringTable: Loaded %u strings.\n", oct->string_table_length);
 }
 
@@ -208,7 +209,8 @@ static void _read_data_tree(oct_file* const oct, ocl_dbuf* const buffer)
         //getchar();
     }
 
-    oct->data_tree = reallocarray(oct->data_tree, oct->data_tree_length, sizeof(oct_atomNode));
+    //oct->data_tree = reallocarray(oct->data_tree, oct->data_tree_length, sizeof(oct_atomNode));
+    oct->data_tree = realloc(oct->data_tree, oct->data_tree_length * sizeof(oct_atomNode));
     printf("DataTree: Loaded %u atoms.\n", oct->data_tree_length);
 }
 

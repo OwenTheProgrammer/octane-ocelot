@@ -106,7 +106,8 @@ void ocl_dbuf_ensure_capacity(ocl_dbuf* const buffer, size_t bytes)
     size_t region_size = buffer->ptr + bytes;
     if(region_size > buffer->size)
     {
-        buffer->data = reallocarray(buffer->data, region_size, sizeof(char));
+        //buffer->data = reallocarray(buffer->data, region_size, sizeof(char));
+        buffer->data = realloc(buffer->data, region_size * sizeof(char));
         buffer->size = region_size;
     }
 }
