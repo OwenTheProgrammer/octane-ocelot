@@ -1,3 +1,4 @@
+/* oct: The octane scene descriptor */
 #pragma once
 #include "utils.h"
 #include "byteconv/endian.h"

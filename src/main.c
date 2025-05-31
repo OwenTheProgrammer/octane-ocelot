@@ -1,5 +1,6 @@
 #include "byteconv/endian.h"
 #include "octane/oct.h"
+#include "octane/oct_atoms.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -19,13 +20,13 @@ int main(int argc, const char* argv[])
 {
     if(argc != 4)
     {
-        printf("Usage: ./ocelot <path to input oct> <path to output oct> <endian: l|b>\n");
+        printf("Usage: ./ocelot <path to input oct> <path to output oct> <endian: L|B>\n");
         return 0;
     }
 
     char input_file[FILENAME_MAX] = { [0 ... FILENAME_MAX-1] = 0 };
     char output_file[FILENAME_MAX] = { [0 ... FILENAME_MAX-1] = 0 };
-    endian_t target_endian = argv[3][0] == 'l' ? ENDIAN_LITTLE : ENDIAN_BIG;
+    endian_t target_endian = (argv[3][0] == 'L' || argv[3][0] == 'l') ? ENDIAN_LITTLE : ENDIAN_BIG;
 
     parse_file_path(&input_file, argv[1]);
     parse_file_path(&output_file, argv[2]);
@@ -38,12 +39,15 @@ int main(int argc, const char* argv[])
     //oct_file oct = oct_load_file("bin/oilrig.oct");
     oct_file oct = oct_load_file(input_file);
 
+    oct_atomNameTable ant = oct_create_atom_name_table(oct);
+    oct_print_atom_name_table(oct, ant);
+
     // Set the target endian to big
     //endian_set_target(ENDIAN_LITTLE);
-    endian_set_target(target_endian);
+    //endian_set_target(target_endian);
 
     //oct_store_file(oct, "bin/output.oct");
-    oct_store_file(oct, output_file);
+    //oct_store_file(oct, output_file);
 
     oct_file_free(&oct);
 

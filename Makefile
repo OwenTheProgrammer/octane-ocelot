@@ -22,7 +22,7 @@ OBJ_FILES = $(SRC_FILES:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 # $(call get_obj_subdirs,<SOURCE DIR>,<OBJECT DIR>)
 get_obj_subdirs = $(patsubst $(1)/%,$(2)/%,$(shell find $(1) -mindepth 1 -type d))
 
-.PHONY: clean buildfs debug release
+.PHONY: clean buildfs debug release run
 
 
 debug: CFLAGS += -O0 -ggdb -Wno-unused-function -Wno-unused-variable -fsanitize=address
@@ -31,6 +31,8 @@ debug: buildfs | $(BINARY)
 release: CFLAGS += -O3 -s -Wno-unused-result
 release: buildfs | $(BINARY)
 
+run: $(BINARY)
+	./$(BINARY) $(BIN_DIR)/oilrig.oct $(BIN_DIR)/output.oct L
 
 $(BINARY): $(OBJ_FILES)
 	$(CC) $(OBJ_FILES) -o $@ $(CFLAGS)
@@ -44,4 +46,4 @@ buildfs:
 
 clean:
 	rm -rf $(OBJ_DIR)
-#	rm -f $(BIN_DIR)/ocelot_*
+	rm -f $(BIN_DIR)/ocelot_*
