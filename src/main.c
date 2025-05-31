@@ -1,6 +1,7 @@
 #include "byteconv/endian.h"
 #include "octane/oct.h"
 #include "octane/oct_atoms.h"
+#include "octane/oct_scene.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -39,8 +40,12 @@ int main(int argc, const char* argv[])
     //oct_file oct = oct_load_file("bin/oilrig.oct");
     oct_file oct = oct_load_file(input_file);
 
-    oct_atomNameTable ant = oct_create_atom_name_table(oct);
-    oct_print_atom_name_table(oct, ant);
+    //oct_atomNameTable ant = oct_create_atom_name_table(oct);
+    //oct_print_atom_name_table(oct, ant);
+
+    oct_sceneDescriptor scene = oct_parse_scene_descriptor(oct);
+    oct_print_scene_descriptor(oct, scene);
+    oct_free_scene_descriptor(&scene);
 
     // Set the target endian to big
     //endian_set_target(ENDIAN_LITTLE);
