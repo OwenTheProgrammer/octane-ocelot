@@ -9,6 +9,7 @@ typedef enum
     OCT_ELEMENT_TYPE_FLOAT_THREE    = 2,
     OCT_ELEMENT_TYPE_FLOAT_FOUR     = 3,
     OCT_ELEMENT_TYPE_INT_ONE        = 10, //assuming this is int
+    OCT_ELEMENT_TYPE_RGBA_U8        = 25,
     OCT_ELEMENT_TYPE_PACKED_VECTOR  = 39, //S10_S11_S11?
     OCT_ELEMENT_TYPE_TEXCOORD       = 44, //R16_G16_UNORM?
 } oct_elementType;
@@ -22,7 +23,10 @@ typedef enum
     OCT_VSTREAM_ELEMENT_NAME_NORMAL         = 1<<3,
     OCT_VSTREAM_ELEMENT_NAME_BINORMAL       = 1<<4,
     OCT_VSTREAM_ELEMENT_NAME_LIGHTMAP_UV    = 1<<5,
-    OCT_VSTREAM_ELEMENT_NAME_MAX            = 6
+    OCT_VSTREAM_ELEMENT_NAME_COLOR_ADD      = 1<<6,
+    OCT_VSTREAM_ELEMENT_NAME_COLOR_OCC      = 1<<7,
+    OCT_VSTREAM_ELEMENT_NAME_VERTEX_BAKED   = 1<<8,
+    OCT_VSTREAM_ELEMENT_NAME_MAX            = 10
 } oct_vstreamElementName;
 
 typedef enum
@@ -107,6 +111,15 @@ struct oct_atomNameTable
 
     /* VertexStreamPool/VertexStream/Elements/Element/Name:lightmapUV */
     uint16_t vstream_element_name_lightmapUV;
+
+    /* VertexStreamPool/VertexStream/Elements/Element/Name:ColorAdditive */
+    uint16_t vstream_element_name_color_add;
+
+    /* VertexStreamPool/VertexStream/Elements/Element/Name:ColorOcclusion */
+    uint16_t vstream_element_name_color_occl;
+
+    /* VertexStreamPool/VertexStream/Elements/Element/Name:VertexBaked */
+    uint16_t vstream_element_name_vertex_baked;
 };
 
 extern oct_atomNameTable _oct_ant;

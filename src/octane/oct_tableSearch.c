@@ -96,6 +96,12 @@ oct_atomNameTable oct_create_atom_name_table(oct_file oct)
 
     ant.vstream_element_name_lightmapUV = oct_get_st_index_of(oct, "lightmapUV");
 
+    ant.vstream_element_name_color_add = oct_get_st_index_of(oct, "ColorAdditive");
+
+    ant.vstream_element_name_color_occl = oct_get_st_index_of(oct, "ColorOcclusion");
+
+    ant.vstream_element_name_vertex_baked = oct_get_st_index_of(oct, "VertexBaked");
+
     return ant;
 }
 
@@ -134,6 +140,9 @@ void oct_print_atom_name_table(oct_file oct, oct_atomNameTable ant)
     PRINT_ST(ant.vstream_element_name_normal)
     PRINT_ST(ant.vstream_element_name_binormal)
     PRINT_ST(ant.vstream_element_name_lightmapUV)
+    PRINT_ST(ant.vstream_element_name_color_add)
+    PRINT_ST(ant.vstream_element_name_color_occl)
+    PRINT_ST(ant.vstream_element_name_vertex_baked)
 }
 
 #undef PRINT_ST

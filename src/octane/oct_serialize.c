@@ -61,6 +61,15 @@ static oct_vstreamElementName _parse_element_type_from_name(uint16_t name_key)
     if(name_key == _oct_ant.vstream_element_name_lightmapUV)
         return OCT_VSTREAM_ELEMENT_NAME_LIGHTMAP_UV;
 
+    if(name_key == _oct_ant.vstream_element_name_color_add)
+        return OCT_VSTREAM_ELEMENT_NAME_COLOR_ADD;
+
+    if(name_key == _oct_ant.vstream_element_name_color_occl)
+        return OCT_VSTREAM_ELEMENT_NAME_COLOR_OCC;
+
+    if(name_key == _oct_ant.vstream_element_name_vertex_baked)
+        return OCT_VSTREAM_ELEMENT_NAME_VERTEX_BAKED;
+
     return OCT_VSTREAM_ELEMENT_NAME_NONE;
 }
 
@@ -69,10 +78,7 @@ oct_indexStreamAtom _oct_atom_read_index_stream(oct_file oct, uint32_t start_idx
 {
     oct_indexStreamAtom atom = (oct_indexStreamAtom){0};
 
-    oct_atomNode start_node = oct.data_tree[start_idx];
-    uint32_t start_level = start_node.header.tree_level;
-
-    atom.name_key = start_node.name_key;
+    atom.name_key = oct.data_tree[start_idx].name_key;
 
     for(uint32_t i = start_idx+1; i < end_idx; i++)
     {
@@ -108,10 +114,7 @@ oct_vertexStreamAtom _oct_atom_read_vertex_stream(oct_file oct, uint32_t start_i
 {
     oct_vertexStreamAtom atom = (oct_vertexStreamAtom){0};
 
-    oct_atomNode start_node = oct.data_tree[start_idx];
-    uint32_t start_level = start_node.header.tree_level;
-
-    atom.node_name = start_node.name_key;
+    atom.node_name = oct.data_tree[start_idx].name_key;
 
     for(uint32_t i = start_idx+1; i < end_idx; i++)
     {
@@ -161,10 +164,7 @@ oct_vstreamElementAtom _oct_atom_read_vstream_element(oct_file oct, uint32_t sta
 {
     oct_vstreamElementAtom atom = (oct_vstreamElementAtom){0};
 
-    oct_atomNode start_node = oct.data_tree[start_idx];
-    uint32_t start_level = start_node.header.tree_level;
-
-    atom.node_name = start_node.name_key;
+    atom.node_name = oct.data_tree[start_idx].name_key;
 
     for(uint32_t i = start_idx+1; i < end_idx; i++)
     {
