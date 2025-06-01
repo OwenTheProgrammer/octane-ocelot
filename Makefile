@@ -1,5 +1,6 @@
 CC		:= gcc
 CFLAGS	= -Wall -Werror -std=gnu17 -I$(INC_DIR)
+CLIBS	= -lglfw
 
 ifeq ($(PLATFORM), win64)
 	CC := x86_64-w64-mingw32-$(CC)
@@ -35,10 +36,10 @@ run: $(BINARY)
 	./$(BINARY) $(BIN_DIR)/oilrig.oct $(BIN_DIR)/output.oct L
 
 $(BINARY): $(OBJ_FILES)
-	$(CC) $(OBJ_FILES) -o $@ $(CFLAGS)
+	$(CC) $(OBJ_FILES) -o $@ $(CFLAGS) $(CLIBS)
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
-	$(CC) -c $< -o $@ $(CFLAGS)
+	$(CC) -c $< -o $@ $(CFLAGS) $(CLIBS)
 
 
 buildfs:

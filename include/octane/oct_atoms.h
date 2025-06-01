@@ -4,6 +4,17 @@
 
 typedef enum
 {
+    OCT_ELEMENT_TYPE_FLOAT_ONE      = 0,
+    OCT_ELEMENT_TYPE_FLOAT_TWO      = 1, //educated guess
+    OCT_ELEMENT_TYPE_FLOAT_THREE    = 2,
+    OCT_ELEMENT_TYPE_FLOAT_FOUR     = 3,
+    OCT_ELEMENT_TYPE_INT_ONE        = 10, //assuming this is int
+    OCT_ELEMENT_TYPE_PACKED_VECTOR  = 39, //no clue yet
+    OCT_ELEMENT_TYPE_TEXCOORD       = 44, //no clue yet
+} oct_elementType;
+
+typedef enum
+{
     OCT_PRIMITIVE_TYPE_NONE,
     OCT_PRIMITIVE_TYPE_TRIANGLES,
     OCT_PRIMITIVE_TYPE_MAX

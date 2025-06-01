@@ -5,6 +5,7 @@ let
 in
     pkgs.mkShell
     {
+        hardeningDisable = [ "all" ];
         buildInputs =
         [
             pkgs.gcc
