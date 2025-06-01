@@ -1,64 +1,11 @@
-#include "ocelot/endian.h"
-#include "ocelot/dbuf.h"
-#include "octane/ibuf.h"
-#include "octane/oct.h"
-#include "octane/oct_atoms.h"
-#include "octane/oct_scene.h"
-#include <stdio.h>
-#include <string.h>
-
-static void parse_file_path(char(* dst)[FILENAME_MAX], const char* arg)
-{
-    if(arg[0] == '\"' || arg[0] == '\'')
-    {
-        strncpy(*dst, arg + 1, strnlen(arg + 1, FILENAME_MAX)-1);
-    }
-    else
-    {
-        strncpy(*dst, arg, strnlen(arg, FILENAME_MAX));
-    }
-}
+#include "gui/window.h"
 
 int main(int argc, const char* argv[])
 {
-    if(argc != 4)
-    {
-        printf("Usage: ./ocelot <path to input oct> <path to output oct> <endian: L|B>\n");
-        return 0;
-    }
+    if(!ocl_gui_init())
+        return -1;
 
-    char input_file[FILENAME_MAX] = { [0 ... FILENAME_MAX-1] = 0 };
-    char output_file[FILENAME_MAX] = { [0 ... FILENAME_MAX-1] = 0 };
-    endian_t target_endian = (argv[3][0] == 'L' || argv[3][0] == 'l') ? ENDIAN_LITTLE : ENDIAN_BIG;
-
-    endian_set_target(target_endian);
-
-    parse_file_path(&input_file, argv[1]);
-    parse_file_path(&output_file, argv[2]);
-
-    printf("input oct: %s\n", input_file);
-    printf("output_oct: %s\n", output_file);
-    printf("target endian: %s\n\n", _ENDIAN_PRINT_TABLE[(int)target_endian]);
-
-    // Load the oct file
-    oct_file oct = oct_load_file(input_file);
-
-    // Load the raw
-    ocl_dbuf raw_ibuf = ocl_dbuf_load("bin/oilrig_0.ibuf");
-
-    oct_sceneDescriptor scene = oct_parse_scene_descriptor(oct);
-    oct_print_scene_descriptor(oct, scene);
-    oct_free_scene_descriptor(&scene);
-
-    // Set the target endian to big
-    //endian_set_target(ENDIAN_LITTLE);
-    //endian_set_target(target_endian);
-
-    //oct_store_file(oct, "bin/output.oct");
-    //oct_store_file(oct, output_file);
-
-    oct_file_free(&oct);
-    ocl_dbuf_free(&raw_ibuf);
+    ocl_gui_loop();
 
     return 0;
 }
