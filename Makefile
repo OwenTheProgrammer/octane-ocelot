@@ -16,7 +16,7 @@ OBJ_DIR	= obj
 SRC_DIR	= src
 INC_DIR	= include
 
-SRC_FILES = $(wildcard $(SRC_DIR)/*.c $(SRC_DIR)/ocelot/*.c $(SRC_DIR)/octane/*.c $(SRC_DIR)/gui/*.c)
+SRC_FILES = $(wildcard $(SRC_DIR)/*.c $(SRC_DIR)/ocelot/*.c $(SRC_DIR)/octane/*.c)
 OBJ_FILES = $(SRC_FILES:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 
 # Finds all subdirectories that need to be made for the obj directory
@@ -26,14 +26,14 @@ get_obj_subdirs = $(patsubst $(1)/%,$(2)/%,$(shell find $(1) -mindepth 1 -type d
 .PHONY: clean buildfs debug release run
 
 
-debug: CFLAGS += -O0 -ggdb -Wno-unused-function -Wno-unused-variable
+debug: CFLAGS += -O0 -ggdb -Wno-unused-function -Wno-unused-variable -fsanitize=address
 debug: buildfs | $(BINARY)
 
 release: CFLAGS += -O3 -s -Wno-unused-result
 release: buildfs | $(BINARY)
 
 run: $(BINARY)
-	./$(BINARY)
+	./$(BINARY) $(BIN_DIR)/oilrig.oct $(BIN_DIR)/output.oct l
 
 $(BINARY): $(OBJ_FILES)
 	$(CC) $(OBJ_FILES) -o $@ $(CFLAGS) $(CLIBS)

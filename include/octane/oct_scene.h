@@ -12,6 +12,12 @@ struct oct_sceneDescriptor
     uint32_t istream_pool_size;
 
     oct_indexStreamAtom* istream_pool;
+
+    /* VertexStreamPool */
+
+    uint32_t vstream_pool_size;
+
+    oct_vertexStreamAtom* vstream_pool;
 };
 
 
