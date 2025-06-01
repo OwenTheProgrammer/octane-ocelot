@@ -1,5 +1,5 @@
-#include "byteconv/endian.h"
-#include "byteconv/bswap.h"
+#include "ocelot/endian.h"
+#include "ocelot/bswap.h"
 #include "utils.h"
 #include <stdint.h>
 

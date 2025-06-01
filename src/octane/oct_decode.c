@@ -1,7 +1,7 @@
 #include "oct_internal.h"
 #include "octane/oct.h"
 #include "ocelot/dbuf.h"
-#include "byteconv/endian.h"
+#include "ocelot/endian.h"
 #include "utils.h"
 #include <stdbool.h>
 #include <stddef.h>

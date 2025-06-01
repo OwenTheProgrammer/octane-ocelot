@@ -1,6 +1,6 @@
-#include "byteconv/bswap.h"
+#include "ocelot/bswap.h"
 #include "ocelot/dbuf.h"
-#include "byteconv/endian.h"
+#include "ocelot/endian.h"
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>

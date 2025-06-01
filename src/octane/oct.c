@@ -1,5 +1,5 @@
 #include "octane/oct.h"
-#include "byteconv/endian.h"
+#include "ocelot/endian.h"
 #include "oct_internal.h"
 #include "utils.h"
 #include <stddef.h>

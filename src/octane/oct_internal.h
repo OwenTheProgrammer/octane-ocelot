@@ -1,5 +1,5 @@
 #pragma once
-#include "byteconv/endian.h"
+#include "ocelot/endian.h"
 #include <stddef.h>
 #include <string.h>
 

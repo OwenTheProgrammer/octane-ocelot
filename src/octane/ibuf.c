@@ -1,5 +1,5 @@
 #include "octane/ibuf.h"
-#include "byteconv/endian.h"
+#include "ocelot/endian.h"
 #include "ocelot/dbuf.h"
 #include <stdint.h>
 #include <stdlib.h>

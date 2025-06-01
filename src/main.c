@@ -1,4 +1,4 @@
-#include "byteconv/endian.h"
+#include "ocelot/endian.h"
 #include "ocelot/dbuf.h"
 #include "octane/ibuf.h"
 #include "octane/oct.h"
