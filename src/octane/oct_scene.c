@@ -16,6 +16,8 @@ oct_sceneDescriptor oct_parse_scene_descriptor(oct_file oct)
 
     _oct_parse_vertex_stream_pool(&scene, oct);
 
+    _oct_parse_scene_tree_node_pool(&scene, oct);
+
     return scene;
 }
 
@@ -29,6 +31,10 @@ void oct_print_scene_descriptor(oct_file oct, oct_sceneDescriptor scene)
     for(uint32_t i = 0; i < scene.vstream_pool_size; i++)
     {
         oct_print_atom_vertex_stream(oct, scene.vstream_pool[i]);
+    }
+    for(uint32_t i = 0; i < scene.scene_tree_pool_size; i++)
+    {
+        oct_print_scene_tree_node(oct, scene.scene_tree_node_pool[i]);
     }
 }
 
@@ -44,6 +50,8 @@ void oct_free_scene_descriptor(oct_sceneDescriptor* const scene)
             free(scene->vstream_pool[i].elements);
         }
         free(scene->vstream_pool);
+
+        free(scene->scene_tree_node_pool);
 
         *scene = (oct_sceneDescriptor){0};
     }

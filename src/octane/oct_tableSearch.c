@@ -102,6 +102,73 @@ oct_atomNameTable oct_create_atom_name_table(oct_file oct)
 
     ant.vstream_element_name_vertex_baked = oct_get_st_index_of(oct, "VertexBaked");
 
+
+    ant.scene_tree_node_pool = oct_get_st_index_of(oct, "SceneTreeNodePool");
+
+    ant.scene_node = oct_get_st_index_of(oct, "Node");
+
+    ant.scene_node_type_scene = oct_get_st_index_of(oct, "Scene");
+
+    ant.scene_node_type_transform = oct_get_st_index_of(oct, "Transform");
+
+    ant.scene_node_type_geometry = oct_get_st_index_of(oct, "Geometry");
+
+    ant.scene_node_type_sub_geometry = oct_get_st_index_of(oct, "SubGeometry");
+
+    ant.scene_node_type_sub_geometry_lit = oct_get_st_index_of(oct, "SubGeometryLit");
+
+    ant.scene_node_type_camera = oct_get_st_index_of(oct, "Camera");
+
+    ant.scene_node_type_light = oct_get_st_index_of(oct, "Light");
+
+    ant.scene_node_name = oct_get_st_index_of(oct, "NodeName");
+
+    ant.scene_node_parent_node_refs = oct_get_st_index_of(oct, "ParentNodeReferences");
+
+    ant.scene_node_local_to_parent_matrix = oct_get_st_index_of(oct, "LocalToWorldMatrix");
+
+    ant.scene_node_visible = oct_get_st_index_of(oct, "Visible");
+
+    ant.scene_node_mesh_name = oct_get_st_index_of(oct, "MeshName");
+
+    ant.scene_node_material_ref = oct_get_st_index_of(oct, "MaterialReference");
+
+    ant.scene_node_vstream_refs = oct_get_st_index_of(oct, "VertexStreamReferences");
+
+    ant.scene_node_istream_ref = oct_get_st_index_of(oct, "IndexStreamReference");
+
+    ant.scene_node_is_orthographic = oct_get_st_index_of(oct, "IsOrthographic");
+
+    ant.scene_node_focal_length = oct_get_st_index_of(oct, "FocalLength");
+
+    ant.scene_node_camera_scale = oct_get_st_index_of(oct, "CameraScale");
+
+    ant.scene_node_near_clip = oct_get_st_index_of(oct, "NearClipPlane");
+
+    ant.scene_node_far_clip = oct_get_st_index_of(oct, "FarClipPlane");
+
+    ant.scene_node_horizontal_film_aperture = oct_get_st_index_of(oct, "HorizontalFilmAmperture");
+
+    ant.scene_node_vertical_film_aperture = oct_get_st_index_of(oct, "VerticalFilmAperture");
+
+    ant.scene_node_lens_squeeze_ratio = oct_get_st_index_of(oct, "LensSqueezeRatio");
+
+    ant.scene_node_light_type = oct_get_st_index_of(oct, "LightType");
+
+    ant.scene_node_light_color = oct_get_st_index_of(oct, "LightColor");
+
+    ant.scene_node_light_intensity = oct_get_st_index_of(oct, "LightIntensity");
+
+    ant.scene_node_shadow_color = oct_get_st_index_of(oct, "ShadowColor");
+
+    ant.scene_node_ambient_shade = oct_get_st_index_of(oct, "AmbientShade");
+
+    ant.scene_node_light_type_directional = oct_get_st_index_of(oct, "Directional");
+
+    ant.scene_node_light_type_point = oct_get_st_index_of(oct, "Point");
+
+    ant.scene_node_light_type_ambient = oct_get_st_index_of(oct, "Ambient");
+
     return ant;
 }
 
@@ -143,6 +210,40 @@ void oct_print_atom_name_table(oct_file oct, oct_atomNameTable ant)
     PRINT_ST(ant.vstream_element_name_color_add)
     PRINT_ST(ant.vstream_element_name_color_occl)
     PRINT_ST(ant.vstream_element_name_vertex_baked)
+
+    PRINT_ST(ant.scene_tree_node_pool)
+    PRINT_ST(ant.scene_node)
+    PRINT_ST(ant.scene_node_type_scene)
+    PRINT_ST(ant.scene_node_type_geometry)
+    PRINT_ST(ant.scene_node_type_sub_geometry)
+    PRINT_ST(ant.scene_node_type_sub_geometry_lit)
+    PRINT_ST(ant.scene_node_type_camera)
+    PRINT_ST(ant.scene_node_type_light)
+    PRINT_ST(ant.scene_node_name)
+    PRINT_ST(ant.scene_node_parent_node_refs)
+    PRINT_ST(ant.scene_node_local_to_parent_matrix)
+    PRINT_ST(ant.scene_node_visible)
+    PRINT_ST(ant.scene_node_mesh_name)
+    PRINT_ST(ant.scene_node_material_ref)
+    PRINT_ST(ant.scene_node_vstream_refs)
+    PRINT_ST(ant.scene_node_istream_ref)
+    PRINT_ST(ant.scene_node_is_orthographic)
+    PRINT_ST(ant.scene_node_focal_length)
+    PRINT_ST(ant.scene_node_camera_scale)
+    PRINT_ST(ant.scene_node_near_clip)
+    PRINT_ST(ant.scene_node_far_clip)
+    PRINT_ST(ant.scene_node_horizontal_film_aperture)
+    PRINT_ST(ant.scene_node_vertical_film_aperture)
+    PRINT_ST(ant.scene_node_lens_squeeze_ratio)
+    PRINT_ST(ant.scene_node_light_type)
+    PRINT_ST(ant.scene_node_light_color)
+    PRINT_ST(ant.scene_node_light_intensity)
+    PRINT_ST(ant.scene_node_shadow_color)
+    PRINT_ST(ant.scene_node_ambient_shade)
+
+    PRINT_ST(ant.scene_node_light_type_directional)
+    PRINT_ST(ant.scene_node_light_type_point)
+    PRINT_ST(ant.scene_node_light_type_ambient)
 }
 
 #undef PRINT_ST

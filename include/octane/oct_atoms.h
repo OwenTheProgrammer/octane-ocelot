@@ -1,6 +1,31 @@
 #pragma once
+#include "types/mat4x4.h"
+#include "types/vector.h"
 #include "octane/oct.h"
+#include <stdbool.h>
 #include <stdint.h>
+
+typedef enum
+{
+    OCT_SCENE_NODE_TYPE_NONE,
+    OCT_SCENE_NODE_TYPE_SCENE,
+    OCT_SCENE_NODE_TYPE_TRANSFORM,
+    OCT_SCENE_NODE_TYPE_GEOMETRY,
+    OCT_SCENE_NODE_TYPE_SUB_GEOMETRY,
+    OCT_SCENE_NODE_TYPE_SUB_GEOMETRY_LIT,
+    OCT_SCENE_NODE_TYPE_CAMERA,
+    OCT_SCENE_NODE_TYPE_LIGHT,
+    OCT_SCENE_NODE_TYPE_MAX
+} oct_sceneNodeType;
+
+typedef enum
+{
+    OCT_SCENE_LIGHT_TYPE_NONE,
+    OCT_SCENE_LIGHT_TYPE_DIRECTIONAL,
+    OCT_SCENE_LIGHT_TYPE_POINT,
+    OCT_SCENE_LIGHT_TYPE_AMBIENT,
+    OCT_SCENE_LIGHT_TYPE_MAX
+} oct_sceneLightType;
 
 typedef enum
 {
@@ -41,6 +66,13 @@ typedef struct oct_atomNameTable    oct_atomNameTable;
 typedef struct oct_indexStreamAtom      oct_indexStreamAtom;
 typedef struct oct_vertexStreamAtom     oct_vertexStreamAtom;
 typedef struct oct_vstreamElementAtom   oct_vstreamElementAtom;
+
+typedef struct oct_sceneTreeNodeAtom    oct_sceneTreeNodeAtom;
+
+typedef struct oct_sceneCameraNode      oct_sceneCameraNode;
+typedef struct oct_sceneGeometryNode    oct_sceneGeometryNode;
+typedef struct oct_sceneSubGeometryNode oct_sceneSubGeometryNode;
+typedef struct oct_sceneLightNode       oct_sceneLightNode;
 
 struct oct_atomNameTable
 {
@@ -120,6 +152,108 @@ struct oct_atomNameTable
 
     /* VertexStreamPool/VertexStream/Elements/Element/Name:VertexBaked */
     uint16_t vstream_element_name_vertex_baked;
+
+
+    /* SceneTreeNodePool */
+    uint16_t scene_tree_node_pool;
+
+    /* SceneTreeNodePool/Node */
+    uint16_t scene_node;
+
+    /* SceneTreeNodePool/Node/Type:Scene */
+    uint16_t scene_node_type_scene;
+
+    /* SceneTreeNodePool/Node/Type:Transform */
+    uint16_t scene_node_type_transform;
+
+    /* SceneTreeNodePool/Node/Type:Geometry */
+    uint16_t scene_node_type_geometry;
+
+    /* SceenTreeNodePool/Node/Type:SubGeometry */
+    uint16_t scene_node_type_sub_geometry;
+
+    /* SceneTreeNodePool/Node/Type:SubGeometryLit */
+    uint16_t scene_node_type_sub_geometry_lit;
+
+    /* SceneTreeNodePool/Node/Type:Camera */
+    uint16_t scene_node_type_camera;
+
+    /* SceneTreeNodePool/Node/Type:Light */
+    uint16_t scene_node_type_light;
+
+    /* SceenTreeNodePool/Node/NodeName */
+    uint16_t scene_node_name;
+
+    /* SceneTreeNodePool/Node/ParentNodeReferences */
+    uint16_t scene_node_parent_node_refs;
+
+    /* SceneTreeNodePool/Node/LocalToParentMatrix */
+    uint16_t scene_node_local_to_parent_matrix;
+
+    /* SceneTreeNodePool/Node/Visible */
+    uint16_t scene_node_visible;
+
+    /* SceneTreeNodePool/Node/MeshName */
+    uint16_t scene_node_mesh_name;
+
+    /* SceneTreeNodePool/Node/MaterialReference */
+    uint16_t scene_node_material_ref;
+
+    /* SceneTreeNodePool/Node/VertexStreamReferences */
+    uint16_t scene_node_vstream_refs;
+
+    /* SceneTreeNodePool/Node/IndexStreamReference */
+    uint16_t scene_node_istream_ref;
+
+    /* SceneTreeNodePool/Node/IsOrthographic */
+    uint16_t scene_node_is_orthographic;
+
+    /* SceneTreeNodePool/Node/FocalLength */
+    uint16_t scene_node_focal_length;
+
+    /* SceneTreeNodePool/Node/CameraScale */
+    uint16_t scene_node_camera_scale;
+
+    /* SceneTreeNodePool/Node/NearClipPlane */
+    uint16_t scene_node_near_clip;
+
+    /* SceneTreeNodePool/Node/FarClipPlane */
+    uint16_t scene_node_far_clip;
+
+    // NOTE: The octane format has a spelling mistake for aperture
+
+    /* SceneTreeNodePool/Node/HorizontalFilmAmperture */
+    uint16_t scene_node_horizontal_film_aperture;
+
+    /* SceneTreeNodePool/Node/VerticalFilmAperture */
+    uint16_t scene_node_vertical_film_aperture;
+
+    /* SceneTreeNodePool/Node/LensSqueezeRatio */
+    uint16_t scene_node_lens_squeeze_ratio;
+
+    /* SceneTreeNodePool/Node/LightType */
+    uint16_t scene_node_light_type;
+
+    /* SceneTreeNodePool/Node/LightColor */
+    uint16_t scene_node_light_color;
+
+    /* SceneTreeNodePool/Node/LightIntensity */
+    uint16_t scene_node_light_intensity;
+
+    /* SceneTreeNodePool/Node/ShadowColor */
+    uint16_t scene_node_shadow_color;
+
+    /* SceneTreeNodePool/Node/AmbientShade */
+    uint16_t scene_node_ambient_shade;
+
+    /* SceneTreeNodePool/Node/Light Type:Directional */
+    uint16_t scene_node_light_type_directional;
+
+    /* SceneTreeNodePool/Node/Light Type:Point */
+    uint16_t scene_node_light_type_point;
+
+    /* SceneTreeNodePool/Node/Light Type:Ambient */
+    uint16_t scene_node_light_type_ambient;
 };
 
 extern oct_atomNameTable _oct_ant;
@@ -127,7 +261,7 @@ extern oct_atomNameTable _oct_ant;
 /* Serialization of IndexStreamPool/IndexStream */
 struct oct_indexStreamAtom
 {
-    uint16_t name_key;
+    uint16_t atom_id;
 
     uint32_t length;
 
@@ -141,7 +275,7 @@ struct oct_indexStreamAtom
 /* Serialization of VertexStreamPool/VertexStream */
 struct oct_vertexStreamAtom
 {
-    uint16_t node_name;
+    uint16_t atom_id;
 
     /* The amount of elements in the vertex stream */
     uint32_t length;
@@ -168,7 +302,7 @@ struct oct_vertexStreamAtom
 /* Serialization of VertexStreamPool/VertexStream/Elements/Element */
 struct oct_vstreamElementAtom
 {
-    uint16_t node_name;
+    uint16_t atom_id;
 
     oct_elementType type;
 
@@ -177,6 +311,88 @@ struct oct_vstreamElementAtom
     oct_vstreamElementName attribute_type;
 
     uint32_t offset;
+};
+
+
+/* Serialization of SceneTreeNodePool/Node/Type:Geometry */
+struct oct_sceneGeometryNode
+{
+    bool visible;
+
+    uint16_t mesh_name;
+};
+
+/* Serialization of SceneTreeNodePool/Node/Type:{SubGeometry, SubGeometryLit} */
+struct oct_sceneSubGeometryNode
+{
+    uint32_t material_reference;
+
+    uint32_t vstream_count;
+
+    uint32_t* vstream_refs;
+
+    uint32_t istream_ref;
+};
+
+/* Serialization of SceneTreeNodePool/Node/Type:Camera */
+struct oct_sceneCameraNode
+{
+    bool is_orthographic;
+
+    float focal_length;
+
+    float scale;
+
+    float near_clip;
+
+    float far_clip;
+
+    float horizontal_film_aperture;
+
+    float vertical_film_aperture;
+
+    float lens_squeeze_ratio;
+};
+
+/* Serialization of SceneTreeNodePool/Node/Type:Light */
+struct oct_sceneLightNode
+{
+    oct_sceneLightType type;
+
+    vec3f light_color;
+
+    float light_intensity;
+
+    float ambient_shade;
+
+    vec3f shadow_color;
+};
+
+
+/* Serialization of SceneTreeNodePool/Node */
+struct oct_sceneTreeNodeAtom
+{
+    uint16_t atom_id;
+
+    uint16_t node_name;
+
+    oct_sceneNodeType type;
+
+    // TODO: This is prone to failure if theres more than one parent ref.
+    // I dont know when that would happen though
+    uint32_t parent_node_refs;
+
+    mat4x4f local_to_parent_matrix;
+
+    /* == Node Types == */
+
+    oct_sceneGeometryNode geometry;
+
+    oct_sceneSubGeometryNode sub_geometry;
+
+    oct_sceneCameraNode camera;
+
+    oct_sceneLightNode light;
 };
 
 
@@ -198,3 +414,16 @@ void oct_print_atom_index_stream(oct_file oct, oct_indexStreamAtom atom);
 void oct_print_atom_vertex_stream(oct_file oct, oct_vertexStreamAtom atom);
 
 void oct_print_atom_vertex_element(oct_file oct, oct_vstreamElementAtom atom);
+
+
+void oct_print_atom_scene_geometry(oct_file oct, oct_sceneGeometryNode atom);
+
+void oct_print_atom_scene_sub_geometry(oct_file oct, oct_sceneSubGeometryNode atom);
+
+void oct_print_atom_scene_sub_geometry_lit(oct_file oct, oct_sceneSubGeometryNode atom);
+
+void oct_print_atom_scene_camera(oct_file oct, oct_sceneCameraNode atom);
+
+void oct_print_atom_scene_light(oct_file oct, oct_sceneLightNode atom);
+
+void oct_print_scene_tree_node(oct_file oct, oct_sceneTreeNodeAtom atom);

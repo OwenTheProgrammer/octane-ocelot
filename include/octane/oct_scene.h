@@ -18,6 +18,12 @@ struct oct_sceneDescriptor
     uint32_t vstream_pool_size;
 
     oct_vertexStreamAtom* vstream_pool;
+
+    /* SceneTreeNodePool*/
+
+    uint32_t scene_tree_pool_size;
+
+    oct_sceneTreeNodeAtom* scene_tree_node_pool;
 };
 
 

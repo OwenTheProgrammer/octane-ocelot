@@ -182,7 +182,7 @@ void oct_print_atom_node(oct_file oct, oct_atomNode node)
 
 void oct_print_atom_index_stream(oct_file oct, oct_indexStreamAtom atom)
 {
-    printf("IndexStream %s\n", oct.string_table[atom.name_key].data);
+    printf("IndexStream %s\n", oct.string_table[atom.atom_id].data);
     printf("|\tLength: %u\n", atom.length);
     printf("|\tBufferReference: %u\n", atom.buffer_reference);
     printf("|\tBufferOffset: %u\n", atom.buffer_offset);
@@ -191,7 +191,7 @@ void oct_print_atom_index_stream(oct_file oct, oct_indexStreamAtom atom)
 
 void oct_print_atom_vertex_stream(oct_file oct, oct_vertexStreamAtom atom)
 {
-    printf("VertexStream %s\n", oct.string_table[atom.node_name].data);
+    printf("VertexStream %s\n", oct.string_table[atom.atom_id].data);
     printf("|\tLength: %u\n", atom.length);
     printf("|\tWidth: %u\n", atom.width);
     printf("|\tVertexBufferReference: %u\n", atom.buffer_reference);
@@ -206,11 +206,111 @@ void oct_print_atom_vertex_stream(oct_file oct, oct_vertexStreamAtom atom)
 
 void oct_print_atom_vertex_element(oct_file oct, oct_vstreamElementAtom atom)
 {
-    printf("Element %s\n", oct.string_table[atom.node_name].data);
+    printf("Element %s\n", oct.string_table[atom.atom_id].data);
     printf("|\tType: %u\n", atom.type);
     printf("|\tName: %s\n", oct.string_table[atom.name].data);
     printf("|\tOffset: %u\n", atom.offset);
 }
+
+
+void oct_print_atom_scene_geometry(oct_file oct, oct_sceneGeometryNode atom)
+{
+    printf("Geometry:\n");
+    printf("|\tVisible: %s\n", atom.visible ? "True" : "False");
+    printf("|\tMeshName: %s\n", oct.string_table[atom.mesh_name].data);
+}
+
+void oct_print_atom_scene_sub_geometry(oct_file oct, oct_sceneSubGeometryNode atom)
+{
+    printf("SubGeometry:\n");
+    printf("|\tMaterialReference: %u\n", atom.material_reference);
+    printf("|\tVertexStreamReferences[%u]:\n", atom.vstream_count);
+    for(uint32_t i = 0; i < atom.vstream_count; i++)
+    {
+        printf("|\t - %u\n", atom.vstream_refs[i]);
+    }
+    printf("|\tIndexStreamReference: %u\n", atom.istream_ref);
+}
+
+void oct_print_atom_scene_sub_geometry_lit(oct_file oct, oct_sceneSubGeometryNode atom)
+{
+    printf("SubGeometryLit\n");
+    printf("|\tMaterialReference: %u\n", atom.material_reference);
+    printf("|\tVertexStreamReferences[%u]:\n", atom.vstream_count);
+    for(uint32_t i = 0; i < atom.vstream_count; i++)
+    {
+        printf("|\t - %u\n", atom.vstream_refs[i]);
+    }
+    printf("|\tIndexStreamReference: %u\n", atom.istream_ref);
+
+}
+
+void oct_print_atom_scene_camera(oct_file oct, oct_sceneCameraNode atom)
+{
+    printf("Camera\n");
+    printf("|\tIsOrthographic: %s\n", atom.is_orthographic ? "True" : "False");
+    printf("|\tFocalLength: %f\n", atom.focal_length);
+    printf("|\tCameraScale: %f\n", atom.scale);
+    printf("|\tNearClip: %f\n", atom.near_clip);
+    printf("|\tFarClip: %f\n", atom.far_clip);
+    printf("|\tHorizontalFilmAperture: %f\n", atom.horizontal_film_aperture);
+    printf("|\tVerticalFilmAperture: %f\n", atom.vertical_film_aperture);
+    printf("|\tLensSqueezeRatio: %f\n", atom.lens_squeeze_ratio);
+}
+
+void oct_print_atom_scene_light(oct_file oct, oct_sceneLightNode atom)
+{
+    printf("Light\n");
+    printf("|\tType: %u\n", (uint32_t)atom.type);
+    printf("|\tLightColor RGB: %u, %u, %u\n", 
+           (uint32_t)(atom.light_color.x * 255),
+           (uint32_t)(atom.light_color.y * 255),
+           (uint32_t)(atom.light_color.z * 255)
+    );
+    printf("|\tLightIntensity: %f\n", atom.light_intensity);
+    printf("|\tAmbientShade: %f\n", atom.ambient_shade);
+    printf("|\tShadowColor RGB: %u, %u, %u\n",
+           (uint32_t)(atom.shadow_color.x * 255),
+           (uint32_t)(atom.shadow_color.y * 255),
+           (uint32_t)(atom.shadow_color.z * 255)
+    );
+}
+
+void oct_print_scene_tree_node(oct_file oct, oct_sceneTreeNodeAtom atom)
+{
+    printf("Node %s\n", oct.string_table[atom.atom_id].data);
+    printf("|\tNodeName: %s\n", oct.string_table[atom.node_name].data);
+    printf("|\tType: %u\n", (uint32_t)atom.type);
+    printf("|\tParentNodeRef: %u\n", atom.parent_node_refs);
+    //printf("|\tLocalToParentMatrix\n");
+    switch(atom.type)
+    {
+        case OCT_SCENE_NODE_TYPE_GEOMETRY:
+            oct_print_atom_scene_geometry(oct, atom.geometry);
+            break;
+
+        case OCT_SCENE_NODE_TYPE_SUB_GEOMETRY:
+            oct_print_atom_scene_sub_geometry(oct, atom.sub_geometry);
+            break;
+
+        case OCT_SCENE_NODE_TYPE_SUB_GEOMETRY_LIT:
+            oct_print_atom_scene_sub_geometry(oct, atom.sub_geometry);
+            break;
+
+        case OCT_SCENE_NODE_TYPE_CAMERA:
+            oct_print_atom_scene_camera(oct, atom.camera);
+            break;
+
+        case OCT_SCENE_NODE_TYPE_LIGHT:
+            oct_print_atom_scene_light(oct, atom.light);
+            break;
+
+        default:
+            break;
+    }
+}
+
+
 
 void oct_file_free(oct_file* const oct)
 {

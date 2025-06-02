@@ -32,7 +32,7 @@ debug: buildfs | $(BINARY)
 release: CFLAGS += -O3 -s -Wno-unused-result
 release: buildfs | $(BINARY)
 
-run: $(BINARY)
+run: debug
 	./$(BINARY) $(BIN_DIR)/oilrig.oct $(BIN_DIR)/output.oct l
 
 $(BINARY): $(OBJ_FILES)
