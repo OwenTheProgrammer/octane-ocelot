@@ -1,7 +1,10 @@
-#include "gui/window.h"
+#include "ocelot/engine/window.h"
 #include "ocelot/engine_state.h"
-#define GLFW_INCLUDE_NONE
-#include <GLFW/glfw3.h>
+//#include <GL/gl.h>
+
+//#define GLFW_INCLUDE_NONE
+//#include <glad/glad.h>
+//#include <GLFW/glfw3.h>
 #include <stdio.h>
 
 static void error_callback(int error, const char* msg)
@@ -15,6 +18,12 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
         glfwSetWindowShouldClose(window, GLFW_TRUE);
 }
 
+static void fb_resize_callback(GLFWwindow* window, int width, int height)
+{
+    glViewport(0, 0, width, height);
+}
+
+
 int ocl_gui_init()
 {
     glfwSetErrorCallback(error_callback);
@@ -24,9 +33,9 @@ int ocl_gui_init()
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    //glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    ocl_rtState.window = glfwCreateWindow(800, 600, "Ocelot", NULL, NULL);
+    ocl_rtState.window = glfwCreateWindow(1280, 720, "Ocelot", NULL, NULL);
 
     if(!ocl_rtState.window)
     {
@@ -35,10 +44,20 @@ int ocl_gui_init()
         return 0;
     }
 
-    //glfwSetKeyCallback(ocl_rtState.window, key_callback);
 
     glfwMakeContextCurrent(ocl_rtState.window);
-    glfwSwapInterval(1);
+
+    glfwSetKeyCallback(ocl_rtState.window, key_callback);
+    glfwSetFramebufferSizeCallback(ocl_rtState.window, fb_resize_callback);
+
+    if(!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+    {
+        fprintf(stderr, "Failed to initialize glad.\n");
+        glfwDestroyWindow(ocl_rtState.window);
+        glfwTerminate();
+        return 0;
+    }
+
 
     return 1;
 }
@@ -47,6 +66,10 @@ void ocl_gui_loop()
 {
     while(!glfwWindowShouldClose(ocl_rtState.window))
     {
+
+        glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
+
         glfwSwapBuffers(ocl_rtState.window);
         glfwPollEvents();
     }
