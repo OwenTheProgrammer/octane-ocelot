@@ -1,22 +1,18 @@
 #pragma once
-#include "ocelot/endian.h"
 #include "ocelot/dbuf.h"
+#include "octane/oct_scene.h"
 #include <stdint.h>
-#include <stdio.h>
 
 typedef struct oct_indexBuffer  oct_indexBuffer;
 
 struct oct_indexBuffer
 {
-    endian_t endian;
+    uint32_t index_count;
 
-    uint32_t stride;
-
-    ocl_dbuf data;
-
-    char file_name[FILENAME_MAX];
+    uint32_t* indices;
 };
 
-oct_indexBuffer oct_load_ibuf(const char* filepath, uint32_t stride, endian_t endian);
 
-void oct_free_ibuf(oct_indexBuffer* const buffer);
+oct_indexBuffer oct_decode_index_buffer(ocl_dbuf* const ibuf, oct_sceneDescriptor scene, uint32_t stride, uint32_t index);
+
+void oct_free_index_buffer(oct_indexBuffer* const ibuf);

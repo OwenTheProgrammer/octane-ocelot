@@ -94,6 +94,24 @@ uint32_t* ocl_dbuf_read_u32_array(ocl_dbuf* const buffer, size_t count)
     return result;
 }
 
+uint32_t* ocl_dbuf_read_uvar_array(ocl_dbuf* const buffer, size_t count, unsigned int stride)
+{
+    if(count == 0 || stride == 0)
+        return NULL;
+
+    uint32_t* result = calloc(count, sizeof(uint32_t));
+
+    for(size_t i = 0; i < count; i++)
+    {
+        uint32_t value = *(uint32_t*)ocl_dbuf_pos(buffer);
+        result[i] = endian_swap_uvar(value, stride);
+
+        ocl_dbuf_advance(buffer, stride);
+    }
+
+    return result;
+}
+
 int32_t* ocl_dbuf_read_svar_array(ocl_dbuf* const buffer, size_t count, unsigned int stride)
 {
     if(count == 0 || stride == 0)

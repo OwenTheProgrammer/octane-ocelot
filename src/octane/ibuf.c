@@ -1,27 +1,28 @@
 #include "octane/ibuf.h"
-#include "ocelot/endian.h"
 #include "ocelot/dbuf.h"
-#include <stdint.h>
+#include "octane/oct_atoms.h"
 #include <stdlib.h>
 
 
-oct_indexBuffer oct_load_ibuf(const char* filepath, uint32_t stride, endian_t endian)
+oct_indexBuffer oct_decode_index_buffer(ocl_dbuf* const ibuf, oct_sceneDescriptor scene, uint32_t stride, uint32_t index)
 {
-    oct_indexBuffer ibuf = (oct_indexBuffer){0};
+    oct_indexBuffer buf = (oct_indexBuffer){0};
 
-    ibuf.stride = stride;
-    ibuf.endian = endian;
-    ibuf.data = ocl_dbuf_load(filepath);
+    oct_indexStreamAtom istream_atom = scene.istream_pool[index];
 
-    return ibuf;
+    buf.index_count = istream_atom.length * (sizeof(uint32_t) / stride);
+
+    ibuf->ptr = istream_atom.buffer_offset;
+
+    buf.indices = ocl_dbuf_read_uvar_array(ibuf, buf.index_count, stride);
+
+    return buf;
 }
 
-
-void oct_free_ibuf(oct_indexBuffer* const buffer)
+void oct_free_index_buffer(oct_indexBuffer* const ibuf)
 {
-    if(buffer != NULL)
+    if(ibuf != NULL)
     {
-        ocl_dbuf_free(&buffer->data);
-        *buffer = (oct_indexBuffer){0};
+        free(ibuf->indices);
     }
 }

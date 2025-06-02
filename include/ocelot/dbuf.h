@@ -47,6 +47,8 @@ uint16_t* ocl_dbuf_read_u16_array(ocl_dbuf* const buffer, size_t count);
 
 uint32_t* ocl_dbuf_read_u32_array(ocl_dbuf* const buffer, size_t count);
 
+uint32_t* ocl_dbuf_read_uvar_array(ocl_dbuf* const buffer, size_t count, unsigned int stride);
+
 int32_t* ocl_dbuf_read_svar_array(ocl_dbuf* const buffer, size_t count, unsigned int stride);
 
 
