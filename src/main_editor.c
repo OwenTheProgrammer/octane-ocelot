@@ -16,15 +16,11 @@ int main()
     ocl_dbuf ibuf_file = ocl_dbuf_load("bin/oilrig_0.ibuf");
     ocl_dbuf vbuf_file = ocl_dbuf_load("bin/oilrig_0.vbuf");
 
-    oce_model model = oce_load_octane_model(ibuf_file, vbuf_file, scene, 28, 14, 2u);
+    oce_model model = oce_load_octane_model(ibuf_file, vbuf_file, scene, 2829, 1474, 2u);
 
     printf("VertexCount: %u\n", model.vertex_count);
     printf("IndexCount: %u\n", model.index_count);
 
-    oct_free_scene_descriptor(&scene);
-    oct_file_free(&oct);
-    ocl_dbuf_free(&ibuf_file);
-    ocl_dbuf_free(&vbuf_file);
 
     if(!ocl_gui_init())
         return -1;
@@ -32,6 +28,9 @@ int main()
     ocl_gui_loop(model);
 
     oce_free_model(&model);
-
+    oct_free_scene_descriptor(&scene);
+    oct_file_free(&oct);
+    ocl_dbuf_free(&ibuf_file);
+    ocl_dbuf_free(&vbuf_file);
     return 0;
 }

@@ -98,6 +98,8 @@ run: $(debug)
 
 buildfs:
 	mkdir -p $(ROOT_BIN_DIR) $(ROOT_OBJ_DIR) $(GLAD_BIN_DIR) $(OCL_OBJ_DIR) $(OCT_OBJ_DIR) $(OCE_OBJ_DIR)
+	cp -a assets $(ROOT_BIN_DIR)/
+
 
 clean:
 	rm -rf $(ROOT_OBJ_DIR)

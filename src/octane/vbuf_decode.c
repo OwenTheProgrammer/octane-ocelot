@@ -42,6 +42,11 @@ oct_vertexBuffer oct_decode_vertex_buffer(ocl_dbuf* const vbuf, oct_sceneDescrip
 
         uint32_t jump = stride - (4*3);
 
+        float min_x = 10000;
+        float min_y = 10000;
+        float max_x = -10000;
+        float max_y = -10000;
+
         //Load each vertex position
         for(uint32_t i = 0; i < v.vertex_count; i++)
         {
@@ -51,15 +56,37 @@ oct_vertexBuffer oct_decode_vertex_buffer(ocl_dbuf* const vbuf, oct_sceneDescrip
             raw = ocl_dbuf_read_u32(vbuf);
             pos.x = *(float*)&raw;
 
+            if(pos.x < min_x) min_x = pos.x;
+            if(pos.x > max_x) max_x = pos.x;
+
+            //pos.x = 0.0270122 * pos.x - 2.37486;
+            //pos.x -= 80.0;
+
+            raw = ocl_dbuf_read_u32(vbuf);
+            //pos.z = *(float*)&raw;
+
+
             raw = ocl_dbuf_read_u32(vbuf);
             pos.y = *(float*)&raw;
 
-            raw = ocl_dbuf_read_u32(vbuf);
-            pos.z = *(float*)&raw;
+            if(pos.y < min_y) min_y = pos.y;
+            if(pos.y > max_y) max_y = pos.y;
+
+            //pos.y = 0.0364159 * pos.y - 16.15153;
+            //pos.y -= 431;
 
             v.positions[i] = pos;
 
             vbuf->ptr += (size_t)jump;
+        }
+
+        for(uint32_t i = 0; i < v.vertex_count; i++)
+        {
+            v.positions[i].x = (v.positions[i].x - min_x) / (max_x - min_x);
+            v.positions[i].y = (v.positions[i].y - min_y) / (max_y - min_y);
+
+            v.positions[i].x -= 0.5;
+            v.positions[i].y -= 0.5;
         }
 
         //Reset the pointer back to the start of the buffer

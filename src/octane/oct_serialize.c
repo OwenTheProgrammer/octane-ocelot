@@ -188,7 +188,7 @@ oct_vertexStreamAtom _oct_atom_read_vertex_stream(oct_file oct, uint32_t start_i
             for(uint32_t j = 0; j < atom.element_count; j++)
             {
                 atom.elements[j] = _oct_atom_read_vstream_element(oct, stream_table[j], stream_table[j+1]);
-                atom.element_flags |= atom.elements[j].type;
+                atom.element_flags |= atom.elements[j].attribute_type;
             }
 
             //Skip iterator to the ending of the array
