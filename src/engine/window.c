@@ -1,10 +1,13 @@
 #include "ocelot/engine/window.h"
+#include "ocelot/engine/camera.h"
 #include "ocelot/engine/model.h"
 #include "ocelot/engine_state.h"
-#include "types/vector.h"
+#include "ocelot/math_types.h"
+#include "ocelot/math_utils.h"
 
 #include <GL/glext.h>
 #include <GLFW/glfw3.h>
+#include <math.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -23,6 +26,7 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 
 static void fb_resize_callback(GLFWwindow* window, int width, int height)
 {
+    oce_camera_update_size(&ocl_rtState.viewport_camera, (unsigned int)width, (unsigned int)height);
     glViewport(0, 0, width, height);
 }
 
@@ -64,6 +68,18 @@ int ocl_gui_init()
         return 0;
     }
 
+    //Initialize the camera
+    oce_cameraDescriptor cam_params =
+    {
+        .near_plane = 0.001f,
+        .far_plane  = 1000.0f,
+        .fov_rad    = deg_to_rad(110.0f),
+
+        .screen_width   = 1280,
+        .screen_height  = 720
+    };
+
+    ocl_rtState.viewport_camera = oce_camera_init(cam_params);
 
     return 1;
 }
@@ -71,11 +87,13 @@ int ocl_gui_init()
 void ocl_gui_loop(oce_model model)
 {
 
+    /*
     for(uint32_t i = 0; i < model.vertex_count; i++)
     {
         vec3f pos = model.vertex_positions[i];
         printf("%u| %.4f %.4f, %.4f\n", i, pos.x, pos.y, pos.z);
     }
+    */
 
     FILE* shader_vert = fopen("bin/assets/shaders/unlit.vert", "rb");
     if(shader_vert == NULL)
@@ -130,6 +148,18 @@ void ocl_gui_loop(oce_model model)
     glDeleteShader(vertex_shader);
     glDeleteShader(frag_shader);
 
+    float vertices[] = {
+        // positions
+         0.5f,  0.5f, 0.0f,
+         0.5f, -0.5f, 0.0f,
+        -0.5f, -0.5f, 0.0f,
+        -0.5f,  0.5f, 0.0f
+    };
+    unsigned int indices[] = {
+        0, 1, 3, // first triangle
+        1, 2, 3  // second triangle
+    };
+
     unsigned int vbo, vao, ebo;
     glGenVertexArrays(1, &vao);
     glGenBuffers(1, &vbo);
@@ -137,11 +167,12 @@ void ocl_gui_loop(oce_model model)
 
     glBindVertexArray(vao);
 
-
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    //glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vec3f) * model.vertex_count, model.vertex_positions, GL_STATIC_DRAW);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+    //glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint32_t) * model.index_count, model.indices, GL_STATIC_DRAW);
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vec3f), NULL);
@@ -152,14 +183,42 @@ void ocl_gui_loop(oce_model model)
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 
+    glfwSetTime(0);
+
     while(!glfwWindowShouldClose(ocl_rtState.window))
     {
+        double _time = glfwGetTime();
+
+        oce_camera_update_matrices(&ocl_rtState.viewport_camera);
+
+        ocl_rtState.viewport_camera.position_ws.z = 1;
+
+        mat3x3f rot = mat3x3f_rotate_y((float)_time);
+
+        vec3f cam_pos = ocl_rtState.viewport_camera.position_ws;
+        cam_pos = mat3x3_mult_vec3(rot, cam_pos);
+
+        ocl_rtState.viewport_camera.view_matrix = mat4x4f_set_3x3(ocl_rtState.viewport_camera.view_matrix, rot);
+        ocl_rtState.viewport_camera.view_matrix.m03 = cam_pos.x;
+        ocl_rtState.viewport_camera.view_matrix.m13 = cam_pos.y;
+        ocl_rtState.viewport_camera.view_matrix.m23 = cam_pos.z;
 
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
         glUseProgram(shader_program);
+
+        unsigned int view_loc = glGetUniformLocation(shader_program, "view");
+        unsigned int proj_loc = glGetUniformLocation(shader_program, "projection");
+
+        float* vm_ptr = (float*)&ocl_rtState.viewport_camera.view_matrix;
+        float* pm_ptr = (float*)&ocl_rtState.viewport_camera.perspective_matrix;
+
+        glUniformMatrix4fv(view_loc, 1, GL_TRUE, vm_ptr);
+        glUniformMatrix4fv(proj_loc, 1, GL_TRUE, pm_ptr);
+
         glBindVertexArray(vao);
+
         glDrawElements(GL_TRIANGLES, model.index_count, GL_UNSIGNED_INT, 0);
 
         glfwSwapBuffers(ocl_rtState.window);

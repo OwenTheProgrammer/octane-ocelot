@@ -2,7 +2,7 @@
 
 #include "ocelot/dbuf.h"
 #include "octane/oct_scene.h"
-#include "types/vector.h"
+#include "ocelot/math_types.h"
 #include <stdint.h>
 
 typedef struct oce_model    oce_model;

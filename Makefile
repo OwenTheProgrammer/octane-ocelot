@@ -40,6 +40,19 @@ GLAD_BINARY		= $(GLAD_BIN_DIR)/glad_$(COMP_TARGET).o
 $(GLAD_BINARY): $(GLAD_SRC_DIR)/glad.c
 	$(CC) -c $< -o $@ $(GLAD_CFLAGS)
 
+# == MATH UTILS COMPILATION == #
+
+MATH_CFLAGS		= $(CFLAGS) -Werror -I$(ROOT_INC_DIR) -lm
+
+MATH_SRC_DIR	= $(ROOT_SRC_DIR)/math
+MATH_OBJ_DIR	= $(ROOT_OBJ_DIR)/math
+
+MATH_SRC_FILES	= $(wildcard $(MATH_SRC_DIR)/*.c)
+MATH_OBJ_FILES	= $(MATH_SRC_FILES:$(MATH_SRC_DIR)/%.c=$(MATH_OBJ_DIR)/%.o)
+
+$(MATH_OBJ_DIR)/%.o: $(MATH_SRC_DIR)/%.c
+	$(CC) -c $< -o $@ $(MATH_CFLAGS)
+
 # == OCELOT BACKEND COMPILATION == #
 
 OCL_CFLAGS	= $(CFLAGS) -Werror -I$(ROOT_INC_DIR)
@@ -71,7 +84,7 @@ $(OCT_OBJ_DIR)/%.o: $(OCT_SRC_DIR)/%.c
 
 # == OCELOT EDITOR COMPILATION == #
 
-OCE_CFLAGS	= $(CFLAGS) -Werror -I$(ROOT_INC_DIR) -I$(GLAD_INC_DIR) -lglfw -lGL
+OCE_CFLAGS	= $(CFLAGS) -Werror -I$(ROOT_INC_DIR) -I$(GLAD_INC_DIR) -lglfw -lGL -lm
 
 OCE_SRC_DIR	= $(ROOT_SRC_DIR)/engine
 OCE_OBJ_DIR	= $(ROOT_OBJ_DIR)/engine
@@ -87,7 +100,7 @@ $(OCE_OBJ_DIR)/main_editor.o: $(ROOT_SRC_DIR)/main_editor.c
 
 # == FINAL BINARY TARGETS == #
 
-$(OCE_BINARY): $(GLAD_BINARY) $(OCT_OBJ_FILES) $(OCL_OBJ_FILES) $(OCE_OBJ_FILES) $(OCE_OBJ_DIR)/main_editor.o
+$(OCE_BINARY): $(GLAD_BINARY) $(MATH_OBJ_FILES) $(OCT_OBJ_FILES) $(OCL_OBJ_FILES) $(OCE_OBJ_FILES) $(OCE_OBJ_DIR)/main_editor.o
 	$(CC) $^ -o $@ $(OCE_CFLAGS)
 
 $(CLI_BINARY): $(OCL_OBJ_FILES) $(OCT_OBJ_FILES) $(OCL_OBJ_DIR)/main_cli.o
@@ -97,7 +110,7 @@ run: $(debug)
 	./$(OCE_BINARY)
 
 buildfs:
-	mkdir -p $(ROOT_BIN_DIR) $(ROOT_OBJ_DIR) $(GLAD_BIN_DIR) $(OCL_OBJ_DIR) $(OCT_OBJ_DIR) $(OCE_OBJ_DIR)
+	mkdir -p $(ROOT_BIN_DIR) $(ROOT_OBJ_DIR) $(GLAD_BIN_DIR) $(MATH_OBJ_DIR) $(OCL_OBJ_DIR) $(OCT_OBJ_DIR) $(OCE_OBJ_DIR)
 	cp -a assets $(ROOT_BIN_DIR)/
 
 

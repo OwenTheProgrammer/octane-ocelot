@@ -1,6 +1,5 @@
 #pragma once
-#include "types/mat4x4.h"
-#include "types/vector.h"
+#include "ocelot/math_types.h"
 #include "octane/oct.h"
 #include <stdbool.h>
 #include <stdint.h>

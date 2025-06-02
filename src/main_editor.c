@@ -1,4 +1,5 @@
 #include "ocelot/dbuf.h"
+#include "ocelot/endian.h"
 #include "ocelot/engine/model.h"
 #include "ocelot/engine/window.h"
 #include "octane/oct.h"
@@ -16,7 +17,10 @@ int main()
     ocl_dbuf ibuf_file = ocl_dbuf_load("bin/oilrig_0.ibuf");
     ocl_dbuf vbuf_file = ocl_dbuf_load("bin/oilrig_0.vbuf");
 
-    oce_model model = oce_load_octane_model(ibuf_file, vbuf_file, scene, 2829, 1474, 2u);
+    endian_set_current(ENDIAN_BIG);
+    endian_set_target(ENDIAN_LITTLE);
+
+    oce_model model = oce_load_octane_model(ibuf_file, vbuf_file, scene, 391, 237, 2u);
 
     printf("VertexCount: %u\n", model.vertex_count);
     printf("IndexCount: %u\n", model.index_count);
