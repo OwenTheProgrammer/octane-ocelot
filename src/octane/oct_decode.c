@@ -2,6 +2,7 @@
 #include "octane/oct.h"
 #include "ocelot/dbuf.h"
 #include "ocelot/endian.h"
+#include "print_utils.h"
 #include "utils.h"
 #include <stdbool.h>
 #include <stddef.h>

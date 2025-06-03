@@ -1,9 +1,10 @@
-#include "oct_scene_internal.h"
+#include "oct_internal.h"
 #include "octane/oct.h"
 #include "octane/oct_atoms.h"
-#include <stdint.h>
+#include "octane/oct_scene.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 
 static uint32_t* _load_cache_hierarchy_indexed(uint32_t start_idx, uint16_t target_node, uint32_t* const node_count, oct_file oct)
 {
@@ -395,4 +396,40 @@ void _oct_parse_scene_tree_node_pool(oct_sceneDescriptor* const scene, oct_file 
     }
 
     free(stream_table);
+}
+
+oct_sceneDescriptor oct_parse_scene_descriptor(oct_file oct)
+{
+    oct_sceneDescriptor scene = (oct_sceneDescriptor){0};
+
+    oct_init_atom_name_table(oct);
+
+    _oct_parse_index_stream_pool(&scene, oct);
+
+    _oct_parse_vertex_stream_pool(&scene, oct);
+
+    _oct_parse_scene_tree_node_pool(&scene, oct);
+
+    return scene;
+}
+
+
+
+
+void oct_free_scene_descriptor(oct_sceneDescriptor* const scene)
+{
+    if(scene != NULL)
+    {
+        free(scene->istream_pool);
+
+        for(uint32_t i = 0; i < scene->vstream_pool_size; i++)
+        {
+            free(scene->vstream_pool[i].elements);
+        }
+        free(scene->vstream_pool);
+
+        free(scene->scene_tree_node_pool);
+
+        *scene = (oct_sceneDescriptor){0};
+    }
 }

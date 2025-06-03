@@ -5,7 +5,6 @@
 #include "ocelot/dbuf.h"
 #include <stdint.h>
 
-
 typedef enum
 {
     OCT_ATOM_TYPE_UNKNOWN   = 0b00,
@@ -43,9 +42,6 @@ typedef enum
 
 #undef NODE_TYPE
 
-
-extern const char* _OCT_ATOM_TYPE_PRINT_TABLE[OCT_ATOM_TYPE_MAX];
-extern const char* _OCT_DATA_TYPE_PRINT_TABLE[OCT_DATA_TYPE_MAX];
 
 typedef struct oct_string       oct_string;
 typedef struct oct_atomHeader   oct_atomHeader;
@@ -128,12 +124,6 @@ oct_file oct_load_file(const char* filepath);
 ocl_dbuf oct_store_buffer(oct_file oct);
 
 void oct_store_file(oct_file oct, const char* filepath);
-
-
-
-void oct_print_header(oct_header header);
-void oct_print_atom_header(oct_atomHeader header);
-void oct_print_atom_node(oct_file oct, oct_atomNode node);
 
 
 void oct_file_free(oct_file* const oct);

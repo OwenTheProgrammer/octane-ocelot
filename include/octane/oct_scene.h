@@ -29,6 +29,4 @@ struct oct_sceneDescriptor
 
 oct_sceneDescriptor oct_parse_scene_descriptor(oct_file oct);
 
-void oct_print_scene_descriptor(oct_file oct, oct_sceneDescriptor scene);
-
 void oct_free_scene_descriptor(oct_sceneDescriptor* const scene);

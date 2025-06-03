@@ -5,6 +5,38 @@
 static const float _180_OVER_PI = 57.2957795131f;
 static const float _PI_OVER_180 = 0.01745329251f;
 
+mat3x3f mat3x3f_identity()
+{
+    return (mat3x3f)
+    {
+        1, 0, 0,
+        0, 1, 0,
+        0, 0, 1
+    };
+}
+
+mat4x4f mat4x4f_identity()
+{
+    return (mat4x4f)
+    {
+        1, 0, 0, 0,
+        0, 1, 0, 0,
+        0, 0, 1, 0,
+        0, 0, 0, 1
+    };
+}
+
+quaternion quaternion_identity()
+{
+    return (quaternion)
+    {
+        .i = 0,
+        .j = 0,
+        .k = 0,
+        .r = 1
+    };
+}
+
 float rad_to_deg(float rad)
 {
     return _180_OVER_PI * rad;

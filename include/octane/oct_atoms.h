@@ -405,24 +405,3 @@ oct_atomNameTable oct_create_atom_name_table(oct_file oct);
 
 void oct_init_atom_name_table(oct_file oct);
 
-void oct_print_atom_name_table(oct_file oct, oct_atomNameTable ant);
-
-
-void oct_print_atom_index_stream(oct_file oct, oct_indexStreamAtom atom);
-
-void oct_print_atom_vertex_stream(oct_file oct, oct_vertexStreamAtom atom);
-
-void oct_print_atom_vertex_element(oct_file oct, oct_vstreamElementAtom atom);
-
-
-void oct_print_atom_scene_geometry(oct_file oct, oct_sceneGeometryNode atom);
-
-void oct_print_atom_scene_sub_geometry(oct_file oct, oct_sceneSubGeometryNode atom);
-
-void oct_print_atom_scene_sub_geometry_lit(oct_file oct, oct_sceneSubGeometryNode atom);
-
-void oct_print_atom_scene_camera(oct_file oct, oct_sceneCameraNode atom);
-
-void oct_print_atom_scene_light(oct_file oct, oct_sceneLightNode atom);
-
-void oct_print_scene_tree_node(oct_file oct, oct_sceneTreeNodeAtom atom);

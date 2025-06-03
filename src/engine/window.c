@@ -1,13 +1,11 @@
 #include "ocelot/engine/window.h"
 #include "ocelot/engine/camera.h"
 #include "ocelot/engine/model.h"
-#include "ocelot/engine_state.h"
+#include "ocelot/engine/core.h"
 #include "ocelot/math_types.h"
 #include "ocelot/math_utils.h"
 
-#include <GL/glext.h>
 #include <GLFW/glfw3.h>
-#include <math.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <stdio.h>

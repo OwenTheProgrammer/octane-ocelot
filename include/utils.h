@@ -12,8 +12,3 @@ typedef unsigned int    bool_t;
 #define FALSE 0
 
 
-void phex_u8(uint8_t value);
-
-void phex_u16(uint16_t value);
-
-void phex_u8_array(void* const src, uint32_t count);

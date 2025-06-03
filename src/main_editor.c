@@ -1,6 +1,7 @@
 #include "ocelot/dbuf.h"
 #include "ocelot/endian.h"
 #include "ocelot/engine/model.h"
+#include "ocelot/engine/core.h"
 #include "ocelot/engine/window.h"
 #include "octane/oct.h"
 #include "octane/oct_scene.h"
@@ -10,12 +11,12 @@ int main()
 {
 
     //Load the oct file
-    oct_file oct = oct_load_file("bin/oilrig.oct");
+    oct_file oct = oct_load_file("assets/oilrig.oct");
     oct_sceneDescriptor scene = oct_parse_scene_descriptor(oct);
 
     //Load the index and vertex buffer files
-    ocl_dbuf ibuf_file = ocl_dbuf_load("bin/oilrig_0.ibuf");
-    ocl_dbuf vbuf_file = ocl_dbuf_load("bin/oilrig_0.vbuf");
+    ocl_dbuf ibuf_file = ocl_dbuf_load("assets/oilrig_0.ibuf");
+    ocl_dbuf vbuf_file = ocl_dbuf_load("assets/oilrig_0.vbuf");
 
     endian_set_current(ENDIAN_BIG);
     endian_set_target(ENDIAN_LITTLE);
