@@ -242,6 +242,7 @@ void oct_print_atom_scene_light(oct_file oct, oct_sceneLightNode atom)
 {
     printf("Light\n");
     printf("|\tType: %u\n", (uint32_t)atom.type);
+    /*
     printf("|\tLightColor RGB: %u, %u, %u\n", 
            (uint32_t)(atom.light_color.x * 255),
            (uint32_t)(atom.light_color.y * 255),
@@ -254,6 +255,7 @@ void oct_print_atom_scene_light(oct_file oct, oct_sceneLightNode atom)
            (uint32_t)(atom.shadow_color.y * 255),
            (uint32_t)(atom.shadow_color.z * 255)
     );
+    */
 }
 
 void oct_print_scene_tree_node(oct_file oct, oct_sceneTreeNodeAtom atom)

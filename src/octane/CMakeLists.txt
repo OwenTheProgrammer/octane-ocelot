@@ -6,6 +6,7 @@ add_library(octane OBJECT
     ibuf.c vbuf.c
 )
 
-target_include_directories(octane PUBLIC
-    ${CMAKE_SOURCE_DIR}/include
+target_include_directories(octane
+    PUBLIC "${CMAKE_SOURCE_DIR}/include"
+    PUBLIC "${CMAKE_SOURCE_DIR}/libs/cglm/include"
 )

@@ -1,15 +1,18 @@
 #include "ocelot/engine/window.h"
+#include "cglm/struct/cam.h"
+#include "cglm/struct/vec3.h"
+#include "cglm/util.h"
 #include "ocelot/engine/camera.h"
 #include "ocelot/engine/model.h"
 #include "ocelot/engine/core.h"
-#include "ocelot/math_types.h"
-#include "ocelot/math_utils.h"
 
 #include <GLFW/glfw3.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <cglm/vec3.h>
+
 
 static void error_callback(int error, const char* msg)
 {
@@ -71,7 +74,7 @@ int ocl_gui_init()
     {
         .near_plane = 0.001f,
         .far_plane  = 1000.0f,
-        .fov_rad    = deg_to_rad(110.0f),
+        .fov_rad    = glm_rad(80.0f),
 
         .screen_width   = 1280,
         .screen_height  = 720
@@ -93,7 +96,7 @@ void ocl_gui_loop(oce_model model)
     }
     */
 
-    FILE* shader_vert = fopen("bin/assets/shaders/unlit.vert", "rb");
+    FILE* shader_vert = fopen("assets/shaders/unlit.vert", "rb");
     if(shader_vert == NULL)
     {
         fprintf(stderr, "Failed to open shader file.\n");
@@ -115,7 +118,7 @@ void ocl_gui_loop(oce_model model)
     free(shader_vert_data);
 
 
-    shader_vert = fopen("bin/assets/shaders/unlit.frag", "rb");
+    shader_vert = fopen("assets/shaders/unlit.frag", "rb");
     if(shader_vert == NULL)
     {
         fprintf(stderr, "Failed to open shader file.\n");
@@ -167,13 +170,13 @@ void ocl_gui_loop(oce_model model)
 
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
     //glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vec3f) * model.vertex_count, model.vertex_positions, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vec3) * model.vertex_count, model.vertex_positions, GL_STATIC_DRAW);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
     //glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint32_t) * model.index_count, model.indices, GL_STATIC_DRAW);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vec3f), NULL);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vec3), NULL);
     glEnableVertexAttribArray(0);
 
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -189,17 +192,11 @@ void ocl_gui_loop(oce_model model)
 
         oce_camera_update_matrices(&ocl_rtState.viewport_camera);
 
-        ocl_rtState.viewport_camera.position_ws.z = 1;
+        ocl_rtState.viewport_camera.position_ws.x = 8.0;
+        ocl_rtState.viewport_camera.position_ws.y = 8.0;
+        ocl_rtState.viewport_camera.position_ws.z = 8.0;
 
-        mat3x3f rot = mat3x3f_rotate_y((float)_time);
-
-        vec3f cam_pos = ocl_rtState.viewport_camera.position_ws;
-        cam_pos = mat3x3_mult_vec3(rot, cam_pos);
-
-        ocl_rtState.viewport_camera.view_matrix = mat4x4f_set_3x3(ocl_rtState.viewport_camera.view_matrix, rot);
-        ocl_rtState.viewport_camera.view_matrix.m03 = cam_pos.x;
-        ocl_rtState.viewport_camera.view_matrix.m13 = cam_pos.y;
-        ocl_rtState.viewport_camera.view_matrix.m23 = cam_pos.z;
+        ocl_rtState.viewport_camera.view_matrix = glms_lookat(ocl_rtState.viewport_camera.position_ws, glms_vec3_zero(), GLMS_YUP);
 
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
@@ -212,8 +209,8 @@ void ocl_gui_loop(oce_model model)
         float* vm_ptr = (float*)&ocl_rtState.viewport_camera.view_matrix;
         float* pm_ptr = (float*)&ocl_rtState.viewport_camera.perspective_matrix;
 
-        glUniformMatrix4fv(view_loc, 1, GL_TRUE, vm_ptr);
-        glUniformMatrix4fv(proj_loc, 1, GL_TRUE, pm_ptr);
+        glUniformMatrix4fv(view_loc, 1, GL_FALSE, vm_ptr);
+        glUniformMatrix4fv(proj_loc, 1, GL_FALSE, pm_ptr);
 
         glBindVertexArray(vao);
 

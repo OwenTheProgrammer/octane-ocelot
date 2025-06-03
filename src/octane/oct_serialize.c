@@ -5,6 +5,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <cglm/mat4.h>
+#include <cglm/vec3.h>
 
 static uint32_t* _load_cache_hierarchy_indexed(uint32_t start_idx, uint16_t target_node, uint32_t* const node_count, oct_file oct)
 {
@@ -259,7 +261,7 @@ oct_sceneTreeNodeAtom _oct_atom_read_scene_tree_node(oct_file oct, uint32_t star
         }
         else if(node.st_key == _oct_ant.scene_node_local_to_parent_matrix)
         {
-            atom.local_to_parent_matrix = *(mat4x4f*)node.data;
+            glm_mat4_ucopy((vec4*)node.data, atom.local_to_parent_matrix);
         }
         else if(node.st_key == _oct_ant.scene_node_visible)
         {
@@ -321,7 +323,7 @@ oct_sceneTreeNodeAtom _oct_atom_read_scene_tree_node(oct_file oct, uint32_t star
         }
         else if(node.st_key == _oct_ant.scene_node_light_color)
         {
-            atom.light.light_color = *(vec3f*)node.data;
+            glm_vec3_copy((float*)node.data, atom.light.light_color);
         }
         else if(node.st_key == _oct_ant.scene_node_light_intensity)
         {
@@ -333,7 +335,7 @@ oct_sceneTreeNodeAtom _oct_atom_read_scene_tree_node(oct_file oct, uint32_t star
         }
         else if(node.st_key == _oct_ant.scene_node_shadow_color)
         {
-            atom.light.shadow_color = *(vec3f*)node.data;
+            glm_vec3_copy((float*)node.data, atom.light.shadow_color);
         }
     }
 

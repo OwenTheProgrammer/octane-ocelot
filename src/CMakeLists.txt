@@ -5,5 +5,8 @@ add_subdirectory(ocelot)
 
 add_subdirectory(octane)
 
-include_directories(${CMAKE_SOURCE_DIR}/include)
+include_directories(
+    ${CMAKE_SOURCE_DIR}/include
+    ${CMAKE_SOURCE_DIR}/libs/cglm/include
+)
 

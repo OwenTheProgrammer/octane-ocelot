@@ -2,7 +2,7 @@
 
 #include "ocelot/dbuf.h"
 #include "octane/oct_scene.h"
-#include "ocelot/math_types.h"
+#include <cglm/vec3.h>
 #include <stdint.h>
 
 typedef struct oce_model    oce_model;
@@ -14,7 +14,7 @@ struct oce_model
 
     uint32_t index_count;
 
-    vec3f* vertex_positions;
+    vec3* vertex_positions;
 
     uint32_t* indices;
 };

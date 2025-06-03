@@ -13,4 +13,5 @@ target_compile_definitions(engine PUBLIC
 
 target_include_directories(engine
     PUBLIC "${CMAKE_SOURCE_DIR}/include"
+    PUBLIC "${CMAKE_SOURCE_DIR}/libs/cglm/include"
 )

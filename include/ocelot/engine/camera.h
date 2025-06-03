@@ -1,6 +1,9 @@
 #pragma once
-#include "ocelot/math_types.h"
+#include "cglm/types-struct.h"
 #include <stdint.h>
+#include <cglm/quat.h>
+#include <cglm/vec3.h>
+#include <cglm/mat4.h>
 
 typedef struct oce_cameraDescriptor oce_cameraDescriptor;
 typedef struct oce_camera           oce_camera;
@@ -20,17 +23,16 @@ struct oce_camera
     oce_cameraDescriptor desc;
 
     /* Camera position in WorldSpace */
-    vec3f position_ws;
+    vec3s position_ws;
 
     /* Camera rotation in WorldSpace */
-    quaternion rotation_ws;
-
+    versor rotation_ws;
 
     /* View matrix (Column Major) */
-    mat4x4f view_matrix;
+    mat4s view_matrix;
 
-    /* Perspective matrix (Column Major) */
-    mat4x4f perspective_matrix;
+    /* Perspective matrix (Column Major) */ 
+    mat4s perspective_matrix;
 };
 
 oce_camera oce_camera_init(oce_cameraDescriptor desc);
@@ -40,5 +42,3 @@ void oce_camera_update_matrices(oce_camera* const camera);
 
 void oce_camera_update_size(oce_camera* const camera, unsigned int width, unsigned int height);
 
-/* Computes the perspective matrix P (column major) */
-mat4x4f oce_compute_perspective_matrix(oce_cameraDescriptor desc);

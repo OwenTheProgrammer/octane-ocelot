@@ -1,7 +1,7 @@
 #pragma once
+#include "cglm/types-struct.h"
 #include "ocelot/dbuf.h"
 #include "octane/oct_scene.h"
-#include "ocelot/math_types.h"
 #include <stdint.h>
 
 typedef struct oct_vertexBuffer oct_vertexBuffer;
@@ -10,7 +10,7 @@ struct oct_vertexBuffer
 {
     uint32_t vertex_count;
 
-    vec3f* positions;
+    vec3s* positions;
 };
 
 oct_vertexBuffer oct_decode_vertex_buffer(ocl_dbuf* const vbuf, oct_sceneDescriptor scene, uint32_t vstream_index);

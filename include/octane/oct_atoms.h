@@ -1,8 +1,9 @@
 #pragma once
-#include "ocelot/math_types.h"
 #include "octane/oct.h"
 #include <stdbool.h>
 #include <stdint.h>
+#include <cglm/vec3.h>
+#include <cglm/mat4.h>
 
 typedef enum
 {
@@ -358,13 +359,13 @@ struct oct_sceneLightNode
 {
     oct_sceneLightType type;
 
-    vec3f light_color;
+    vec3 light_color;
 
     float light_intensity;
 
     float ambient_shade;
 
-    vec3f shadow_color;
+    vec3 shadow_color;
 };
 
 
@@ -381,7 +382,7 @@ struct oct_sceneTreeNodeAtom
     // I dont know when that would happen though
     uint32_t parent_node_refs;
 
-    mat4x4f local_to_parent_matrix;
+    mat4 local_to_parent_matrix;
 
     /* == Node Types == */
 

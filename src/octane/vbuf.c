@@ -1,7 +1,7 @@
+#include "cglm/struct.h"
 #include "ocelot/dbuf.h"
 #include "octane/oct_atoms.h"
 #include "octane/vbuf.h"
-#include "ocelot/math_types.h"
 #include <stddef.h>
 #include <stdint.h>
 #include <stdlib.h>
@@ -38,14 +38,29 @@ oct_vertexBuffer oct_decode_vertex_buffer(ocl_dbuf* const vbuf, oct_sceneDescrip
         vbuf->ptr += vstream_atom.elements[pos_idx].offset;
         uint32_t stride = vstream_atom.width;
 
-        v.positions = calloc(v.vertex_count, sizeof(vec3f));
+        v.positions = calloc(v.vertex_count, sizeof(vec3));
 
         uint32_t jump = stride - (4*3);
 
         //Load each vertex position
         for(uint32_t i = 0; i < v.vertex_count; i++)
         {
-            vec3f pos = (vec3f){0};
+            vec3s pos = GLM_VEC3_ZERO_INIT;
+            uint32_t raw;
+
+            raw = ocl_dbuf_read_u32(vbuf);
+            pos.x = *(float*)&raw;
+
+            raw = ocl_dbuf_read_u32(vbuf);
+            pos.y = *(float*)&raw;
+
+            raw = ocl_dbuf_read_u32(vbuf);
+            pos.z = *(float*)&raw;
+
+            v.positions[i] = pos;
+
+            /*
+            vec3 pos = (vec3f){0};
             uint32_t raw;
 
             raw = ocl_dbuf_read_u32(vbuf);
@@ -62,7 +77,7 @@ oct_vertexBuffer oct_decode_vertex_buffer(ocl_dbuf* const vbuf, oct_sceneDescrip
             pos.z /= 100.0;
 
             v.positions[i] = pos;
-
+            */
             vbuf->ptr += (size_t)jump;
         }
 
