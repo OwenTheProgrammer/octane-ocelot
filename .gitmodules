@@ -1,4 +1,3 @@
-[submodule "cglm"]
-    path = libs/cglm
-    url = https://github.com/recp/cglm.git
-    branch = v0.9.6
+[submodule "libs/cglm"]
+	path = libs/cglm
+	url = https://github.com/recp/cglm/tree/v0.9.6

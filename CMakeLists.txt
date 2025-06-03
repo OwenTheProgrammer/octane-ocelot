@@ -5,7 +5,7 @@ project(ocelot LANGUAGES C)
 # cmake -DCMAKE_BUILD_TYPE=Debug -B bin/ -S .
 # cmake --build bin/ -j
 
-set(CMAKE_C_COMPILER gcc)
+# set(CMAKE_C_COMPILER gcc)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
@@ -25,7 +25,7 @@ target_link_libraries(ocelot_cli
 add_executable(ocelot_editor src/main_editor.c)
 
 target_link_libraries(ocelot_editor
-    glad ocelot octane engine
+    glad ocelot octane engine cglm
 )
 
 file(COPY ${CMAKE_SOURCE_DIR}/assets DESTINATION ${CMAKE_BINARY_DIR})

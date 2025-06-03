@@ -11,3 +11,5 @@ obj/*
 
 # Ignore bear output
 compile_commands.json
+
+libs/cglm/*
