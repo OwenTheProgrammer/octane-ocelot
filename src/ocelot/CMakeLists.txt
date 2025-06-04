@@ -3,7 +3,7 @@ add_library(ocelot OBJECT
 	bswap.c endian.c
 	dbuf.c dbuf_rw.c
     print_utils.c
-    color_convert.c
+    color_convert.c texture.c
     file_bmp.c
 )
 

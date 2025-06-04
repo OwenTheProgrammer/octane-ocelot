@@ -1,6 +1,8 @@
 #include "types/file_bmp.h"
 #include "ocelot/dbuf.h"
 #include "ocelot/endian.h"
+#include "types/texture.h"
+#include <stdbool.h>
 
 static const uint32_t _BMP_HEADER_SIZE = 14;
 static const uint32_t _BMP_DIB_SIZE = 108;
@@ -111,7 +113,7 @@ static _bmp_dibHeaderV4 _init_bmp_dib(uint32_t width, uint32_t height)
     dib.red_mask_be     = 0x000000FF;
     dib.green_mask_be   = 0x0000FF00;
     dib.blue_mask_be    = 0x00FF0000;
-    dib.alpha_mask_be   = 0xFF000000;
+    dib.alpha_mask_be   = 0x00000000;
 
     //"Win "
     dib.color_space = 0x206E6957;
@@ -158,7 +160,7 @@ static void _write_dib_header(ocl_dbuf* const buffer, _bmp_dibHeaderV4 dib)
 }
 
 
-ocl_dbuf ocl_bmp_encode_raw_texture(ocl_rawTexture texture)
+ocl_dbuf ocl_bmp_encode_raw_texture(ocl_texture texture, bool flip_y)
 {
     endian_t prev_ctx = endian_get_current();
     endian_t prev_tgt = endian_get_target();
@@ -176,7 +178,15 @@ ocl_dbuf ocl_bmp_encode_raw_texture(ocl_rawTexture texture)
 
     _write_dib_header(&data, dib);
 
-    ocl_dbuf_write_u8_array(&data, (uint8_t*)texture.data, pixel_count * sizeof(uint32_t));
+    uint32_t* ptr = ocl_dbuf_pos(&data);
+    if(!flip_y)
+    {
+        ocl_texture_flip_y_ext(&texture, ptr);
+    }
+    else
+    {
+        ocl_dbuf_write_u8_array(&data, (uint8_t*)texture.data, pixel_count * sizeof(uint32_t));
+    }
 
     endian_set_current(prev_ctx);
     endian_set_target(prev_tgt);
@@ -185,9 +195,9 @@ ocl_dbuf ocl_bmp_encode_raw_texture(ocl_rawTexture texture)
 }
 
 
-void ocl_bmp_write_raw_texture(ocl_rawTexture texture, const char* filepath)
+void ocl_bmp_write_raw_texture(ocl_texture texture, bool flip_y, const char* filepath)
 {
-    ocl_dbuf data = ocl_bmp_encode_raw_texture(texture);
+    ocl_dbuf data = ocl_bmp_encode_raw_texture(texture, flip_y);
     ocl_dbuf_write(data, filepath);
     ocl_dbuf_free(&data);
 }

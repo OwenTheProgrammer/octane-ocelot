@@ -3,6 +3,7 @@
 *.oct
 *.ibuf
 *.vbuf
+*.tstream
 
 # Ignore all build files
 bin/*
