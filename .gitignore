@@ -1,16 +1,11 @@
-
-# Ignore any oct files
-*.oct
-*.ibuf
-*.vbuf
-*.tstream
+# Ignore all octane files
+xbfiles/*
 
 # Ignore all build files
 bin/*
 obj/*
+
+# Ignore clangd output
+compile_commands.json
 .cache/*
 
-# Ignore bear output
-compile_commands.json
-
-libs/cglm/*

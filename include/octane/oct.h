@@ -1,8 +1,8 @@
 /* oct: The octane scene descriptor */
 #pragma once
-#include "utils.h"
 #include "ocelot/endian.h"
 #include "ocelot/dbuf.h"
+#include <stdbool.h>
 #include <stdint.h>
 
 typedef enum
@@ -61,7 +61,7 @@ struct oct_atomHeader
 {
     oct_atomType atom_type;
 
-    bool_t has_name;
+    bool has_name;
 
     oct_dataType data_type;
 
@@ -91,9 +91,11 @@ struct oct_header
 {
     endian_t endian;
 
-    // char magic[8];
+    // char magic[4];
 
-    // char pad[4];
+    float version;
+
+    // uint32_t cache_crc;
 
     uint32_t string_table_size;
 

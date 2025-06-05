@@ -139,7 +139,11 @@ static oct_header _read_header(oct_file oct, ocl_dbuf* const buffer)
     // Seek forward past the endian section
     ocl_dbuf_advance(buffer, _OCT_MAGIC_SIZE);
 
-    printf("Reading oct file (Endian: %s -> %s)\n",
+    uint32_t version_raw = ocl_dbuf_read_u32(buffer);
+    header.version = *(float*)&version_raw;
+
+    printf("Reading oct file V%.2f (Endian: %s -> %s)\n",
+           header.version,
            _ENDIAN_PRINT_TABLE[(int)endian_get_current()],
            _ENDIAN_PRINT_TABLE[(int)endian_get_target()]
     );
@@ -225,6 +229,9 @@ oct_file oct_load_buffer(ocl_dbuf buffer)
     oct_file oct = (oct_file){0};
 
     oct.header = _read_header(oct, &buffer);
+
+    if(oct.header.endian == ENDIAN_UNKNOWN)
+        return oct;
 
     oct_print_header(oct.header);
 

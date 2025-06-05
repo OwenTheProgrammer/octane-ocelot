@@ -1,18 +1,16 @@
 #include "octane/oct.h"
-#include "octane/oct_atoms.h"
 #include "ocelot/endian.h"
 #include "oct_internal.h"
-#include "utils.h"
 #include <stddef.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <stdio.h>
 
-const size_t _OCT_MAGIC_SIZE = 8;
+const size_t _OCT_MAGIC_SIZE = 4;
 const size_t _OCT_HEADER_SIZE = 60;
 
-const char _OCT_MAGIC_LE[8] = {0x29, 0x76, 0x01, 0x45, 0xCD, 0xCC, 0x8C, 0x3F};
-const char _OCT_MAGIC_BE[8] = {0x45, 0x01, 0x76, 0x29, 0x3F, 0x8C, 0xCC, 0xCD};
+const uint32_t _OCT_MAGIC_LE = 0x45017629;
+const uint32_t _OCT_MAGIC_BE = 0x29760145;
 
 static void _free_string_table(oct_string* const table, uint32_t length)
 {
@@ -41,32 +39,20 @@ static void _free_data_tree(oct_atomNode* const tree, uint32_t length)
 }
 
 
-endian_t _oct_magic_to_endian(void* const magic)
+endian_t _oct_magic_to_endian(uint32_t* const magic)
 {
-    if(memcmp(magic, _OCT_MAGIC_LE, _OCT_MAGIC_SIZE) == 0)
+    if(*magic == _OCT_MAGIC_LE)
         return ENDIAN_LITTLE;
 
-    if(memcmp(magic, _OCT_MAGIC_BE, _OCT_MAGIC_SIZE) == 0)
+    if(*magic == _OCT_MAGIC_BE)
         return ENDIAN_BIG;
 
     return ENDIAN_UNKNOWN;
 }
 
-void _oct_endian_to_magic(endian_t endian, const char** magic)
+uint32_t _oct_endian_to_magic(endian_t endian)
 {
-    switch(endian)
-    {
-        case ENDIAN_LITTLE:
-            memcpy(magic, _OCT_MAGIC_LE, _OCT_MAGIC_SIZE);
-            break;
-
-        case ENDIAN_BIG:
-            memcpy(magic, _OCT_MAGIC_BE, _OCT_MAGIC_SIZE);
-            break;
-
-        default:
-            break;
-    }
+    return (endian == ENDIAN_LITTLE) ? _OCT_MAGIC_LE : _OCT_MAGIC_BE;
 }
 
 

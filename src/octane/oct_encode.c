@@ -91,9 +91,15 @@ static ocl_dbuf _encode_header(oct_header header)
 {
     ocl_dbuf buffer = ocl_dbuf_create(_OCT_HEADER_SIZE, NULL);
 
-    // Write the magic section
-    _oct_endian_to_magic(endian_get_target(), buffer.data);
-    ocl_dbuf_advance(&buffer, _OCT_MAGIC_SIZE + 4);
+    // Write the magic section (endian swapping will convert LE to BE if needed)
+    //ocl_dbuf_write_u32(&buffer, _oct_endian_to_magic(endian_get_target()));
+    ocl_dbuf_write_u32(&buffer, _OCT_MAGIC_LE);
+
+    // Write the header version
+    ocl_dbuf_write_u32(&buffer, *(uint32_t*)&header.version);
+
+    // Skip the cache crc
+    ocl_dbuf_advance(&buffer, 4);
 
     // Write the string table size (bytes)
     ocl_dbuf_write_u32(&buffer, header.string_table_size);
@@ -149,7 +155,8 @@ ocl_dbuf oct_store_buffer(oct_file oct)
     endian_t prev_ctx = endian_get_current();
     endian_set_current(oct.header.endian);
 
-    printf("Writing oct file (Endian: %s -> %s)\n",
+    printf("Writing oct file V%.2f (Endian: %s -> %s)\n",
+           oct.header.version,
            _ENDIAN_PRINT_TABLE[(int)endian_get_current()],
            _ENDIAN_PRINT_TABLE[(int)endian_get_target()]
     );

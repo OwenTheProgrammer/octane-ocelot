@@ -33,6 +33,9 @@ void oct_print_atom_header(oct_atomHeader header);
 /* Prints the contents of an oct_atomNode */
 void oct_print_atom_node(oct_file oct, oct_atomNode node);
 
+/* Prints the contents of the strings in the string table */
+void oct_print_string_table(oct_file oct);
+
 /* == OCTANE SCENE DISPLAYS == */
 
 void oct_print_scene_descriptor(oct_file oct, oct_sceneDescriptor scene);

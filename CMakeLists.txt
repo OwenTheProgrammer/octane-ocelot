@@ -28,14 +28,17 @@ target_link_libraries(ocelot_editor
     glad ocelot octane engine cglm
 )
 
-add_executable(testing src/main_test.c)
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    add_executable(testing src/main_test.c)
 
-target_link_libraries(testing
-    glad ocelot octane engine cglm
-)
+    target_link_libraries(testing
+        glad ocelot octane engine cglm
+    )
+endif()
 
 
 file(COPY ${CMAKE_SOURCE_DIR}/assets DESTINATION ${CMAKE_BINARY_DIR})
+file(COPY ${CMAKE_SOURCE_DIR}/xbfiles DESTINATION ${CMAKE_BINARY_DIR})
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     add_custom_command(TARGET ocelot_editor POST_BUILD

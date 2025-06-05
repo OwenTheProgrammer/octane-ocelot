@@ -52,7 +52,7 @@ void phex_u8_array(void* const src, uint32_t count)
 
 void oct_print_header(oct_header header)
 {
-    printf("Oct Header:\n");
+    printf("Oct Header V%.2f:\n", header.version);
     printf("|\tEndian: %s\n", _ENDIAN_PRINT_TABLE[(int)header.endian]);
     printf("|\tString table: %u bytes\n", header.string_table_size);
     printf("|\tData tree: %u bytes\n", header.data_tree_size);
@@ -158,6 +158,19 @@ void oct_print_atom_node(oct_file oct, oct_atomNode node)
     }
 
     printf("--------------\n");
+}
+
+
+void oct_print_string_table(oct_file oct)
+{
+    printf("StringTable[%u]: (%u Bytes)\n",
+           oct.string_table_length,
+           oct.header.string_table_size
+    );
+    for(uint32_t i = 0; i < oct.string_table_length; i++)
+    {
+        printf("|\t- String[%u]: \"%s\"\n", i, oct.string_table[i].data);
+    }
 }
 
 void oct_print_atom_index_stream(oct_file oct, oct_indexStreamAtom atom)

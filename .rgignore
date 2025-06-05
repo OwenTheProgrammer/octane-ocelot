@@ -1,0 +1,11 @@
+
+# Ignores for ripgrep
+
+libs/cglm/*
+libs/glad/debug/*
+libs/glad/release/*
+
+LICENSE
+
+# Ignore docs folder 
+docs/*

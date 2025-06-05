@@ -10,12 +10,12 @@
 extern const size_t _OCT_MAGIC_SIZE;
 extern const size_t _OCT_HEADER_SIZE;
 
-extern const char _OCT_MAGIC_LE[8];
-extern const char _OCT_MAGIC_BE[8];
+extern const uint32_t _OCT_MAGIC_LE;
+extern const uint32_t _OCT_MAGIC_BE;
 
-endian_t _oct_magic_to_endian(void* const magic);
+endian_t _oct_magic_to_endian(uint32_t* const magic);
 
-void _oct_endian_to_magic(endian_t endian, const char** magic);
+uint32_t _oct_endian_to_magic(endian_t endian);
 
 
 oct_indexStreamAtom _oct_atom_read_index_stream(oct_file oct, uint32_t start_idx, uint32_t end_idx);

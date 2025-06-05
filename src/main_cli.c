@@ -1,7 +1,9 @@
+#include "ocelot/endian.h"
 #include "octane/oct.h"
 #include "octane/oct_scene.h"
 #include "print_utils.h"
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 static void parse_file_path(char(* dst)[FILENAME_MAX], const char* arg)
@@ -26,7 +28,7 @@ int main(int argc, const char* argv[])
 
     char input_file[FILENAME_MAX] = { [0 ... FILENAME_MAX-1] = 0 };
     char output_file[FILENAME_MAX] = { [0 ... FILENAME_MAX-1] = 0 };
-    endian_t target_endian = argv[3][0] == 'l' ? ENDIAN_LITTLE : ENDIAN_BIG;
+    endian_t target_endian = (argv[3][0] == 'l' || argv[3][0] == 'L') ? ENDIAN_LITTLE : ENDIAN_BIG;
 
     parse_file_path(&input_file, argv[1]);
     parse_file_path(&output_file, argv[2]);
@@ -39,20 +41,25 @@ int main(int argc, const char* argv[])
     //oct_file oct = oct_load_file("bin/oilrig.oct");
     oct_file oct = oct_load_file(input_file);
 
-    oct_sceneDescriptor scene = oct_parse_scene_descriptor(oct);
+    // Something went wrong
+    if(oct.header.endian == ENDIAN_UNKNOWN)
+        return EXIT_FAILURE;
 
-    oct_print_scene_descriptor(oct, scene);
+    oct_print_string_table(oct);
+    //oct_sceneDescriptor scene = oct_parse_scene_descriptor(oct);
 
-    oct_free_scene_descriptor(&scene);
+    //oct_print_scene_descriptor(oct, scene);
 
-    // Set the target endian to big
+    //oct_free_scene_descriptor(&scene);
+
+    // Set the target endian
     //endian_set_target(ENDIAN_LITTLE);
-    //endian_set_target(target_endian);
+    endian_set_target(target_endian);
 
     //oct_store_file(oct, "bin/output.oct");
-    //oct_store_file(oct, output_file);
+    oct_store_file(oct, output_file);
 
     oct_file_free(&oct);
 
-    return 0;
+    return EXIT_SUCCESS;
 }
