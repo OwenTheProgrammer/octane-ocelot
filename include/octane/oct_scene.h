@@ -3,9 +3,12 @@
 #include "octane/oct.h"
 #include "octane/oct_atoms.h"
 #include <stdint.h>
-typedef struct oct_sceneDescriptor  oct_sceneDescriptor;
 
-struct oct_sceneDescriptor
+typedef struct oct_rawDataDescriptor    oct_rawDataDescriptor;
+typedef struct oct_sceneTreeNodePool    oct_sceneTreeNodePool;
+
+/* Serialization of an oct files data */
+struct oct_rawDataDescriptor
 {
     /* IndexStreamPool */
 
@@ -27,6 +30,6 @@ struct oct_sceneDescriptor
 };
 
 
-oct_sceneDescriptor oct_parse_scene_descriptor(oct_file oct);
+oct_rawDataDescriptor oct_parse_raw_data_descriptor(oct_file oct);
 
-void oct_free_scene_descriptor(oct_sceneDescriptor* const scene);
+void oct_free_raw_data_descriptor(oct_rawDataDescriptor* const scene);

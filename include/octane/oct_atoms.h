@@ -2,8 +2,6 @@
 #include "octane/oct.h"
 #include <stdbool.h>
 #include <stdint.h>
-#include <cglm/vec3.h>
-#include <cglm/mat4.h>
 
 typedef enum
 {
@@ -359,13 +357,13 @@ struct oct_sceneLightNode
 {
     oct_sceneLightType type;
 
-    vec3 light_color;
+    float light_color[3];
 
     float light_intensity;
 
     float ambient_shade;
 
-    vec3 shadow_color;
+    float shadow_color[3];
 };
 
 
@@ -382,7 +380,7 @@ struct oct_sceneTreeNodeAtom
     // I dont know when that would happen though
     uint32_t parent_node_refs;
 
-    mat4 local_to_parent_matrix;
+    float local_to_parent_matrix[16];
 
     /* == Node Types == */
 

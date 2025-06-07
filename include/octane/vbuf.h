@@ -13,7 +13,7 @@ struct oct_vertexBuffer
     vec3s* positions;
 };
 
-oct_vertexBuffer oct_decode_vertex_buffer(ocl_dbuf* const vbuf, oct_sceneDescriptor scene, uint32_t vstream_index);
+oct_vertexBuffer oct_decode_vertex_buffer(ocl_dbuf* const vbuf, oct_rawDataDescriptor scene, uint32_t vstream_index);
 
 
 void oct_free_vertex_buffer(oct_vertexBuffer* const vbuf);

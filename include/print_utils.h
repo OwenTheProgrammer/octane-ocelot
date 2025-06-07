@@ -38,7 +38,7 @@ void oct_print_string_table(oct_file oct);
 
 /* == OCTANE SCENE DISPLAYS == */
 
-void oct_print_scene_descriptor(oct_file oct, oct_sceneDescriptor scene);
+void oct_print_scene_descriptor(oct_file oct, oct_rawDataDescriptor scene);
 
 /* == OCTANE ATOM DISPLAYS == */
 

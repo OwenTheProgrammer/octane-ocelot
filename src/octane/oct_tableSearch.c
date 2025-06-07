@@ -125,7 +125,7 @@ oct_atomNameTable oct_create_atom_name_table(oct_file oct)
 
     ant.scene_node_parent_node_refs = oct_get_st_index_of(oct, "ParentNodeReferences");
 
-    ant.scene_node_local_to_parent_matrix = oct_get_st_index_of(oct, "LocalToWorldMatrix");
+    ant.scene_node_local_to_parent_matrix = oct_get_st_index_of(oct, "LocalToParentMatrix");
 
     ant.scene_node_visible = oct_get_st_index_of(oct, "Visible");
 

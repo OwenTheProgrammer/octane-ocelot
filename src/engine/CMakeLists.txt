@@ -1,6 +1,7 @@
 
 add_library(engine OBJECT
     camera.c model.c state.c window.c
+    scene.c scene_load.c
 )
 
 target_link_libraries(engine PUBLIC

@@ -18,7 +18,7 @@ static uint32_t _find_element_of_type(oct_vertexStreamAtom vstream, oct_vstreamE
 }
 
 
-oct_vertexBuffer oct_decode_vertex_buffer(ocl_dbuf* const vbuf, oct_sceneDescriptor scene, uint32_t vstream_index)
+oct_vertexBuffer oct_decode_vertex_buffer(ocl_dbuf* const vbuf, oct_rawDataDescriptor scene, uint32_t vstream_index)
 {
     oct_vertexBuffer v = (oct_vertexBuffer){0};
 

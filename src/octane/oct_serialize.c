@@ -5,8 +5,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
-#include <cglm/mat4.h>
-#include <cglm/vec3.h>
 
 static uint32_t* _load_cache_hierarchy_indexed(uint32_t start_idx, uint16_t target_node, uint32_t* const node_count, oct_file oct)
 {
@@ -261,7 +259,10 @@ oct_sceneTreeNodeAtom _oct_atom_read_scene_tree_node(oct_file oct, uint32_t star
         }
         else if(node.st_key == _oct_ant.scene_node_local_to_parent_matrix)
         {
-            glm_mat4_ucopy((vec4*)node.data, atom.local_to_parent_matrix);
+            if(node.elem_count != 16)
+                fprintf(stderr, "Matrix does not have 16 entries!\n");
+
+            memcpy(atom.local_to_parent_matrix, node.data, sizeof(atom.local_to_parent_matrix));
         }
         else if(node.st_key == _oct_ant.scene_node_visible)
         {
@@ -323,7 +324,10 @@ oct_sceneTreeNodeAtom _oct_atom_read_scene_tree_node(oct_file oct, uint32_t star
         }
         else if(node.st_key == _oct_ant.scene_node_light_color)
         {
-            glm_vec3_copy((float*)node.data, atom.light.light_color);
+            if(node.elem_count != 3)
+                fprintf(stderr, "Unhandled colour length!\n");
+
+            memcpy(atom.light.light_color, node.data, sizeof(atom.light.light_color));
         }
         else if(node.st_key == _oct_ant.scene_node_light_intensity)
         {
@@ -335,7 +339,10 @@ oct_sceneTreeNodeAtom _oct_atom_read_scene_tree_node(oct_file oct, uint32_t star
         }
         else if(node.st_key == _oct_ant.scene_node_shadow_color)
         {
-            glm_vec3_copy((float*)node.data, atom.light.shadow_color);
+            if(node.elem_count != 3)
+                fprintf(stderr, "Unhandled colour length!\n");
+
+            memcpy(atom.light.shadow_color, node.data, sizeof(atom.light.shadow_color));
         }
     }
 
@@ -343,7 +350,7 @@ oct_sceneTreeNodeAtom _oct_atom_read_scene_tree_node(oct_file oct, uint32_t star
 }
 
 
-void _oct_parse_index_stream_pool(oct_sceneDescriptor* const scene, oct_file oct)
+void _oct_parse_index_stream_pool(oct_rawDataDescriptor* const scene, oct_file oct)
 {
     //Load the hierarchy of the IndexStreamPool
     uint32_t* stream_table = _load_cache_hierarchy_named(
@@ -363,7 +370,7 @@ void _oct_parse_index_stream_pool(oct_sceneDescriptor* const scene, oct_file oct
 }
 
 
-void _oct_parse_vertex_stream_pool(oct_sceneDescriptor* const scene, oct_file oct)
+void _oct_parse_vertex_stream_pool(oct_rawDataDescriptor* const scene, oct_file oct)
 {
     //Load the hierarchy of the VertexStreamPool
     uint32_t* stream_table = _load_cache_hierarchy_named(
@@ -382,7 +389,7 @@ void _oct_parse_vertex_stream_pool(oct_sceneDescriptor* const scene, oct_file oc
     free(stream_table);
 }
 
-void _oct_parse_scene_tree_node_pool(oct_sceneDescriptor* const scene, oct_file oct)
+void _oct_parse_scene_tree_node_pool(oct_rawDataDescriptor* const scene, oct_file oct)
 {
     uint32_t* stream_table = _load_cache_hierarchy_named(
         _oct_ant.scene_tree_node_pool, _oct_ant.scene_node, 
@@ -400,9 +407,9 @@ void _oct_parse_scene_tree_node_pool(oct_sceneDescriptor* const scene, oct_file 
     free(stream_table);
 }
 
-oct_sceneDescriptor oct_parse_scene_descriptor(oct_file oct)
+oct_rawDataDescriptor oct_parse_raw_data_descriptor(oct_file oct)
 {
-    oct_sceneDescriptor scene = (oct_sceneDescriptor){0};
+    oct_rawDataDescriptor scene = (oct_rawDataDescriptor){0};
 
     oct_init_atom_name_table(oct);
 
@@ -416,9 +423,7 @@ oct_sceneDescriptor oct_parse_scene_descriptor(oct_file oct)
 }
 
 
-
-
-void oct_free_scene_descriptor(oct_sceneDescriptor* const scene)
+void oct_free_raw_data_descriptor(oct_rawDataDescriptor* const scene)
 {
     if(scene != NULL)
     {
@@ -432,6 +437,6 @@ void oct_free_scene_descriptor(oct_sceneDescriptor* const scene)
 
         free(scene->scene_tree_node_pool);
 
-        *scene = (oct_sceneDescriptor){0};
+        *scene = (oct_rawDataDescriptor){0};
     }
 }

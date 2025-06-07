@@ -1,41 +1,30 @@
-#include "ocelot/dbuf.h"
 #include "ocelot/endian.h"
-#include "ocelot/engine/model.h"
-#include "ocelot/engine/core.h"
-#include "ocelot/engine/window.h"
+#include "ocelot/engine/scene.h"
 #include "octane/oct.h"
 #include "octane/oct_scene.h"
-#include <stdio.h>
+#include <stdlib.h>
 
 int main()
 {
-
     //Load the oct file
-    oct_file oct = oct_load_file("assets/oilrig.oct");
-    oct_sceneDescriptor scene = oct_parse_scene_descriptor(oct);
+    oct_file oct = oct_load_file("bin/xbfiles/oilrig/oilrig.oct");
 
-    //Load the index and vertex buffer files
-    ocl_dbuf ibuf_file = ocl_dbuf_load("assets/oilrig_0.ibuf");
-    ocl_dbuf vbuf_file = ocl_dbuf_load("assets/oilrig_0.vbuf");
+    if(oct.header.endian == ENDIAN_UNKNOWN)
+        return EXIT_FAILURE;
+
+    oct_rawDataDescriptor raw_scene = oct_parse_raw_data_descriptor(oct);
 
     endian_set_current(ENDIAN_BIG);
     endian_set_target(ENDIAN_LITTLE);
 
-    oce_model model = oce_load_octane_model(ibuf_file, vbuf_file, scene, 391, 237, 2u);
+    //Load the scene
+    ocl_scene scene = ocl_load_oct_scene(raw_scene, oct);
 
-    printf("VertexCount: %u\n", model.vertex_count);
-    printf("IndexCount: %u\n", model.index_count);
-
-
-    if(!ocl_gui_init())
-        return -1;
-
-    ocl_gui_loop(model);
-
-    oce_free_model(&model);
-    oct_free_scene_descriptor(&scene);
+    //Unload the octane file stuff
+    oct_free_raw_data_descriptor(&raw_scene);
     oct_file_free(&oct);
-    ocl_dbuf_free(&ibuf_file);
-    ocl_dbuf_free(&vbuf_file);
-    return 0;
+
+    ocl_unload_scene(&scene);
+
+    return EXIT_SUCCESS;
 }

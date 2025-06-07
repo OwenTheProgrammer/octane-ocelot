@@ -10,6 +10,9 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     add_compile_options(-Wall -std=gnu17 -O0 -ggdb -Wno-unused-function -Wno-unused-variable)
+
+    add_compile_options(-fsanitize=address)
+    add_link_options(-fsanitize=address)
 endif()
 
 add_subdirectory(libs)

@@ -1,6 +1,5 @@
 #include "ocelot/endian.h"
 #include "octane/oct.h"
-#include "octane/oct_scene.h"
 #include "print_utils.h"
 #include <stdio.h>
 #include <stdlib.h>

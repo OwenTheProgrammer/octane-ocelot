@@ -1,14 +1,14 @@
 
 add_library(ocelot OBJECT
-	bswap.c endian.c
-	dbuf.c dbuf_rw.c
+    bswap.c endian.c
+    dbuf.c dbuf_rw.c
     print_utils.c
-    color_convert.c texture.c
+    color_convert.c texture.c crc.c uuid.c
     file_bmp.c
 )
 
 target_link_libraries(ocelot PUBLIC
-    cglm
+    cglm engine
 )
 
 target_include_directories(ocelot

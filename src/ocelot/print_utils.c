@@ -305,7 +305,7 @@ void oct_print_scene_tree_node(oct_file oct, oct_sceneTreeNodeAtom atom)
     }
 }
 
-void oct_print_scene_descriptor(oct_file oct, oct_sceneDescriptor scene)
+void oct_print_scene_descriptor(oct_file oct, oct_rawDataDescriptor scene)
 {
     for(uint32_t i = 0; i < scene.istream_pool_size; i++)
     {
