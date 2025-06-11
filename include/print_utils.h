@@ -1,5 +1,6 @@
 #pragma once
 #include "octane/oct.h"
+#include "octane/oct_nameBindings.h"
 #include "octane/oct_scene.h"
 #include <stdint.h>
 

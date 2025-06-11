@@ -1,4 +1,5 @@
 #include "print_utils.h"
+#include "octane/oct_nameBindings.h"
 #include "utils.h"
 #include <stdint.h>
 #include <stdio.h>
@@ -42,7 +43,7 @@ void phex_u8_array(void* const src, uint32_t count)
     for(uint32_t i = 0; i < count; i++)
     {
         phex_u8(ptr[i]);
-        putchar((i % 8 == 0 && i != 0) ? '\n' : ' ');
+putchar((i % 8 == 0 && i != 0) ? '\n' : ' ');
     }
 
     putchar('\n');
@@ -61,7 +62,7 @@ void oct_print_header(oct_header header)
 void oct_print_atom_header(oct_atomHeader header)
 {
     printf("Atom Header:\n");
-    printf("|\tType: %s\n", _OCT_ATOM_TYPE_PRINT_TABLE[(int)header.atom_type]);
+printf("|\tType: %s\n", _OCT_ATOM_TYPE_PRINT_TABLE[(int)header.atom_type]);
     printf("|\tHas name: %s\n", header.has_name ? "True" : "False");
     printf("|\tData type: %s\n", _OCT_DATA_TYPE_PRINT_TABLE[(int)header.data_type]);
     printf("|\tLength size: %u B\n", header.length_bytes);
@@ -82,7 +83,7 @@ void oct_print_atom_node(oct_file oct, oct_atomNode node)
     {
         case OCT_NODE_TYPE_BRANCH:  printf("Branch\n"); break;
         case OCT_NODE_TYPE_STRING:  printf("String\n"); break;
-        case OCT_NODE_TYPE_FLOAT:   printf("Float\n"); break;
+case OCT_NODE_TYPE_FLOAT:   printf("Float\n"); break;
         case OCT_NODE_TYPE_INT:     printf("Int\n"); break;
         case OCT_NODE_TYPE_UUID:    printf("UUID\n"); break;
 
@@ -139,7 +140,7 @@ void oct_print_atom_node(oct_file oct, oct_atomNode node)
                     printf("|\t%u: String[%u]: \"%s\"\n",
                            i,
                            ((uint16_t*)node.data)[i],
-                           oct.string_table[((uint16_t*)node.data)[i]].data
+oct.string_table[((uint16_t*)node.data)[i]].data
                     );
                     break;
 
@@ -322,76 +323,98 @@ void oct_print_scene_descriptor(oct_file oct, oct_rawDataDescriptor scene)
 }
 
 
-#define PRINT_ST(x) printf("|\t\"%s\": StringTable[%u]\n", oct.string_table[x].data, x);
+#define PST(_TYPE) printf("|\t\"%s\": StringTable[%u]\n", oct.string_table[ant._TYPE].data, ant._TYPE);
 
 void oct_print_atom_name_table(oct_file oct, oct_atomNameTable ant)
 {
     printf("AtomNameTable:\n");
-    PRINT_ST(ant.length)
-    PRINT_ST(ant.width)
-    PRINT_ST(ant.type)
-    PRINT_ST(ant.offset)
-    PRINT_ST(ant.name)
 
-    PRINT_ST(ant.index_stream_pool)
-    PRINT_ST(ant.index_stream)
-    PRINT_ST(ant.index_buffer_reference)
-    PRINT_ST(ant.index_buffer_offset)
-    PRINT_ST(ant.index_stream_primitive)
+    PST(_common.Name)
+    PST(_common.Flags)
+    PST(_common.FileName)
+    PST(_common.Width)
+    PST(_common.Size)
+    PST(_common.Length)
+    PST(_common.Type)
 
-    PRINT_ST(ant.vertex_stream_pool)
-    PRINT_ST(ant.vertex_stream)
-    PRINT_ST(ant.vstream_buffer_reference)
-    PRINT_ST(ant.vstream_buffer_offset)
-    PRINT_ST(ant.vstream_elements)
-    PRINT_ST(ant.vstream_element)
+    PST(VertexBufferPool._header)
+    PST(VertexBufferPool.VertexBuffer._header)
+    PST(VertexBufferPool.VertexBuffer.Name)
+    PST(VertexBufferPool.VertexBuffer.Flags)
+    PST(VertexBufferPool.VertexBuffer.Size)
+    PST(VertexBufferPool.VertexBuffer.HeapLoc)
+    PST(VertexBufferPool.VertexBuffer.FileName)
 
-    PRINT_ST(ant.vstream_element_name_position)
-    PRINT_ST(ant.vstream_element_name_uv1)
-    PRINT_ST(ant.vstream_element_name_tangent)
-    PRINT_ST(ant.vstream_element_name_normal)
-    PRINT_ST(ant.vstream_element_name_binormal)
-    PRINT_ST(ant.vstream_element_name_lightmapUV)
-    PRINT_ST(ant.vstream_element_name_color_add)
-    PRINT_ST(ant.vstream_element_name_color_occl)
-    PRINT_ST(ant.vstream_element_name_vertex_baked)
+    PST(IndexBufferPool._header)
+    PST(IndexBufferPool.IndexBuffer._header)
+    PST(IndexBufferPool.IndexBuffer.Width)
+    PST(IndexBufferPool.IndexBuffer.Name)
+    PST(IndexBufferPool.IndexBuffer.Flags)
+    PST(IndexBufferPool.IndexBuffer.Size)
+    PST(IndexBufferPool.IndexBuffer.FileName)
 
-    PRINT_ST(ant.scene_tree_node_pool)
-    PRINT_ST(ant.scene_node)
-    PRINT_ST(ant.scene_node_type_scene)
-    PRINT_ST(ant.scene_node_type_geometry)
-    PRINT_ST(ant.scene_node_type_sub_geometry)
-    PRINT_ST(ant.scene_node_type_sub_geometry_lit)
-    PRINT_ST(ant.scene_node_type_camera)
-    PRINT_ST(ant.scene_node_type_light)
-    PRINT_ST(ant.scene_node_name)
-    PRINT_ST(ant.scene_node_parent_node_refs)
-    PRINT_ST(ant.scene_node_local_to_parent_matrix)
-    PRINT_ST(ant.scene_node_visible)
-    PRINT_ST(ant.scene_node_mesh_name)
-    PRINT_ST(ant.scene_node_material_ref)
-    PRINT_ST(ant.scene_node_vstream_refs)
-    PRINT_ST(ant.scene_node_istream_ref)
-    PRINT_ST(ant.scene_node_is_orthographic)
-    PRINT_ST(ant.scene_node_focal_length)
-    PRINT_ST(ant.scene_node_camera_scale)
-    PRINT_ST(ant.scene_node_near_clip)
-    PRINT_ST(ant.scene_node_far_clip)
-    PRINT_ST(ant.scene_node_horizontal_film_aperture)
-    PRINT_ST(ant.scene_node_vertical_film_aperture)
-    PRINT_ST(ant.scene_node_lens_squeeze_ratio)
-    PRINT_ST(ant.scene_node_light_type)
-    PRINT_ST(ant.scene_node_light_color)
-    PRINT_ST(ant.scene_node_light_intensity)
-    PRINT_ST(ant.scene_node_shadow_color)
-    PRINT_ST(ant.scene_node_ambient_shade)
+    PST(IndexStreamPool._header)
+    PST(IndexStreamPool.IndexStream._header)
+    PST(IndexStreamPool.IndexStream.Length)
+    PST(IndexStreamPool.IndexStream.IndexBufferReference)
+    PST(IndexStreamPool.IndexStream.IndexBufferOffset)
+    PST(IndexStreamPool.IndexStream.IndexStreamPrimitive)
+    PST(IndexStreamPool.IndexStream.IndexStreamElement)
 
-    PRINT_ST(ant.scene_node_light_type_directional)
-    PRINT_ST(ant.scene_node_light_type_point)
-    PRINT_ST(ant.scene_node_light_type_ambient)
+    PST(VertexStreamPool._header)
+    PST(VertexStreamPool.VertexStream._header)
+    PST(VertexStreamPool.VertexStream.Length)
+    PST(VertexStreamPool.VertexStream.Width)
+    PST(VertexStreamPool.VertexStream.ExtraStride)
+    PST(VertexStreamPool.VertexStream.VertexBufferReference)
+    PST(VertexStreamPool.VertexStream.VertexBufferOffset)
+
+    PST(VertexStreamPool.VertexStream.Elements._header)
+    PST(VertexStreamPool.VertexStream.Elements.Element._header)
+    PST(VertexStreamPool.VertexStream.Elements.Element.Type)
+    PST(VertexStreamPool.VertexStream.Elements.Element.Name)
+    PST(VertexStreamPool.VertexStream.Elements.Element.Offset)
+
+    PST(SceneTreeNodePool._header)
+    PST(SceneTreeNodePool.Node._header)
+    PST(SceneTreeNodePool.Node.Type)
+    PST(SceneTreeNodePool.Node.NodeName)
+    PST(SceneTreeNodePool.Node.Uuid)
+    PST(SceneTreeNodePool.Node.DisplayLayer)
+    PST(SceneTreeNodePool.Node.ParentNodeReferences)
+    PST(SceneTreeNodePool.Node.LocalToParentMatrix)
+    PST(SceneTreeNodePool.Node.Visible)
+    PST(SceneTreeNodePool.Node.DynamicVisPlacement)
+    PST(SceneTreeNodePool.Node.MeshName)
+    PST(SceneTreeNodePool.Node.MaterialReference)
+    PST(SceneTreeNodePool.Node.VertexStreamReferences)
+    PST(SceneTreeNodePool.Node.IndexStreamReference)
+    PST(SceneTreeNodePool.Node.IsOrthographic)
+    PST(SceneTreeNodePool.Node.FocalLength)
+    PST(SceneTreeNodePool.Node.CameraScale)
+    PST(SceneTreeNodePool.Node.NearClipPlane)
+    PST(SceneTreeNodePool.Node.FarClipPlane)
+    PST(SceneTreeNodePool.Node.HorizontalFilmAperture)
+    PST(SceneTreeNodePool.Node.VerticalFilmAperture)
+    PST(SceneTreeNodePool.Node.LensSqueezeRatio)
+    PST(SceneTreeNodePool.Node.LightType)
+    PST(SceneTreeNodePool.Node.LightColor)
+    PST(SceneTreeNodePool.Node.LightIntensity)
+    PST(SceneTreeNodePool.Node.AmbientShade)
+    PST(SceneTreeNodePool.Node.ShadowColor)
+    PST(SceneTreeNodePool.Node.DecayRate)
+    PST(SceneTreeNodePool.Node.ExclusionType)
+    PST(SceneTreeNodePool.Node.StaticKeyValuePairs._header)
+    PST(SceneTreeNodePool.Node.StaticKeyValuePairs.FalloffRadius)
+    PST(SceneTreeNodePool.Node.StaticKeyValuePairs.Softness)
+    PST(SceneTreeNodePool.Node.StaticKeyValuePairs.IsRoaming)
+    PST(SceneTreeNodePool.Node.StaticKeyValuePairs.UseTertiary)
+    PST(SceneTreeNodePool.Node.StaticKeyValuePairs.IsNegative)
+    PST(SceneTreeNodePool.Node.StaticKeyValuePairs.LightUsageLightmapNormal)
+    PST(SceneTreeNodePool.Node.StaticKeyValuePairs.LightUsageLightmapSpecular)
 }
 
-#undef PRINT_ST
+#undef PST
 
 
 const char* _OCT_ATOM_TYPE_PRINT_TABLE[OCT_ATOM_TYPE_MAX] =
