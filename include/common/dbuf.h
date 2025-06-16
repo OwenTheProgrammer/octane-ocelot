@@ -21,6 +21,8 @@ dbuf dbuf_create(size_t size, void* const data);
 
 dbuf dbuf_load(const char* filepath);
 
+bool dbuf_is_valid(dbuf* const buffer);
+
 void dbuf_write(dbuf buffer, const char* filepath);
 
 

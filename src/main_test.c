@@ -56,9 +56,12 @@ static void _export_bc1_bmp()
     ocl_texture_free(&texture);
 }
 
-static void _export_tstream()
+static int _export_tstream()
 {
     dbuf tstream = dbuf_load("bin/assets/oilrig_32.tstream");
+
+    if(!dbuf_is_valid(&tstream))
+        return EXIT_FAILURE;
 
     endian_set_current(ENDIAN_BIG);
     endian_set_target(ENDIAN_LITTLE);
@@ -68,6 +71,8 @@ static void _export_tstream()
 
     ocl_bmp_write_raw_texture(texture, false, "bin/32.bmp");
     ocl_texture_free(&texture);
+
+    return EXIT_SUCCESS;
 }
 
 
@@ -78,8 +83,8 @@ int main()
 
     //_export_bc1_bmp();
 
-    _export_tstream();
+    return _export_tstream();
 
-    return 0;
+    //return 0;
 }
 

@@ -4,13 +4,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-static bool _is_valid_dbuf(dbuf* const buffer)
-{
-    if(buffer == NULL)
-        return false;
-
-    return (buffer->data != NULL && buffer->size != 0);
-}
 
 dbuf dbuf_create(size_t size, void* const data)
 {
@@ -64,6 +57,14 @@ dbuf dbuf_load(const char* filepath)
     printf("Loaded \"%s\" (%zu bytes)\n", filepath, buffer.size);
 
     return buffer;
+}
+
+bool dbuf_is_valid(dbuf* const buffer)
+{
+    if(buffer == NULL)
+        return false;
+
+    return (buffer->data != NULL && buffer->size != 0);
 }
 
 void dbuf_write(dbuf buffer, const char* filepath)
@@ -161,7 +162,7 @@ dbuf dbuf_merge(bool end_at_ptr, bool free_inputs, size_t count, ...)
     {
         dbuf* entry = va_arg(args, dbuf*);
 
-        if(_is_valid_dbuf(entry))
+        if(dbuf_is_valid(entry))
         {
             pool[valid_count++] = entry;
             final_size += end_at_ptr ? entry->ptr : entry->size;
