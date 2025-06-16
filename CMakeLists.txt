@@ -1,6 +1,18 @@
 cmake_minimum_required(VERSION 3.21)
 project(ocelot LANGUAGES C)
 
+if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
+    
+    # Default to Debug
+    set(CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the type of build." FORCE)
+
+    # Set the possible target build types for cmake GUI
+    set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release")
+
+endif()
+
+message("BuildType: ${CMAKE_BUILD_TYPE}")
+
 # Build with:
 # cmake -DCMAKE_BUILD_TYPE=Debug -B bin/ -S .
 # cmake --build bin/ -j
@@ -41,7 +53,10 @@ endif()
 
 
 file(COPY ${CMAKE_SOURCE_DIR}/assets DESTINATION ${CMAKE_BINARY_DIR})
-file(COPY ${CMAKE_SOURCE_DIR}/xbfiles DESTINATION ${CMAKE_BINARY_DIR})
+
+if(EXISTS ${CMAKE_SOURCE_DIR}/xbfiles)
+    file(COPY ${CMAKE_SOURCE_DIR}/xbfiles DESTINATION ${CMAKE_BINARY_DIR})
+endif()
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     add_custom_command(TARGET ocelot_editor POST_BUILD

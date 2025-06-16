@@ -11,7 +11,7 @@ oce_model oce_load_octane_model(ocl_dbuf ibuf, ocl_dbuf vbuf, oct_rawDataDescrip
 
     model.vertex_count = oct_vbuf.vertex_count;
 
-    model.vertex_positions = oct_vbuf.positions;
+    //model.vertex_positions = oct_vbuf.positions;
 
 
     oct_indexBuffer oct_ibuf = oct_decode_index_buffer(&ibuf, scene, istream_stride, istream_index);
