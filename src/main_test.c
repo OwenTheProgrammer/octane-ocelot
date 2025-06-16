@@ -1,6 +1,6 @@
 
-#include "ocelot/dbuf.h"
-#include "ocelot/endian.h"
+#include "common/dbuf.h"
+#include "common/endian.h"
 #include "types/file_bmp.h"
 #include "types/texture.h"
 #include <stdbool.h>
@@ -58,13 +58,13 @@ static void _export_bc1_bmp()
 
 static void _export_tstream()
 {
-    ocl_dbuf tstream = ocl_dbuf_load("bin/assets/oilrig_32.tstream");
+    dbuf tstream = dbuf_load("bin/assets/oilrig_32.tstream");
 
     endian_set_current(ENDIAN_BIG);
     endian_set_target(ENDIAN_LITTLE);
 
     ocl_texture texture = ocl_decode_texture_bc1(tstream);
-    ocl_dbuf_free(&tstream);
+    dbuf_free(&tstream);
 
     ocl_bmp_write_raw_texture(texture, false, "bin/32.bmp");
     ocl_texture_free(&texture);

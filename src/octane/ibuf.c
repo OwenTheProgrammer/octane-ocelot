@@ -1,10 +1,10 @@
 #include "octane/ibuf.h"
-#include "ocelot/dbuf.h"
+#include "common/dbuf.h"
 #include "octane/oct_atoms.h"
 #include <stdlib.h>
 
 
-oct_indexBuffer oct_decode_index_buffer(ocl_dbuf* const ibuf, oct_rawDataDescriptor scene, uint32_t stride, uint32_t index)
+oct_indexBuffer oct_decode_index_buffer(dbuf* const ibuf, oct_rawDataDescriptor scene, uint32_t stride, uint32_t index)
 {
     oct_indexBuffer buf = (oct_indexBuffer){0};
 
@@ -14,7 +14,7 @@ oct_indexBuffer oct_decode_index_buffer(ocl_dbuf* const ibuf, oct_rawDataDescrip
 
     ibuf->ptr = istream_atom.buffer_offset;
 
-    buf.indices = ocl_dbuf_read_uvar_array(ibuf, buf.index_count, stride);
+    buf.indices = dbuf_read_uvar_array(ibuf, buf.index_count, stride);
 
     return buf;
 }

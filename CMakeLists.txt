@@ -1,5 +1,4 @@
 cmake_minimum_required(VERSION 3.21)
-project(ocelot LANGUAGES C)
 
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
     
@@ -11,14 +10,23 @@ if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
 
 endif()
 
-message("BuildType: ${CMAKE_BUILD_TYPE}")
 
-# Build with:
-# cmake -DCMAKE_BUILD_TYPE=Debug -B bin/ -S .
-# cmake --build bin/ -j
+option(OCELOT_BUILD_CLI "Build the command line interface tool" ON)
+option(OCELOT_BUILD_EDITOR "Build the GUI based editor tool" ON)
 
-# set(CMAKE_C_COMPILER gcc)
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
+# Only build the debug testing if we target debug
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    set(OCELOT_BUILD_TESTING True)
+else()
+    set(OCELOT_BUILD_TESTING False)
+endif()
+
+# Generate clangd index file when compiling debug
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+endif()
+
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     add_compile_options(-Wall -std=gnu17 -O0 -ggdb -Wno-unused-function -Wno-unused-variable)
@@ -27,39 +35,89 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     add_link_options(-fsanitize=address)
 endif()
 
-add_subdirectory(libs)
+message(STATUS "Build Type: ${CMAKE_BUILD_TYPE}")
 
-add_subdirectory(src)
+if(OCELOT_BUILD_CLI)
+    message(STATUS "Including ocelot CLI")
+endif()
 
-add_executable(ocelot_cli src/main_cli.c)
+if(OCELOT_BUILD_EDITOR)
+    message(STATUS "Including ocelot editor")
+endif()
 
-target_link_libraries(ocelot_cli
-    ocelot octane
-)
+if(OCELOT_BUILD_TESTING)
+    message(STATUS "Including ocelot debug testing")
+endif()
 
-add_executable(ocelot_editor src/main_editor.c)
+set(CGLM_SHARED OFF CACHE BOOL "Build static libraries" FORCE)
+set(CGLM_STATIC ON CACHE BOOL "Static build" FORCE)
 
-target_link_libraries(ocelot_editor
-    glad ocelot octane engine cglm
-)
+set(GLFW_BUILD_DOCS OFF CACHE BOOL "Build the GLFW documentation" FORCE)
+set(GLFW_INSTALL OFF CACHE BOOL "Generate installation target" FORCE)
 
-if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-    add_executable(testing src/main_test.c)
+add_subdirectory(src/common)
 
-    target_link_libraries(testing
-        glad ocelot octane engine cglm
+add_subdirectory(src/ocelot)
+
+add_subdirectory(src/octane)
+
+if(OCELOT_BUILD_CLI)
+
+    project(ocelot_cli LANGUAGES C)
+
+    add_executable(${PROJECT_NAME} src/main_cli.c)
+
+    target_link_libraries(${PROJECT_NAME}
+        PRIVATE
+            ocelot octane
     )
+
+endif()
+
+if(OCELOT_BUILD_EDITOR)
+
+    project(ocelot_editor LANGUAGES C)
+
+    add_subdirectory(libs/glad)
+
+    add_subdirectory(libs/cglm)
+
+    add_subdirectory(libs/glfw)
+
+    add_subdirectory(src/engine)
+
+    add_executable(${PROJECT_NAME} src/main_editor.c)
+
+    target_link_libraries(${PROJECT_NAME}
+        PRIVATE
+            engine
+    )
+
+    file(COPY ${CMAKE_SOURCE_DIR}/assets DESTINATION ${CMAKE_BINARY_DIR})
+
+endif()
+
+if(OCELOT_BUILD_TESTING)
+
+    project(ocelot_testing LANGUAGES C)
+
+    add_executable(${PROJECT_NAME} src/main_test.c)
+
+    target_link_libraries(${PROJECT_NAME}
+        PRIVATE
+            octane ocelot
+    )
+
 endif()
 
 
-file(COPY ${CMAKE_SOURCE_DIR}/assets DESTINATION ${CMAKE_BINARY_DIR})
 
 if(EXISTS ${CMAKE_SOURCE_DIR}/xbfiles)
     file(COPY ${CMAKE_SOURCE_DIR}/xbfiles DESTINATION ${CMAKE_BINARY_DIR})
 endif()
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-    add_custom_command(TARGET ocelot_editor POST_BUILD
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_BINARY_DIR}/compile_commands.json ${CMAKE_SOURCE_DIR}
     )
 endif()

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ocelot/dbuf.h"
+#include "common/dbuf.h"
 #include "octane/oct_scene.h"
 #include <cglm/vec3.h>
 #include <stdint.h>
@@ -19,6 +19,6 @@ struct oce_model
     uint32_t* indices;
 };
 
-oce_model oce_load_octane_model(ocl_dbuf ibuf, ocl_dbuf vbuf, oct_rawDataDescriptor scene, uint32_t vstream_index, uint32_t istream_index, uint32_t istream_stride);
+oce_model oce_load_octane_model(dbuf ibuf, dbuf vbuf, oct_rawDataDescriptor scene, uint32_t vstream_index, uint32_t istream_index, uint32_t istream_stride);
 
 void oce_free_model(oce_model* const model);

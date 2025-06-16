@@ -1,10 +1,10 @@
-#include "ocelot/dbuf.h"
+#include "common/dbuf.h"
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-static bool _is_valid_dbuf(ocl_dbuf* const buffer)
+static bool _is_valid_dbuf(dbuf* const buffer)
 {
     if(buffer == NULL)
         return false;
@@ -12,9 +12,9 @@ static bool _is_valid_dbuf(ocl_dbuf* const buffer)
     return (buffer->data != NULL && buffer->size != 0);
 }
 
-ocl_dbuf ocl_dbuf_create(size_t size, void* const data)
+dbuf dbuf_create(size_t size, void* const data)
 {
-    ocl_dbuf result = (ocl_dbuf){0};
+    dbuf result = (dbuf){0};
 
     if(size == 0)
         return result;
@@ -31,9 +31,9 @@ ocl_dbuf ocl_dbuf_create(size_t size, void* const data)
     return result;
 }
 
-ocl_dbuf ocl_dbuf_load(const char* filepath)
+dbuf dbuf_load(const char* filepath)
 {
-    ocl_dbuf buffer = (ocl_dbuf){0};
+    dbuf buffer = (dbuf){0};
 
     if(filepath == NULL)
     {
@@ -66,7 +66,7 @@ ocl_dbuf ocl_dbuf_load(const char* filepath)
     return buffer;
 }
 
-void ocl_dbuf_write(ocl_dbuf buffer, const char* filepath)
+void dbuf_write(dbuf buffer, const char* filepath)
 {
     if(buffer.data == NULL || buffer.size == 0)
     {
@@ -95,11 +95,11 @@ void ocl_dbuf_write(ocl_dbuf buffer, const char* filepath)
 }
 
 
-void ocl_dbuf_ensure_capacity(ocl_dbuf* const buffer, size_t bytes)
+void dbuf_ensure_capacity(dbuf* const buffer, size_t bytes)
 {
     if(buffer == NULL || buffer->data == NULL)
     {
-        *buffer = ocl_dbuf_create(bytes, NULL);
+        *buffer = dbuf_create(bytes, NULL);
         return;
     }
 
@@ -112,25 +112,25 @@ void ocl_dbuf_ensure_capacity(ocl_dbuf* const buffer, size_t bytes)
     }
 }
 
-void ocl_dbuf_advance(ocl_dbuf* const buffer, size_t bytes)
+void dbuf_advance(dbuf* const buffer, size_t bytes)
 {
     buffer->ptr += bytes;
 }
 
-void* ocl_dbuf_pos(ocl_dbuf* const buffer)
+void* dbuf_pos(dbuf* const buffer)
 {
     return buffer->data + buffer->ptr;
 }
 
 
-void ocl_dbuf_write_data(ocl_dbuf* const buffer, void* const src, size_t bytes, bool advance)
+void dbuf_write_data(dbuf* const buffer, void* const src, size_t bytes, bool advance)
 {
     if(bytes == 0)
         return;
 
-    void* dst_ptr = ocl_dbuf_pos(buffer);
+    void* dst_ptr = dbuf_pos(buffer);
 
-    ocl_dbuf_ensure_capacity(buffer, bytes);
+    dbuf_ensure_capacity(buffer, bytes);
 
     if(src != NULL)
     {
@@ -142,13 +142,13 @@ void ocl_dbuf_write_data(ocl_dbuf* const buffer, void* const src, size_t bytes, 
     }
 
     if(advance)
-        ocl_dbuf_advance(buffer, bytes);
+        dbuf_advance(buffer, bytes);
 }
 
-ocl_dbuf ocl_dbuf_merge(bool end_at_ptr, bool free_inputs, size_t count, ...)
+dbuf dbuf_merge(bool end_at_ptr, bool free_inputs, size_t count, ...)
 {
     // Make a reference pool of all the valid buffers
-    ocl_dbuf** pool = calloc(count, sizeof(ocl_dbuf*));
+    dbuf** pool = calloc(count, sizeof(dbuf*));
 
     // Keep track of the final buffer metrics
     size_t valid_count = 0;
@@ -159,7 +159,7 @@ ocl_dbuf ocl_dbuf_merge(bool end_at_ptr, bool free_inputs, size_t count, ...)
 
     for(size_t i = 0; i < count; i++)
     {
-        ocl_dbuf* entry = va_arg(args, ocl_dbuf*);
+        dbuf* entry = va_arg(args, dbuf*);
 
         if(_is_valid_dbuf(entry))
         {
@@ -172,22 +172,22 @@ ocl_dbuf ocl_dbuf_merge(bool end_at_ptr, bool free_inputs, size_t count, ...)
 
     // Combine all the buffers
 
-    ocl_dbuf result = (ocl_dbuf){0};
+    dbuf result = (dbuf){0};
 
     result.size = final_size;
     result.data = calloc(final_size, sizeof(char));
 
     for(size_t i = 0; i < valid_count; i++)
     {
-        ocl_dbuf* entry = pool[i];
+        dbuf* entry = pool[i];
 
         size_t len = end_at_ptr ? entry->ptr : entry->size;
-        memcpy(ocl_dbuf_pos(&result), entry->data, len);
+        memcpy(dbuf_pos(&result), entry->data, len);
 
-        ocl_dbuf_advance(&result, len);
+        dbuf_advance(&result, len);
 
         if(free_inputs)
-            ocl_dbuf_free(entry);
+            dbuf_free(entry);
     }
 
     free(pool);
@@ -196,12 +196,12 @@ ocl_dbuf ocl_dbuf_merge(bool end_at_ptr, bool free_inputs, size_t count, ...)
 
 
 
-void ocl_dbuf_free(ocl_dbuf* const buffer)
+void dbuf_free(dbuf* const buffer)
 {
     if(buffer != NULL)
     {
         free(buffer->data);
 
-        *buffer = (ocl_dbuf){0};
+        *buffer = (dbuf){0};
     }
 }

@@ -1,4 +1,4 @@
-#include "ocelot/endian.h"
+#include "common/endian.h"
 #include "ocelot/engine/scene.h"
 #include "octane/oct.h"
 #include "octane/oct_scene.h"

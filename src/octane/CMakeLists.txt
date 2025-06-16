@@ -1,12 +1,12 @@
 
-# Compile the octane source code into object files
-add_library(octane OBJECT
-    oct_internal.h
+project(octane LANGUAGES C)
+
+add_library(${PROJECT_NAME} STATIC
     oct.c oct_decode.c oct_encode.c oct_serialize.c oct_loadBindings.c
     ibuf.c vbuf.c
 )
 
-target_include_directories(octane
-    PUBLIC "${CMAKE_SOURCE_DIR}/include"
-    PUBLIC "${CMAKE_SOURCE_DIR}/libs/cglm/include"
+target_link_libraries(${PROJECT_NAME}
+    PUBLIC
+        ocelot_utils
 )

@@ -1,6 +1,6 @@
 #include "types/file_bmp.h"
-#include "ocelot/dbuf.h"
-#include "ocelot/endian.h"
+#include "common/dbuf.h"
+#include "common/endian.h"
 #include "types/texture.h"
 #include <stdbool.h>
 
@@ -121,46 +121,46 @@ static _bmp_dibHeaderV4 _init_bmp_dib(uint32_t width, uint32_t height)
     return dib;
 }
 
-static void _write_bmp_header(ocl_dbuf* const buffer, _bmp_header header)
+static void _write_bmp_header(dbuf* const buffer, _bmp_header header)
 {
-    ocl_dbuf_write_u16(buffer, _BMP_MAGIC_LE);
-    ocl_dbuf_write_u32(buffer, header.file_size);
-    ocl_dbuf_advance(buffer, 4);
-    ocl_dbuf_write_u32(buffer, header.data_offset);
+    dbuf_write_u16(buffer, _BMP_MAGIC_LE);
+    dbuf_write_u32(buffer, header.file_size);
+    dbuf_advance(buffer, 4);
+    dbuf_write_u32(buffer, header.data_offset);
 }
 
-static void _write_dib_header(ocl_dbuf* const buffer, _bmp_dibHeaderV4 dib)
+static void _write_dib_header(dbuf* const buffer, _bmp_dibHeaderV4 dib)
 {
-    ocl_dbuf_write_u32(buffer, dib.header_size);
+    dbuf_write_u32(buffer, dib.header_size);
 
-    ocl_dbuf_write_u32(buffer, dib.width_pixels);
-    ocl_dbuf_write_u32(buffer, dib.height_pixels);
+    dbuf_write_u32(buffer, dib.width_pixels);
+    dbuf_write_u32(buffer, dib.height_pixels);
 
-    ocl_dbuf_write_u16(buffer, dib.color_planes);
-    ocl_dbuf_write_u16(buffer, dib.bits_per_pixel);
-    ocl_dbuf_write_u32(buffer, dib.compression_type);
+    dbuf_write_u16(buffer, dib.color_planes);
+    dbuf_write_u16(buffer, dib.bits_per_pixel);
+    dbuf_write_u32(buffer, dib.compression_type);
 
-    ocl_dbuf_write_u32(buffer, dib.data_size);
+    dbuf_write_u32(buffer, dib.data_size);
 
     // TODO: Implement signed integer writing here
-    ocl_dbuf_write_u32(buffer, dib.horizontal_ppm);
-    ocl_dbuf_write_u32(buffer, dib.vertical_ppm);
+    dbuf_write_u32(buffer, dib.horizontal_ppm);
+    dbuf_write_u32(buffer, dib.vertical_ppm);
 
-    ocl_dbuf_write_u32(buffer, dib.palette_colors);
-    ocl_dbuf_write_u32(buffer, dib.important_colors);
+    dbuf_write_u32(buffer, dib.palette_colors);
+    dbuf_write_u32(buffer, dib.important_colors);
 
-    ocl_dbuf_write_u32(buffer, dib.red_mask_be);
-    ocl_dbuf_write_u32(buffer, dib.green_mask_be);
-    ocl_dbuf_write_u32(buffer, dib.blue_mask_be);
-    ocl_dbuf_write_u32(buffer, dib.alpha_mask_be);
+    dbuf_write_u32(buffer, dib.red_mask_be);
+    dbuf_write_u32(buffer, dib.green_mask_be);
+    dbuf_write_u32(buffer, dib.blue_mask_be);
+    dbuf_write_u32(buffer, dib.alpha_mask_be);
 
-    ocl_dbuf_write_u32(buffer, dib.color_space);
+    dbuf_write_u32(buffer, dib.color_space);
 
-    ocl_dbuf_advance(buffer, 36 + 4 + 4 + 4);
+    dbuf_advance(buffer, 36 + 4 + 4 + 4);
 }
 
 
-ocl_dbuf ocl_bmp_encode_raw_texture(ocl_texture texture, bool flip_y)
+dbuf ocl_bmp_encode_raw_texture(ocl_texture texture, bool flip_y)
 {
     endian_t prev_ctx = endian_get_current();
     endian_t prev_tgt = endian_get_target();
@@ -172,20 +172,20 @@ ocl_dbuf ocl_bmp_encode_raw_texture(ocl_texture texture, bool flip_y)
     _bmp_header header = _init_bmp_header(pixel_count);
     _bmp_dibHeaderV4 dib = _init_bmp_dib(texture.width, texture.height);
 
-    ocl_dbuf data = ocl_dbuf_create(header.file_size, NULL);
+    dbuf data = dbuf_create(header.file_size, NULL);
 
     _write_bmp_header(&data, header);
 
     _write_dib_header(&data, dib);
 
-    uint32_t* ptr = ocl_dbuf_pos(&data);
+    uint32_t* ptr = dbuf_pos(&data);
     if(!flip_y)
     {
         ocl_texture_flip_y_ext(&texture, ptr);
     }
     else
     {
-        ocl_dbuf_write_u8_array(&data, (uint8_t*)texture.data, pixel_count * sizeof(uint32_t));
+        dbuf_write_u8_array(&data, (uint8_t*)texture.data, pixel_count * sizeof(uint32_t));
     }
 
     endian_set_current(prev_ctx);
@@ -197,7 +197,7 @@ ocl_dbuf ocl_bmp_encode_raw_texture(ocl_texture texture, bool flip_y)
 
 void ocl_bmp_write_raw_texture(ocl_texture texture, bool flip_y, const char* filepath)
 {
-    ocl_dbuf data = ocl_bmp_encode_raw_texture(texture, flip_y);
-    ocl_dbuf_write(data, filepath);
-    ocl_dbuf_free(&data);
+    dbuf data = ocl_bmp_encode_raw_texture(texture, flip_y);
+    dbuf_write(data, filepath);
+    dbuf_free(&data);
 }

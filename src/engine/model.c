@@ -3,7 +3,7 @@
 #include "octane/vbuf.h"
 #include <stdlib.h>
 
-oce_model oce_load_octane_model(ocl_dbuf ibuf, ocl_dbuf vbuf, oct_rawDataDescriptor scene, uint32_t vstream_index, uint32_t istream_index, uint32_t istream_stride)
+oce_model oce_load_octane_model(dbuf ibuf, dbuf vbuf, oct_rawDataDescriptor scene, uint32_t vstream_index, uint32_t istream_index, uint32_t istream_stride)
 {
     oce_model model = (oce_model){0};
 

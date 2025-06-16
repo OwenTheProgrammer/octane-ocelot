@@ -1,7 +1,7 @@
 /* oct: The octane scene descriptor */
 #pragma once
-#include "ocelot/endian.h"
-#include "ocelot/dbuf.h"
+#include "common/endian.h"
+#include "common/dbuf.h"
 #include <stdbool.h>
 #include <stdint.h>
 
@@ -118,12 +118,12 @@ struct oct_file
     oct_atomNode* data_tree;
 };
 
-oct_file oct_load_buffer(ocl_dbuf buffer);
+oct_file oct_load_buffer(dbuf buffer);
 
 oct_file oct_load_file(const char* filepath);
 
 
-ocl_dbuf oct_store_buffer(oct_file oct);
+dbuf oct_store_buffer(oct_file oct);
 
 void oct_store_file(oct_file oct, const char* filepath);
 

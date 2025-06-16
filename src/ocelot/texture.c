@@ -3,14 +3,14 @@
 #include <stdlib.h>
 #include <string.h>
 
-static ocl_textureBlockBC1 _read_block_bc1(ocl_dbuf* const buffer)
+static ocl_textureBlockBC1 _read_block_bc1(dbuf* const buffer)
 {
     ocl_textureBlockBC1 block = (ocl_textureBlockBC1){0};
 
-    block.block_min = ocl_dbuf_read_u16(buffer);
-    block.block_max = ocl_dbuf_read_u16(buffer);
+    block.block_min = dbuf_read_u16(buffer);
+    block.block_max = dbuf_read_u16(buffer);
 
-    block.lut = ocl_dbuf_read_u32(buffer);
+    block.lut = dbuf_read_u32(buffer);
 
     return block;
 }
@@ -56,7 +56,7 @@ void ocl_decode_block_bc1(ocl_textureBlockBC1 block, uint32_t result[16])
 }
 
 
-ocl_texture ocl_decode_texture_bc1(ocl_dbuf buffer)
+ocl_texture ocl_decode_texture_bc1(dbuf buffer)
 {
     ocl_texture texture = (ocl_texture){0};
 

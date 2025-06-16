@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ocelot/dbuf.h"
+#include "common/dbuf.h"
 #include <stdint.h>
 
 typedef struct ocl_textureBlockBC1  ocl_textureBlockBC1;
@@ -55,4 +55,4 @@ uint32_t ocl_lerp_rgb24(uint32_t from, uint32_t to, float t);
 void ocl_decode_block_bc1(ocl_textureBlockBC1 block, uint32_t result[16]);
 
 
-ocl_texture ocl_decode_texture_bc1(ocl_dbuf buffer);
+ocl_texture ocl_decode_texture_bc1(dbuf buffer);

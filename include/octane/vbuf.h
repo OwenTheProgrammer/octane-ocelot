@@ -1,6 +1,5 @@
 #pragma once
-#include "cglm/types-struct.h"
-#include "ocelot/dbuf.h"
+#include "common/dbuf.h"
 #include "octane/oct_scene.h"
 #include <stdint.h>
 
@@ -10,10 +9,10 @@ struct oct_vertexBuffer
 {
     uint32_t vertex_count;
 
-    vec3s* positions;
+    float* positions;
 };
 
-oct_vertexBuffer oct_decode_vertex_buffer(ocl_dbuf* const vbuf, oct_rawDataDescriptor scene, uint32_t vstream_index);
+oct_vertexBuffer oct_decode_vertex_buffer(dbuf* const vbuf, oct_rawDataDescriptor scene, uint32_t vstream_index);
 
 
 void oct_free_vertex_buffer(oct_vertexBuffer* const vbuf);

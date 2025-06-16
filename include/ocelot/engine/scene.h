@@ -1,5 +1,5 @@
 #pragma once
-#include "cglm/types.h"
+#include <cglm/types.h>
 #include "ocelot/engine/model.h"
 #include "octane/oct_scene.h"
 #include "types/uuid.h"

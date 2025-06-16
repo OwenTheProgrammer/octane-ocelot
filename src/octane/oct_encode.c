@@ -1,7 +1,7 @@
-#include "ocelot/endian.h"
+#include "common/endian.h"
 #include "oct_internal.h"
 #include "octane/oct.h"
-#include "ocelot/dbuf.h"
+#include "common/dbuf.h"
 #include "utils.h"
 #include <stdio.h>
 #include <stdbool.h>
@@ -29,20 +29,20 @@ static uint16_t _encode_atom_header(oct_atomHeader header)
 
 #undef STORE_VALUE
 
-static void _encode_atom_node(ocl_dbuf* const buffer, oct_atomNode node)
+static void _encode_atom_node(dbuf* const buffer, oct_atomNode node)
 {
     // Write the atom header segment and match the current endian
     uint16_t header = _encode_atom_header(node.header);
     header = endian_eval_u16(header, ENDIAN_LITTLE);
 
-    ocl_dbuf_write_u16(buffer, header);
+    dbuf_write_u16(buffer, header);
 
     // Write the string table key
-    ocl_dbuf_write_u16(buffer, node.st_key);
+    dbuf_write_u16(buffer, node.st_key);
 
     // Write the name key if its present
     if(node.header.has_name)
-        ocl_dbuf_write_u16(buffer, node.name_key);
+        dbuf_write_u16(buffer, node.name_key);
 
     uint32_t list_stride = node.header.length_bytes;
     uint32_t elem_stride = node.header.element_bytes;
@@ -50,36 +50,36 @@ static void _encode_atom_node(ocl_dbuf* const buffer, oct_atomNode node)
     switch(node.node_type)
     {
         case OCT_NODE_TYPE_STRING:
-            ocl_dbuf_write_u16(buffer, *(uint16_t*)node.data);
+            dbuf_write_u16(buffer, *(uint16_t*)node.data);
             break;
 
         case OCT_NODE_TYPE_STRING_ARRAY:
-            ocl_dbuf_write_uvar(buffer, node.elem_count, list_stride);
-            ocl_dbuf_write_u16_array(buffer, (uint16_t*)node.data, node.elem_count);
+            dbuf_write_uvar(buffer, node.elem_count, list_stride);
+            dbuf_write_u16_array(buffer, (uint16_t*)node.data, node.elem_count);
             break;
 
         case OCT_NODE_TYPE_FLOAT:
-            ocl_dbuf_write_u32(buffer, *(uint32_t*)node.data);
+            dbuf_write_u32(buffer, *(uint32_t*)node.data);
             break;
 
         case OCT_NODE_TYPE_FLOAT_ARRAY:
-            ocl_dbuf_write_uvar(buffer, node.elem_count, list_stride);
-            ocl_dbuf_write_u32_array(buffer, (uint32_t*)node.data, node.elem_count);
+            dbuf_write_uvar(buffer, node.elem_count, list_stride);
+            dbuf_write_u32_array(buffer, (uint32_t*)node.data, node.elem_count);
             break;
 
         case OCT_NODE_TYPE_INT:
-            ocl_dbuf_write_uvar(buffer, *(uint32_t*)node.data, elem_stride);
+            dbuf_write_uvar(buffer, *(uint32_t*)node.data, elem_stride);
             break;
 
         case OCT_NODE_TYPE_INT_ARRAY:
-            ocl_dbuf_write_uvar(buffer, node.elem_count, list_stride);
-            ocl_dbuf_write_uvar_array(buffer, (uint32_t*)node.data, node.elem_count, elem_stride);
+            dbuf_write_uvar(buffer, node.elem_count, list_stride);
+            dbuf_write_uvar_array(buffer, (uint32_t*)node.data, node.elem_count, elem_stride);
             break;
 
         case OCT_NODE_TYPE_BINARY:
         case OCT_NODE_TYPE_UUID:
-            ocl_dbuf_write_uvar(buffer, node.elem_count, list_stride);
-            ocl_dbuf_write_u8_array(buffer, (uint8_t*)node.data, node.elem_count);
+            dbuf_write_uvar(buffer, node.elem_count, list_stride);
+            dbuf_write_u8_array(buffer, (uint8_t*)node.data, node.elem_count);
             break;
 
         default:
@@ -87,50 +87,50 @@ static void _encode_atom_node(ocl_dbuf* const buffer, oct_atomNode node)
     }
 }
 
-static ocl_dbuf _encode_header(oct_header header)
+static dbuf _encode_header(oct_header header)
 {
-    ocl_dbuf buffer = ocl_dbuf_create(_OCT_HEADER_SIZE, NULL);
+    dbuf buffer = dbuf_create(_OCT_HEADER_SIZE, NULL);
 
     // Write the magic section (endian swapping will convert LE to BE if needed)
-    //ocl_dbuf_write_u32(&buffer, _oct_endian_to_magic(endian_get_target()));
-    ocl_dbuf_write_u32(&buffer, _OCT_MAGIC_LE);
+    //dbuf_write_u32(&buffer, _oct_endian_to_magic(endian_get_target()));
+    dbuf_write_u32(&buffer, _OCT_MAGIC_LE);
 
     // Write the header version
-    ocl_dbuf_write_u32(&buffer, *(uint32_t*)&header.version);
+    dbuf_write_u32(&buffer, *(uint32_t*)&header.version);
 
     // Skip the cache crc
-    ocl_dbuf_advance(&buffer, 4);
+    dbuf_advance(&buffer, 4);
 
     // Write the string table size (bytes)
-    ocl_dbuf_write_u32(&buffer, header.string_table_size);
+    dbuf_write_u32(&buffer, header.string_table_size);
 
     // Write the data tree size (bytes)
-    ocl_dbuf_write_u32(&buffer, header.data_tree_size);
+    dbuf_write_u32(&buffer, header.data_tree_size);
 
     // Ignore the next 40 bytes
-    // ocl_dbuf_advance(&buffer, 40);
+    // dbuf_advance(&buffer, 40);
 
     return buffer;
 }
 
-static ocl_dbuf _encode_string_table(oct_file oct)
+static dbuf _encode_string_table(oct_file oct)
 {
-    ocl_dbuf buffer = ocl_dbuf_create(oct.header.string_table_size, NULL);
+    dbuf buffer = dbuf_create(oct.header.string_table_size, NULL);
 
     for(uint32_t i = 0; i < oct.string_table_length; i++)
     {
         oct_string str = oct.string_table[i];
 
-        ocl_dbuf_write_data(&buffer, str.data, str.len, false);
-        ocl_dbuf_advance(&buffer, str.len + 1);
+        dbuf_write_data(&buffer, str.data, str.len, false);
+        dbuf_advance(&buffer, str.len + 1);
     }
 
     return buffer;
 }
 
-static ocl_dbuf _encode_data_tree(oct_file oct)
+static dbuf _encode_data_tree(oct_file oct)
 {
-    ocl_dbuf buffer = ocl_dbuf_create(oct.header.data_tree_size, NULL);
+    dbuf buffer = dbuf_create(oct.header.data_tree_size, NULL);
 
     for(uint32_t i = 0; i < oct.data_tree_length; i++)
     {
@@ -150,7 +150,7 @@ static ocl_dbuf _encode_data_tree(oct_file oct)
     return buffer;
 }
 
-ocl_dbuf oct_store_buffer(oct_file oct)
+dbuf oct_store_buffer(oct_file oct)
 {
     endian_t prev_ctx = endian_get_current();
     endian_set_current(oct.header.endian);
@@ -161,13 +161,13 @@ ocl_dbuf oct_store_buffer(oct_file oct)
            _ENDIAN_PRINT_TABLE[(int)endian_get_target()]
     );
 
-    ocl_dbuf header = _encode_header(oct.header);
+    dbuf header = _encode_header(oct.header);
 
-    ocl_dbuf string_table = _encode_string_table(oct);
+    dbuf string_table = _encode_string_table(oct);
 
-    ocl_dbuf data_tree = _encode_data_tree(oct);
+    dbuf data_tree = _encode_data_tree(oct);
 
-    ocl_dbuf buffer = ocl_dbuf_merge(false, true, 3, &header, &string_table, &data_tree);
+    dbuf buffer = dbuf_merge(false, true, 3, &header, &string_table, &data_tree);
 
     endian_set_current(prev_ctx);
     return buffer;
@@ -175,9 +175,9 @@ ocl_dbuf oct_store_buffer(oct_file oct)
 
 void oct_store_file(oct_file oct, const char* filepath)
 {
-    ocl_dbuf data = oct_store_buffer(oct);
+    dbuf data = oct_store_buffer(oct);
 
-    ocl_dbuf_write(data, filepath);
+    dbuf_write(data, filepath);
 
-    ocl_dbuf_free(&data);
+    dbuf_free(&data);
 }

@@ -1,5 +1,4 @@
-#include "cglm/struct.h"
-#include "ocelot/dbuf.h"
+#include "common/dbuf.h"
 #include "octane/oct_atoms.h"
 #include "octane/vbuf.h"
 #include <stddef.h>
@@ -18,7 +17,7 @@ static uint32_t _find_element_of_type(oct_vertexStreamAtom vstream, oct_vstreamE
 }
 
 
-oct_vertexBuffer oct_decode_vertex_buffer(ocl_dbuf* const vbuf, oct_rawDataDescriptor scene, uint32_t vstream_index)
+oct_vertexBuffer oct_decode_vertex_buffer(dbuf* const vbuf, oct_rawDataDescriptor scene, uint32_t vstream_index)
 {
     oct_vertexBuffer v = (oct_vertexBuffer){0};
 
@@ -38,46 +37,26 @@ oct_vertexBuffer oct_decode_vertex_buffer(ocl_dbuf* const vbuf, oct_rawDataDescr
         vbuf->ptr += vstream_atom.elements[pos_idx].offset;
         uint32_t stride = vstream_atom.width;
 
-        v.positions = calloc(v.vertex_count, sizeof(vec3));
+        static const size_t POSITION_STRIDE = sizeof(float) * 3;
 
-        uint32_t jump = stride - (4*3);
+        v.positions = calloc(v.vertex_count, POSITION_STRIDE);
+
+        uint32_t jump = stride - POSITION_STRIDE;
 
         //Load each vertex position
         for(uint32_t i = 0; i < v.vertex_count; i++)
         {
-            vec3s pos = GLM_VEC3_ZERO_INIT;
             uint32_t raw;
 
-            raw = ocl_dbuf_read_u32(vbuf);
-            pos.x = *(float*)&raw;
+            raw = dbuf_read_u32(vbuf);
+            v.positions[i*3 + 0] = *(float*)&raw;
 
-            raw = ocl_dbuf_read_u32(vbuf);
-            pos.y = *(float*)&raw;
+            raw = dbuf_read_u32(vbuf);
+            v.positions[i*3 + 1] = *(float*)&raw;
 
-            raw = ocl_dbuf_read_u32(vbuf);
-            pos.z = *(float*)&raw;
+            raw = dbuf_read_u32(vbuf);
+            v.positions[i*3 + 2] = *(float*)&raw;
 
-            v.positions[i] = pos;
-
-            /*
-            vec3 pos = (vec3f){0};
-            uint32_t raw;
-
-            raw = ocl_dbuf_read_u32(vbuf);
-            pos.x = *(float*)&raw;
-
-            raw = ocl_dbuf_read_u32(vbuf);
-            pos.y = *(float*)&raw;
-
-            raw = ocl_dbuf_read_u32(vbuf);
-            pos.z = *(float*)&raw;
-
-            pos.x /= 100.0;
-            pos.y /= 100.0;
-            pos.z /= 100.0;
-
-            v.positions[i] = pos;
-            */
             vbuf->ptr += (size_t)jump;
         }
 

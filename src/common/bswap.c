@@ -1,4 +1,4 @@
-#include "ocelot/bswap.h"
+#include "common/bswap.h"
 
 uint16_t bswap_u16(uint16_t src)
 {

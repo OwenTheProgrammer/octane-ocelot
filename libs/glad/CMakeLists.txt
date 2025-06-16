@@ -1,17 +1,19 @@
 
+project(glad LANGUAGES C)
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-    set(TARGET_DIR ${CMAKE_CURRENT_SOURCE_DIR}/debug)
+    set(TARGET_DIR ${PROJECT_SOURCE_DIR}/debug)
 else()
-    set(TARGET_DIR ${CMAKE_CURRENT_SOURCE_DIR}/release)
+    set(TARGET_DIR ${PROJECT_SOURCE_DIR}/release)
 endif()
 
 
-add_library(glad STATIC
+add_library(${PROJECT_NAME} STATIC
     ${TARGET_DIR}/src/glad.c
 )
 
-target_include_directories(glad PUBLIC
-    ${TARGET_DIR}/include
+target_include_directories(${PROJECT_NAME}
+    PUBLIC
+        "${TARGET_DIR}/include"
 )
 

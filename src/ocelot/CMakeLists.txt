@@ -1,17 +1,14 @@
 
-add_library(ocelot OBJECT
-    bswap.c endian.c
-    dbuf.c dbuf_rw.c
+project(ocelot LANGUAGES C)
+
+
+add_library(${PROJECT_NAME} STATIC
     print_utils.c
     color_convert.c texture.c crc.c uuid.c
     file_bmp.c
 )
 
-target_link_libraries(ocelot PUBLIC
-    cglm engine
-)
-
-target_include_directories(ocelot
-    PUBLIC "${CMAKE_SOURCE_DIR}/include"
-    PUBLIC "${CMAKE_SOURCE_DIR}/libs/cglm/include"
+target_link_libraries(${PROJECT_NAME}
+    PUBLIC
+        ocelot_utils
 )
