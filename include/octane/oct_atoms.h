@@ -59,6 +59,9 @@ typedef enum
 } oct_primitiveType;
 
 
+typedef struct oct_vertexBufferAtom     oct_vertexBufferAtom;
+typedef struct oct_indexBufferAtom      oct_indexBufferAtom;
+
 typedef struct oct_indexStreamAtom      oct_indexStreamAtom;
 typedef struct oct_vertexStreamAtom     oct_vertexStreamAtom;
 typedef struct oct_vstreamElementAtom   oct_vstreamElementAtom;
@@ -70,6 +73,37 @@ typedef struct oct_sceneGeometryNode    oct_sceneGeometryNode;
 typedef struct oct_sceneSubGeometryNode oct_sceneSubGeometryNode;
 typedef struct oct_sceneLightNode       oct_sceneLightNode;
 
+/* Serialization of VertexBufferPool/VertexBuffer */
+struct oct_vertexBufferAtom
+{
+    uint16_t atom_id;
+
+    uint16_t name;
+
+    uint32_t flags;
+
+    uint32_t size;
+
+    uint32_t heap_loc;
+
+    uint16_t file_name;
+};
+
+/* Serialization of IndexBufferPool/IndexBuffer */
+struct oct_indexBufferAtom
+{
+    uint16_t atom_id;
+
+    uint32_t width;
+
+    uint16_t name;
+
+    uint32_t flags;
+
+    uint32_t size;
+
+    uint16_t file_name;
+};
 
 /* Serialization of IndexStreamPool/IndexStream */
 struct oct_indexStreamAtom

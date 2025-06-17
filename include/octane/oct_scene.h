@@ -10,6 +10,20 @@ typedef struct oct_sceneTreeNodePool    oct_sceneTreeNodePool;
 /* Serialization of an oct files data */
 struct oct_rawDataDescriptor
 {
+    /* VertexBufferPool */
+    
+    uint32_t vbuf_pool_size;
+
+    oct_vertexBufferAtom* vbuf_pool;
+
+
+    /* IndexBufferPool */
+
+    uint32_t ibuf_pool_size;
+
+    oct_indexBufferAtom* ibuf_pool;
+
+
     /* IndexStreamPool */
 
     uint32_t istream_pool_size;
@@ -27,6 +41,7 @@ struct oct_rawDataDescriptor
     uint32_t scene_tree_pool_size;
 
     oct_sceneTreeNodeAtom* scene_tree_node_pool;
+
 };
 
 

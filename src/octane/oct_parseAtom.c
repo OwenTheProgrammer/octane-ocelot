@@ -3,135 +3,82 @@
 #include "octane/oct_atoms.h"
 #include "octane/oct_scene.h"
 #include "octane/oct_nameBindings.h"
-#include <stdbool.h>
-#include <stdio.h>
-#include <stdlib.h>
 #include <stdint.h>
+#include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 
-/* Check if `name_key` matches the [S]cene [N]ode [T]ype*/
-#define EVAL_SNT(NODE_TYPE, ELEM_TYPE) \
-    if(name_key == _oct_aet.SceneTreeNodePool.Node.Type.NODE_TYPE)  \
-        return OCT_SCENE_NODE_TYPE_##ELEM_TYPE;
 
-/* Check if `name_key` matches the [S]cene [L]ight [T]ype */
-#define EVAL_SLT(NODE_TYPE, ELEM_TYPE) \
-    if(name_key == _oct_aet.SceneTreeNodePool.Node.LightType.NODE_TYPE) \
-        return OCT_SCENE_LIGHT_TYPE_##ELEM_TYPE;
-
-/* Check if `name_key` matches the [V]stream [E]lement [N]ame */
-#define EVAL_VEN(OCT_TYPE, ELEM_TYPE) \
-    if(name_key == _oct_aet.VertexStreamPool.VertexStream.Elements.Element.Name.OCT_TYPE)  \
-        return OCT_VSTREAM_ELEMENT_NAME_##ELEM_TYPE;
-
-/* Check if `name_key` matches the [P]rimitive [T]ype */
-#define EVAL_PT(OCT_TYPE, ELEM_TYPE) \
-    if(name_key == _oct_aet.IndexStreamPool.IndexStream.IndexStreamPrimitive.OCT_TYPE)  \
-        return OCT_PRIMITIVE_TYPE_##ELEM_TYPE;
-
-static oct_sceneNodeType _scene_node_type_from_st_idx(uint16_t name_key)
+oct_vertexBufferAtom _oct_atom_read_vertex_buffer(oct_file oct, uint32_t start_idx, uint32_t end_idx)
 {
-    EVAL_SNT(Scene, SCENE)
-    EVAL_SNT(Transform, TRANSFORM)
-    EVAL_SNT(Geometry, GEOMETRY)
-    EVAL_SNT(SubGeometry, SUB_GEOMETRY)
-    EVAL_SNT(SubGeometryLit, SUB_GEOMETRY_LIT)
-    EVAL_SNT(Camera, CAMERA)
-    EVAL_SNT(Light, LIGHT)
+    oct_vertexBufferAtom atom = (oct_vertexBufferAtom){0};
 
-    return OCT_SCENE_NODE_TYPE_NONE;
-}
+    atom.atom_id = oct.data_tree[start_idx].name_key;
 
-static oct_sceneLightType _scene_light_type_from_st_idx(uint16_t name_key)
-{
-    EVAL_SLT(Directional, DIRECTIONAL)
-    EVAL_SLT(Point, POINT)
-    EVAL_SLT(Ambient, AMBIENT)
-
-    return OCT_SCENE_LIGHT_TYPE_NONE;
-}
-
-static oct_vstreamElementName _vstream_element_name_from_st_idx(uint16_t name_key)
-{
-    EVAL_VEN(Position, POSITION)
-    EVAL_VEN(Uv1, UV1)
-    EVAL_VEN(Tangent, TANGENT)
-    EVAL_VEN(Normal, NORMAL)
-    EVAL_VEN(Binormal, BINORMAL)
-    EVAL_VEN(lightmapUV, LIGHTMAP_UV)
-    EVAL_VEN(ColorAdditive, COLOR_ADD)
-    EVAL_VEN(ColorOcclusion, COLOR_OCC)
-    EVAL_VEN(VertexBaked, VERTEX_BAKED)
-
-    return OCT_VSTREAM_ELEMENT_NAME_NONE;
-}
-
-static oct_primitiveType _primitive_type_from_st_idx(uint16_t name_key)
-{
-    EVAL_PT(TRIANGLES, TRIANGLES)
-
-    return OCT_PRIMITIVE_TYPE_NONE;
-}
-
-#undef EVAL_SNT
-#undef EVAL_SLT
-#undef EVAL_VEN
-#undef EVAL_PT
-
-/* Finds the index of the first node in the data tree with the type `key` */
-static uint32_t _find_index_of_node(oct_file oct, uint16_t key)
-{
-    if(key == 0)
-        return 0;
-
-    for(uint32_t i = 0; i < oct.data_tree_length; i++)
+    for(uint32_t i = start_idx+1; i < end_idx; i++)
     {
-        if(oct.data_tree[i].st_key == key)
-            return i;
+        oct_atomNode node = oct.data_tree[i];
+
+        if(node.st_key == _oct_ant.VertexBufferPool.VertexBuffer.Name)
+        {
+            atom.name = *(uint16_t*)node.data;
+        }
+        else if(node.st_key == _oct_ant.VertexBufferPool.VertexBuffer.Flags)
+        {
+            atom.flags = *(uint32_t*)node.data;
+        }
+        else if(node.st_key == _oct_ant.VertexBufferPool.VertexBuffer.Size)
+        {
+            atom.size = *(uint32_t*)node.data;
+        }
+        else if(node.st_key == _oct_ant.VertexBufferPool.VertexBuffer.HeapLoc)
+        {
+            atom.heap_loc = *(uint32_t*)node.data;
+        }
+        else if(node.st_key == _oct_ant.VertexBufferPool.VertexBuffer.FileName)
+        {
+            atom.file_name = *(uint16_t*)node.data;
+        }
     }
 
-    return 0;
+    return atom;
 }
 
-/* Preloads the target node type positions within an atom array */
-static uint32_t* _load_cache_hierarchy_indexed(uint32_t start_idx, uint16_t target_node, uint32_t* const node_count, oct_file oct)
+oct_indexBufferAtom _oct_atom_read_index_buffer(oct_file oct, uint32_t start_idx, uint32_t end_idx)
 {
-    //The hierarchy level we want to stop at when we see again
-    uint32_t pool_level = oct.data_tree[start_idx++].header.tree_level;
+    oct_indexBufferAtom atom = (oct_indexBufferAtom){0};
 
-    //Allocate a table with much more than needed (max amount possible)
-    uint32_t* node_cache = calloc(UINT16_MAX, sizeof(uint32_t));
-    uint32_t count = 0;
+    atom.atom_id = oct.data_tree[start_idx].name_key;
 
-    //Keep going until we read a node thats outside the root nodes level
-    while(oct.data_tree[start_idx].header.tree_level > pool_level)
+    for(uint32_t i = start_idx+1; i < end_idx; i++)
     {
-        oct_atomNode node = oct.data_tree[start_idx];
+        oct_atomNode node = oct.data_tree[i];
 
-        //Add the node to the cache if its the target
-        if(node.st_key == target_node)
-            node_cache[count++] = start_idx;
-
-        start_idx++;
+        if(node.st_key == _oct_ant.IndexBufferPool.IndexBuffer.Width)
+        {
+            atom.width = *(uint32_t*)node.data;
+        }
+        else if(node.st_key == _oct_ant.IndexBufferPool.IndexBuffer.Name)
+        {
+            atom.name = *(uint16_t*)node.data;
+        }
+        else if(node.st_key == _oct_ant.IndexBufferPool.IndexBuffer.Flags)
+        {
+            atom.flags = *(uint16_t*)node.data;
+        }
+        else if(node.st_key == _oct_ant.IndexBufferPool.IndexBuffer.Size)
+        {
+            atom.size = *(uint32_t*)node.data;
+        }
+        else if(node.st_key == _oct_ant.IndexBufferPool.IndexBuffer.FileName)
+        {
+            atom.file_name = *(uint16_t*)node.data;
+        }
     }
 
-    //Return the amount of target node occurances found
-    *node_count = count;
-
-    //Add the read ending as a delim for the last node
-    node_cache[count++] = start_idx;
-    node_cache = realloc(node_cache, count * sizeof(uint32_t));
-
-    return node_cache;
+    return atom;
 }
 
-
-static uint32_t* _load_cache_hierarchy_named(uint16_t root_node, uint16_t target_node, uint32_t* const node_count, oct_file oct)
-{
-    //Find the root node
-    uint32_t pool_index = _find_index_of_node(oct, root_node);
-    return _load_cache_hierarchy_indexed(pool_index, target_node, node_count, oct);
-}
 
 /* Reads an instance of IndexStreamPool/IndexStream from `start_idx` to `end_idx` */
 oct_indexStreamAtom _oct_atom_read_index_stream(oct_file oct, uint32_t start_idx, uint32_t end_idx)
@@ -435,99 +382,4 @@ oct_sceneTreeNodeAtom _oct_atom_read_scene_tree_node(oct_file oct, uint32_t star
     }
 
     return atom;
-}
-
-/* Reads the entries of IndexStreamPool */
-void _oct_parse_index_stream_pool(oct_rawDataDescriptor* const scene, oct_file oct)
-{
-    //Load the hierarchy of the IndexStreamPool
-    uint32_t* stream_table = _load_cache_hierarchy_named(
-        _oct_ant.IndexStreamPool._header,
-        _oct_ant.IndexStreamPool.IndexStream._header,
-        &scene->istream_pool_size, oct
-    );
-
-    scene->istream_pool = calloc(scene->istream_pool_size, sizeof(oct_indexStreamAtom));
-
-    // Read the nodes at the cache positions
-    for(uint32_t i = 0; i < scene->istream_pool_size; i++)
-    {
-        scene->istream_pool[i] = _oct_atom_read_index_stream(oct, stream_table[i], stream_table[i+1]);
-    }
-
-    free(stream_table);
-}
-
-
-void _oct_parse_vertex_stream_pool(oct_rawDataDescriptor* const scene, oct_file oct)
-{
-    //Load the hierarchy of the VertexStreamPool
-    uint32_t* stream_table = _load_cache_hierarchy_named(
-        _oct_ant.VertexStreamPool._header,
-        _oct_ant.VertexStreamPool.VertexStream._header,
-        &scene->vstream_pool_size, oct
-    );
-
-    scene->vstream_pool = calloc(scene->vstream_pool_size, sizeof(oct_vertexStreamAtom));
-
-    //Read the nodes at the cache positions
-    for(uint32_t i = 0; i < scene->vstream_pool_size; i++)
-    {
-        scene->vstream_pool[i] = _oct_atom_read_vertex_stream(oct, stream_table[i], stream_table[i+1]);
-    }
-
-    free(stream_table);
-}
-
-void _oct_parse_scene_tree_node_pool(oct_rawDataDescriptor* const scene, oct_file oct)
-{
-    uint32_t* stream_table = _load_cache_hierarchy_named(
-        _oct_ant.SceneTreeNodePool._header,
-        _oct_ant.SceneTreeNodePool.Node._header,
-        &scene->scene_tree_pool_size, oct
-    );
-
-    scene->scene_tree_node_pool = calloc(scene->scene_tree_pool_size, sizeof(oct_sceneTreeNodeAtom));
-
-    //Read the nodes at the cache positions
-    for(uint32_t i = 0; i < scene->scene_tree_pool_size; i++)
-    {
-        scene->scene_tree_node_pool[i] = _oct_atom_read_scene_tree_node(oct, stream_table[i], stream_table[i+1]);
-    }
-
-    free(stream_table);
-}
-
-oct_rawDataDescriptor oct_parse_raw_data_descriptor(oct_file oct)
-{
-    oct_rawDataDescriptor scene = (oct_rawDataDescriptor){0};
-
-    oct_load_name_bindings(oct);
-
-    _oct_parse_index_stream_pool(&scene, oct);
-
-    _oct_parse_vertex_stream_pool(&scene, oct);
-
-    _oct_parse_scene_tree_node_pool(&scene, oct);
-
-    return scene;
-}
-
-
-void oct_free_raw_data_descriptor(oct_rawDataDescriptor* const scene)
-{
-    if(scene != NULL)
-    {
-        free(scene->istream_pool);
-
-        for(uint32_t i = 0; i < scene->vstream_pool_size; i++)
-        {
-            free(scene->vstream_pool[i].elements);
-        }
-        free(scene->vstream_pool);
-
-        free(scene->scene_tree_node_pool);
-
-        *scene = (oct_rawDataDescriptor){0};
-    }
 }
