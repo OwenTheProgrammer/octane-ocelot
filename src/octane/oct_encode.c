@@ -1,7 +1,7 @@
-#include "common/endian.h"
+#include "byteconv/endian.h"
 #include "oct_internal.h"
 #include "octane/oct.h"
-#include "common/dbuf.h"
+#include "data/dbuf.h"
 #include "utils.h"
 #include <stdio.h>
 #include <stdbool.h>
@@ -157,8 +157,8 @@ dbuf oct_store_buffer(oct_file oct)
 
     printf("Writing oct file V%.2f (Endian: %s -> %s)\n",
            oct.header.version,
-           _ENDIAN_PRINT_TABLE[(int)endian_get_current()],
-           _ENDIAN_PRINT_TABLE[(int)endian_get_target()]
+           endian_current_to_string(),
+           endian_target_to_string()
     );
 
     dbuf header = _encode_header(oct.header);

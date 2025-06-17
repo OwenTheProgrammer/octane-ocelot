@@ -1,4 +1,5 @@
-#include "common/bswap.h"
+#include "bswap.h"
+#include <stdint.h>
 
 uint16_t bswap_u16(uint16_t src)
 {

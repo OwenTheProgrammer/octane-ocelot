@@ -1,5 +1,5 @@
 #pragma once
-#include "common/endian.h"
+#include "byteconv/endian.h"
 #include "octane/oct.h"
 #include "octane/oct_atoms.h"
 #include "octane/oct_scene.h"

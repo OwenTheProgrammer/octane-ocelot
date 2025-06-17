@@ -1,4 +1,4 @@
-#include "common/endian.h"
+#include "byteconv/endian.h"
 #include "octane/oct.h"
 #include "ocelot/print_utils.h"
 #include <stdio.h>
@@ -34,7 +34,7 @@ int main(int argc, const char* argv[])
 
     printf("input oct: %s\n", input_file);
     printf("output_oct: %s\n", output_file);
-    printf("target endian: %s\n\n", _ENDIAN_PRINT_TABLE[(int)target_endian]);
+    printf("target endian: %s\n\n", endian_to_string(target_endian));
 
     // Load the oct file
     //oct_file oct = oct_load_file("bin/oilrig.oct");

@@ -1,5 +1,5 @@
 #pragma once
-#include "common/dbuf.h"
+#include "data/dbuf.h"
 #include "octane/oct_scene.h"
 #include <stdint.h>
 

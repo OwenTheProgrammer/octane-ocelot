@@ -1,7 +1,7 @@
 #include "oct_internal.h"
 #include "octane/oct.h"
-#include "common/dbuf.h"
-#include "common/endian.h"
+#include "data/dbuf.h"
+#include "byteconv/endian.h"
 #include "ocelot/print_utils.h"
 #include "utils.h"
 #include <stdbool.h>
@@ -144,8 +144,8 @@ static oct_header _read_header(oct_file oct, dbuf* const buffer)
 
     printf("Reading oct file V%.2f (Endian: %s -> %s)\n",
            header.version,
-           _ENDIAN_PRINT_TABLE[(int)endian_get_current()],
-           _ENDIAN_PRINT_TABLE[(int)endian_get_target()]
+           endian_current_to_string(),
+           endian_target_to_string()
     );
 
     // Ignore the padding bytes

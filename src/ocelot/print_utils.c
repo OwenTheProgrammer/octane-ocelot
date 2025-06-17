@@ -54,7 +54,7 @@ putchar((i % 8 == 0 && i != 0) ? '\n' : ' ');
 void oct_print_header(oct_header header)
 {
     printf("Oct Header V%.2f:\n", header.version);
-    printf("|\tEndian: %s\n", _ENDIAN_PRINT_TABLE[(int)header.endian]);
+    printf("|\tEndian: %s\n", endian_to_string(header.endian));
     printf("|\tString table: %u bytes\n", header.string_table_size);
     printf("|\tData tree: %u bytes\n", header.data_tree_size);
 }
@@ -62,7 +62,7 @@ void oct_print_header(oct_header header)
 void oct_print_atom_header(oct_atomHeader header)
 {
     printf("Atom Header:\n");
-printf("|\tType: %s\n", _OCT_ATOM_TYPE_PRINT_TABLE[(int)header.atom_type]);
+    printf("|\tType: %s\n", _OCT_ATOM_TYPE_PRINT_TABLE[(int)header.atom_type]);
     printf("|\tHas name: %s\n", header.has_name ? "True" : "False");
     printf("|\tData type: %s\n", _OCT_DATA_TYPE_PRINT_TABLE[(int)header.data_type]);
     printf("|\tLength size: %u B\n", header.length_bytes);
@@ -83,7 +83,7 @@ void oct_print_atom_node(oct_file oct, oct_atomNode node)
     {
         case OCT_NODE_TYPE_BRANCH:  printf("Branch\n"); break;
         case OCT_NODE_TYPE_STRING:  printf("String\n"); break;
-case OCT_NODE_TYPE_FLOAT:   printf("Float\n"); break;
+        case OCT_NODE_TYPE_FLOAT:   printf("Float\n"); break;
         case OCT_NODE_TYPE_INT:     printf("Int\n"); break;
         case OCT_NODE_TYPE_UUID:    printf("UUID\n"); break;
 
@@ -138,9 +138,9 @@ case OCT_NODE_TYPE_FLOAT:   printf("Float\n"); break;
             {
                 case OCT_NODE_TYPE_STRING_ARRAY:
                     printf("|\t%u: String[%u]: \"%s\"\n",
-                           i,
-                           ((uint16_t*)node.data)[i],
-oct.string_table[((uint16_t*)node.data)[i]].data
+                        i,
+                        ((uint16_t*)node.data)[i],
+                        oct.string_table[((uint16_t*)node.data)[i]].data
                     );
                     break;
 

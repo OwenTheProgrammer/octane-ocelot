@@ -1,8 +1,8 @@
-#include "common/dbuf.h"
-#include <stdarg.h>
+#include "dbuf.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdarg.h>
 
 
 dbuf dbuf_create(size_t size, void* const data)

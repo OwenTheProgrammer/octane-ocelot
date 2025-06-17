@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/dbuf.h"
+#include "data/dbuf.h"
 #include <stdint.h>
 
 typedef struct ocl_textureBlockBC1  ocl_textureBlockBC1;

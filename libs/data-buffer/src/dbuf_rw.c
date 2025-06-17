@@ -1,6 +1,6 @@
-#include "common/bswap.h"
-#include "common/dbuf.h"
-#include "common/endian.h"
+#include "dbuf.h"
+#include "byteconv/bswap.h"
+#include "byteconv/endian.h"
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>

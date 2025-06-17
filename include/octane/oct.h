@@ -1,7 +1,7 @@
 /* oct: The octane scene descriptor */
 #pragma once
-#include "common/endian.h"
-#include "common/dbuf.h"
+#include "byteconv/endian.h"
+#include "data/dbuf.h"
 #include <stdbool.h>
 #include <stdint.h>
 

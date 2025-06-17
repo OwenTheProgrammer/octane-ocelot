@@ -1,4 +1,4 @@
-#include "common/dbuf.h"
+#include "data/dbuf.h"
 #include "octane/oct_atoms.h"
 #include "octane/vbuf.h"
 #include <stddef.h>

@@ -8,5 +8,10 @@ add_library(${PROJECT_NAME} STATIC
 
 target_link_libraries(${PROJECT_NAME}
     PUBLIC
-        ocelot_utils
+        byteconv dbuf
+)
+
+target_include_directories(${PROJECT_NAME}
+    PUBLIC
+        "${CMAKE_SOURCE_DIR}/include"
 )
