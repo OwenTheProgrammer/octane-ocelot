@@ -3,6 +3,7 @@
 #include "ocelot/engine/model.h"
 #include "octane/oct_scene.h"
 #include "types/uuid.h"
+#include "data/hash_table.h"
 #include <stdbool.h>
 #include <stdint.h>
 

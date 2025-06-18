@@ -3,6 +3,7 @@
 #include "octane/oct_atoms.h"
 #include "octane/oct_scene.h"
 #include "octane/oct_nameBindings.h"
+#include "data/dbuf.h"
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -68,7 +69,7 @@ uint32_t* _load_cache_hierarchy_named(uint16_t root_node, uint16_t target_node, 
 
 
 /* Reads the entries of VertexBufferPool */
-void _oct_parse_vertex_buffer_pool(oct_rawDataDescriptor* const scene, oct_file oct)
+static void _oct_parse_vertex_buffer_pool(oct_rawDataDescriptor* const scene, oct_file oct)
 {
     //Load the hierarchy of the VertexBufferPool
     uint32_t* stream_table = _load_cache_hierarchy_named(
@@ -89,7 +90,7 @@ void _oct_parse_vertex_buffer_pool(oct_rawDataDescriptor* const scene, oct_file 
 }
 
 /* Reads the entries of IndexBufferPool */
-void _oct_parse_index_buffer_pool(oct_rawDataDescriptor* const scene, oct_file oct)
+static void _oct_parse_index_buffer_pool(oct_rawDataDescriptor* const scene, oct_file oct)
 {
     //Load the hierarchy of the IndexBufferPool
     uint32_t* stream_table = _load_cache_hierarchy_named(
@@ -110,7 +111,7 @@ void _oct_parse_index_buffer_pool(oct_rawDataDescriptor* const scene, oct_file o
 }
 
 /* Reads the entries of IndexStreamPool */
-void _oct_parse_index_stream_pool(oct_rawDataDescriptor* const scene, oct_file oct)
+static void _oct_parse_index_stream_pool(oct_rawDataDescriptor* const scene, oct_file oct)
 {
     //Load the hierarchy of the IndexStreamPool
     uint32_t* stream_table = _load_cache_hierarchy_named(
@@ -131,7 +132,7 @@ void _oct_parse_index_stream_pool(oct_rawDataDescriptor* const scene, oct_file o
 }
 
 
-void _oct_parse_vertex_stream_pool(oct_rawDataDescriptor* const scene, oct_file oct)
+static void _oct_parse_vertex_stream_pool(oct_rawDataDescriptor* const scene, oct_file oct)
 {
     //Load the hierarchy of the VertexStreamPool
     uint32_t* stream_table = _load_cache_hierarchy_named(
@@ -151,7 +152,7 @@ void _oct_parse_vertex_stream_pool(oct_rawDataDescriptor* const scene, oct_file 
     free(stream_table);
 }
 
-void _oct_parse_scene_tree_node_pool(oct_rawDataDescriptor* const scene, oct_file oct)
+static void _oct_parse_scene_tree_node_pool(oct_rawDataDescriptor* const scene, oct_file oct)
 {
     uint32_t* stream_table = _load_cache_hierarchy_named(
         _oct_ant.SceneTreeNodePool._header,
@@ -170,6 +171,56 @@ void _oct_parse_scene_tree_node_pool(oct_rawDataDescriptor* const scene, oct_fil
     free(stream_table);
 }
 
+static void _oct_load_externals(oct_rawDataDescriptor* const scene, oct_file oct)
+{
+    oct_indexBufferAtom ibuf_atom = (oct_indexBufferAtom){0};
+    oct_vertexBufferAtom vbuf_atom = (oct_vertexBufferAtom){0};
+
+    //Find the index buffer containing the .ibuf file metadata
+    for(uint32_t i = 0; i < scene->ibuf_pool_size; i++)
+    {
+        oct_indexBufferAtom atom = scene->ibuf_pool[i];
+
+        if(atom.file_name != 0)
+        {
+            ibuf_atom = atom;
+            break;
+        }
+    }
+
+    //Find the vertex buffer containing the .vbuf file metadata
+    for(uint32_t i = 0; i < scene->vbuf_pool_size; i++)
+    {
+        oct_vertexBufferAtom atom = scene->vbuf_pool[i];
+
+        if(atom.file_name != 0)
+        {
+            vbuf_atom = atom;
+            break;
+        }
+    }
+
+    if(ibuf_atom.file_name == 0)
+    {
+        fprintf(stderr, "Oct file has no index buffer (.ibuf) reference.\n");
+        return;
+    }
+    if(vbuf_atom.file_name == 0)
+    {
+        fprintf(stderr, "Oct file has no vertex buffer (.vbuf) reference.\n");
+    }
+
+    // TODO: Implement relative path searching here
+
+    //scene->ibuf_file = dbuf_load(oct.string_table[ibuf_atom.file_name].data);
+    scene->ibuf_file = dbuf_load("bin/xbfiles/oilrig/oilrig_0.ibuf");
+    scene->ibuf_stride = ibuf_atom.width;
+
+    //scene->vbuf_file = dbuf_load(oct.string_table[vbuf_atom.file_name].data);
+    scene->vbuf_file = dbuf_load("bin/xbfiles/oilrig/oilrig_0.vbuf");
+
+} 
+
 oct_rawDataDescriptor oct_parse_raw_data_descriptor(oct_file oct)
 {
     oct_rawDataDescriptor scene = (oct_rawDataDescriptor){0};
@@ -185,6 +236,8 @@ oct_rawDataDescriptor oct_parse_raw_data_descriptor(oct_file oct)
     _oct_parse_vertex_stream_pool(&scene, oct);
 
     _oct_parse_scene_tree_node_pool(&scene, oct);
+
+    _oct_load_externals(&scene, oct);
 
     return scene;
 }
@@ -207,6 +260,10 @@ void oct_free_raw_data_descriptor(oct_rawDataDescriptor* const scene)
         free(scene->vstream_pool);
 
         free(scene->scene_tree_node_pool);
+
+        dbuf_free(&scene->ibuf_file);
+
+        dbuf_free(&scene->vbuf_file);
 
         *scene = (oct_rawDataDescriptor){0};
     }

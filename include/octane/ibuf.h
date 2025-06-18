@@ -13,6 +13,6 @@ struct oct_indexBuffer
 };
 
 
-oct_indexBuffer oct_decode_index_buffer(dbuf* const ibuf, oct_rawDataDescriptor scene, uint32_t stride, uint32_t index);
+oct_indexBuffer oct_decode_index_buffer(oct_rawDataDescriptor scene, uint32_t index);
 
 void oct_free_index_buffer(oct_indexBuffer* const ibuf);
