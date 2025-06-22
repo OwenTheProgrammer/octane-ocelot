@@ -1,22 +1,21 @@
 
-project(octane LANGUAGES C)
+project(platform LANGUAGES C)
 
 add_library(${PROJECT_NAME} STATIC
-    ibuf.c vbuf.c
+    platform.c
 )
-
-add_subdirectory(oct)
 
 target_link_libraries(${PROJECT_NAME}
     PUBLIC
-        dbuf platform
+        dbuf
 )
 
 add_dependencies(${PROJECT_NAME}
-    dbuf platform
+    dbuf
 )
 
 target_include_directories(${PROJECT_NAME}
     PUBLIC
         "${CMAKE_SOURCE_DIR}/include"
+        "${CMAKE_SOURCE_DIR}/libs/dbuf/include" # Hack to shut clangd up
 )

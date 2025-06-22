@@ -1,7 +1,7 @@
 #pragma once
-#include "octane/oct.h"
-#include "octane/oct_nameBindings.h"
-#include "octane/oct_scene.h"
+#include "octane/oct/oct.h"
+#include "octane/oct/name_bindings.h"
+#include "octane/oct/scene.h"
 #include <stdint.h>
 
 /* == GLOBAL STRING TABLES == */
@@ -26,7 +26,7 @@ void phex_u8_array(void* const src, uint32_t count);
 /* == OCTANE DISPLAYS == */
 
 /* Prints the contents of an oct_header */
-void oct_print_header(oct_header header);
+void oct_print_header(oct_fileHeader header);
 
 /* Prints the contents of an oct_atomHeader */
 void oct_print_atom_header(oct_atomHeader header);
@@ -39,7 +39,7 @@ void oct_print_string_table(oct_file oct);
 
 /* == OCTANE SCENE DISPLAYS == */
 
-void oct_print_scene_descriptor(oct_file oct, oct_rawDataDescriptor scene);
+void oct_print_scene_descriptor(oct_file oct, oct_sceneDescriptor scene);
 
 /* == OCTANE ATOM DISPLAYS == */
 

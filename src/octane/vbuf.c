@@ -1,11 +1,13 @@
 #include "data/dbuf.h"
-#include "octane/oct_atoms.h"
+#include "octane/oct/atoms.h"
+#include "octane/oct/enums.h"
+#include "octane/oct/scene.h"
 #include "octane/vbuf.h"
 #include <stddef.h>
 #include <stdint.h>
 #include <stdlib.h>
 
-static uint32_t _find_element_of_type(oct_vertexStreamAtom vstream, oct_vstreamElementName elem_type)
+static uint32_t _find_element_of_type(oct_vertexStreamAtom vstream, ocl_vertexElementType elem_type)
 {
     for(uint32_t i = 0; i < vstream.element_count; i++)
     {
@@ -17,7 +19,7 @@ static uint32_t _find_element_of_type(oct_vertexStreamAtom vstream, oct_vstreamE
 }
 
 
-oct_vertexBuffer oct_decode_vertex_buffer(oct_rawDataDescriptor scene, uint32_t vstream_index)
+oct_vertexBuffer oct_decode_vertex_buffer(oct_sceneDescriptor scene, uint32_t vstream_index)
 {
     oct_vertexBuffer v = (oct_vertexBuffer){0};
 
@@ -33,9 +35,9 @@ oct_vertexBuffer oct_decode_vertex_buffer(oct_rawDataDescriptor scene, uint32_t 
     vbuf->ptr = vstream_atom.buffer_offset;
 
 
-    if(vstream_atom.element_flags & OCT_VSTREAM_ELEMENT_NAME_POSITION)
+    if(vstream_atom.element_flags & OCL_VERTEX_ELEMENT_TYPE_POSITION)
     {
-        uint32_t pos_idx = _find_element_of_type(vstream_atom, OCT_VSTREAM_ELEMENT_NAME_POSITION);
+        uint32_t pos_idx = _find_element_of_type(vstream_atom, OCL_VERTEX_ELEMENT_TYPE_POSITION);
         vbuf->ptr += vstream_atom.elements[pos_idx].offset;
         uint32_t stride = vstream_atom.width;
 

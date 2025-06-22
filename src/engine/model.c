@@ -1,9 +1,10 @@
 #include "ocelot/engine/model.h"
 #include "octane/ibuf.h"
+#include "octane/oct/scene.h"
 #include "octane/vbuf.h"
 #include <stdlib.h>
 
-oce_model oce_load_octane_model(oct_rawDataDescriptor scene, uint32_t vstream_index, uint32_t istream_index)
+oce_model oce_load_octane_model(oct_sceneDescriptor scene, uint32_t vstream_index, uint32_t istream_index)
 {
     oce_model model = (oce_model){0};
 

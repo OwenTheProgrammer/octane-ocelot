@@ -1,6 +1,5 @@
 #pragma once
-#include "data/dbuf.h"
-#include "octane/oct_scene.h"
+#include "octane/oct/scene.h"
 #include <stdint.h>
 
 typedef struct oct_indexBuffer  oct_indexBuffer;
@@ -13,6 +12,6 @@ struct oct_indexBuffer
 };
 
 
-oct_indexBuffer oct_decode_index_buffer(oct_rawDataDescriptor scene, uint32_t index);
+oct_indexBuffer oct_decode_index_buffer(oct_sceneDescriptor scene, uint32_t index);
 
 void oct_free_index_buffer(oct_indexBuffer* const ibuf);

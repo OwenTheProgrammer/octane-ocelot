@@ -1,5 +1,5 @@
-#include "byteconv/endian.h"
-#include "octane/oct.h"
+#include "data/endian.h"
+#include "octane/oct/oct.h"
 #include "ocelot/print_utils.h"
 #include <stdio.h>
 #include <stdlib.h>

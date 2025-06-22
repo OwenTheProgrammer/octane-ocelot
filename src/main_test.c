@@ -1,6 +1,6 @@
 
 #include "data/dbuf.h"
-#include "byteconv/endian.h"
+#include "data/endian.h"
 #include "types/file_bmp.h"
 #include "types/texture.h"
 #include <stdbool.h>

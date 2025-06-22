@@ -1,6 +1,5 @@
 #include "ocelot/print_utils.h"
-#include "octane/oct_nameBindings.h"
-#include "utils.h"
+#include "octane/oct/scene.h"
 #include <stdint.h>
 #include <stdio.h>
 
@@ -43,7 +42,7 @@ void phex_u8_array(void* const src, uint32_t count)
     for(uint32_t i = 0; i < count; i++)
     {
         phex_u8(ptr[i]);
-putchar((i % 8 == 0 && i != 0) ? '\n' : ' ');
+        putchar((i % 8 == 0 && i != 0) ? '\n' : ' ');
     }
 
     putchar('\n');
@@ -51,7 +50,7 @@ putchar((i % 8 == 0 && i != 0) ? '\n' : ' ');
 
 
 
-void oct_print_header(oct_header header)
+void oct_print_header(oct_fileHeader header)
 {
     printf("Oct Header V%.2f:\n", header.version);
     printf("|\tEndian: %s\n", endian_to_string(header.endian));
@@ -79,18 +78,21 @@ void oct_print_atom_node(oct_file oct, oct_atomNode node)
     );
 
     printf("|\tType: ");
-    switch(node.node_type)
-    {
-        case OCT_NODE_TYPE_BRANCH:  printf("Branch\n"); break;
-        case OCT_NODE_TYPE_STRING:  printf("String\n"); break;
-        case OCT_NODE_TYPE_FLOAT:   printf("Float\n"); break;
-        case OCT_NODE_TYPE_INT:     printf("Int\n"); break;
-        case OCT_NODE_TYPE_UUID:    printf("UUID\n"); break;
 
-        case OCT_NODE_TYPE_STRING_ARRAY:    printf("String[%u]\n", node.elem_count); break;
-        case OCT_NODE_TYPE_FLOAT_ARRAY:     printf("Float[%u]\n", node.elem_count); break;
-        case OCT_NODE_TYPE_INT_ARRAY:       printf("Int[%u]\n", node.elem_count); break;
-        case OCT_NODE_TYPE_BINARY:          printf("Binary[%u]\n", node.elem_count); break;
+    ocl_nodeType node_type = ocl_parse_atom_node_type(node.header);
+
+    switch(node_type)
+    {
+        case OCL_NODE_TYPE_BRANCH:  printf("Branch\n"); break;
+        case OCL_NODE_TYPE_STRING:  printf("String\n"); break;
+        case OCL_NODE_TYPE_FLOAT:   printf("Float\n"); break;
+        case OCL_NODE_TYPE_INT:     printf("Int\n"); break;
+        case OCL_NODE_TYPE_UUID:    printf("UUID\n"); break;
+
+        case OCL_NODE_TYPE_STRING_ARRAY:    printf("String[%u]\n", node.elem_count); break;
+        case OCL_NODE_TYPE_FLOAT_ARRAY:     printf("Float[%u]\n", node.elem_count); break;
+        case OCL_NODE_TYPE_INT_ARRAY:       printf("Int[%u]\n", node.elem_count); break;
+        case OCL_NODE_TYPE_BINARY:          printf("Binary[%u]\n", node.elem_count); break;
         default:
             printf("???\n");
             break;
@@ -98,30 +100,30 @@ void oct_print_atom_node(oct_file oct, oct_atomNode node)
 
     if(node.elem_count == 1)
     {
-        switch(node.node_type)
+        switch(node_type)
         {
-            case OCT_NODE_TYPE_STRING:
+            case OCL_NODE_TYPE_STRING:
                 printf("|\tString[%u]: \"%s\"\n", 
                        *(uint16_t*)node.data, 
                        oct.string_table[*(uint16_t*)node.data].data
                 );
                 break;
 
-            case OCT_NODE_TYPE_FLOAT:
+            case OCL_NODE_TYPE_FLOAT:
                 printf("|\tFloat: %f\n", *(float*)node.data);
                 break;
 
-            case OCT_NODE_TYPE_INT:
+            case OCL_NODE_TYPE_INT:
                 printf("|\tInt: %i\n", *(int32_t*)node.data);
                 break;
 
-            case OCT_NODE_TYPE_BINARY:
+            case OCL_NODE_TYPE_BINARY:
                 printf("|\tBinary[%u]:\n", node.elem_count);
                 phex_u8_array(node.data, node.elem_count);
                 printf("-----------\n");
                 break;
 
-            case OCT_NODE_TYPE_UUID:
+            case OCL_NODE_TYPE_UUID:
                 printf("|\tUUID: ");
                 phex_u8_array(node.data, node.elem_count);
                 break;
@@ -134,9 +136,9 @@ void oct_print_atom_node(oct_file oct, oct_atomNode node)
     {
         for(uint32_t i = 0; i < node.elem_count; i++)
         {
-            switch(node.node_type)
+            switch(node_type)
             {
-                case OCT_NODE_TYPE_STRING_ARRAY:
+                case OCL_NODE_TYPE_STRING_ARRAY:
                     printf("|\t%u: String[%u]: \"%s\"\n",
                         i,
                         ((uint16_t*)node.data)[i],
@@ -144,11 +146,11 @@ void oct_print_atom_node(oct_file oct, oct_atomNode node)
                     );
                     break;
 
-                case OCT_NODE_TYPE_FLOAT_ARRAY:
+                case OCL_NODE_TYPE_FLOAT_ARRAY:
                     printf("| %u: %f\n", i, ((float*)node.data)[i]);
                     break;
 
-                case OCT_NODE_TYPE_INT_ARRAY:
+                case OCL_NODE_TYPE_INT_ARRAY:
                     printf("| %u: %i\n", i, ((int32_t*)node.data)[i]);
                     break;
 
@@ -306,7 +308,7 @@ void oct_print_scene_tree_node(oct_file oct, oct_sceneTreeNodeAtom atom)
     }
 }
 
-void oct_print_scene_descriptor(oct_file oct, oct_rawDataDescriptor scene)
+void oct_print_scene_descriptor(oct_file oct, oct_sceneDescriptor scene)
 {
     for(uint32_t i = 0; i < scene.istream_pool_size; i++)
     {

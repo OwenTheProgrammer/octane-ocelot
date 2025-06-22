@@ -1,13 +1,25 @@
-#include "byteconv/endian.h"
+/*
+#include "data/endian.h"
 #include "ocelot/engine/scene.h"
-#include "octane/oct.h"
+#include "octane/format/oct/oct.h"
 #include "octane/oct_scene.h"
+*/
+#include "octane/oct/oct.h"
+#include "platform.h"
 #include <stdlib.h>
 
 int main()
 {
     //Load the oct file
-    oct_file oct = oct_load_file("bin/xbfiles/oilrig/oilrig.oct");
+    ocl_set_platform(OCL_PLATFORM_TARGET_XBOX);
+    oct_file oct = oct_load_file("bin/gamefiles/xbox360/worlds/oilrig/oilrig.oct");
+
+    //Unload the octane file data
+    oct_file_free(&oct);
+
+    /*
+    //Load the oct file
+    oct_file oct = oct_load_file("bin/gamefiles/xbox360/worlds/oilrig/oilrig.oct");
 
     if(oct.header.endian == ENDIAN_UNKNOWN)
         return EXIT_FAILURE;
@@ -25,6 +37,8 @@ int main()
     oct_file_free(&oct);
 
     ocl_unload_scene(&scene);
+
+    */
 
     return EXIT_SUCCESS;
 }

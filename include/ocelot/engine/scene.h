@@ -1,9 +1,8 @@
 #pragma once
 #include <cglm/types.h>
 #include "ocelot/engine/model.h"
-#include "octane/oct_scene.h"
+#include "octane/oct/scene.h"
 #include "types/uuid.h"
-#include "data/hash_table.h"
 #include <stdbool.h>
 #include <stdint.h>
 
@@ -122,7 +121,7 @@ struct ocl_sceneMesh
 
 
 /* Loads an oct files world data, decoupling data from the octane files */
-ocl_scene ocl_load_oct_scene(oct_rawDataDescriptor desc, oct_file oct);
+ocl_scene ocl_load_oct_scene(oct_sceneDescriptor desc, oct_file oct);
 
 ocl_sceneMesh* ocl_find_mesh(ocl_scene scene, uint32_t mesh_id);
 

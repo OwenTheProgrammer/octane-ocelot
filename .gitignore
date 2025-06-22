@@ -1,9 +1,8 @@
-# Ignore all octane files
-xbfiles/*
+# Ignore all game files
+gamefiles/*
 
 # Ignore all build files
 bin/*
-obj/*
 
 # Ignore clangd output
 compile_commands.json

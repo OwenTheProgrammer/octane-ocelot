@@ -1,8 +1,8 @@
 #include "cglm/mat4.h"
 #include "ocelot/engine/scene.h"
-#include "octane/oct.h"
-#include "octane/oct_atoms.h"
-#include "octane/oct_scene.h"
+#include "octane/oct/oct.h"
+#include "octane/oct/atoms.h"
+#include "octane/oct/scene.h"
 #include "types/crc.h"
 #include <stdbool.h>
 #include <stdint.h>
@@ -178,7 +178,7 @@ static void _load_sub_geometry_atom(ocl_scene* const scene, oct_sceneTreeNodeAto
 }
 
 
-ocl_scene ocl_load_oct_scene(oct_rawDataDescriptor desc, oct_file oct)
+ocl_scene ocl_load_oct_scene(oct_sceneDescriptor desc, oct_file oct)
 {
     ocl_scene scene = (ocl_scene){0};
 

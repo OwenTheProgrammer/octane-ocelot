@@ -1,8 +1,9 @@
 #include "types/file_bmp.h"
 #include "data/dbuf.h"
-#include "byteconv/endian.h"
+#include "data/endian.h"
 #include "types/texture.h"
 #include <stdbool.h>
+#include <stdint.h>
 
 static const uint32_t _BMP_HEADER_SIZE = 14;
 static const uint32_t _BMP_DIB_SIZE = 108;

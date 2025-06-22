@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.21)
 
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
-    
+
     # Default to Debug
     set(CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the type of build." FORCE)
 
@@ -50,18 +50,17 @@ message(STATUS "Build Type: ${CMAKE_BUILD_TYPE}")
 if(OCELOT_BUILD_CLI)
     message(STATUS "Including ocelot CLI")
 endif()
-
 if(OCELOT_BUILD_EDITOR)
     message(STATUS "Including ocelot editor")
 endif()
-
 if(OCELOT_BUILD_TESTING)
     message(STATUS "Including ocelot debug testing")
 endif()
 
-add_subdirectory(libs)
+add_subdirectory(libs/dbuf)
 add_subdirectory(src/ocelot)
 add_subdirectory(src/octane)
+add_subdirectory(src/platform)
 
 if(OCELOT_BUILD_CLI)
 
@@ -110,13 +109,8 @@ if(OCELOT_BUILD_TESTING)
 endif()
 
 
-
-if(EXISTS ${CMAKE_SOURCE_DIR}/xbfiles)
-    file(COPY ${CMAKE_SOURCE_DIR}/xbfiles DESTINATION ${CMAKE_BINARY_DIR})
+# Copy the testing game files into the bin dir
+if(EXISTS ${CMAKE_SOURCE_DIR}/gamefiles)
+    file(COPY ${CMAKE_SOURCE_DIR}/gamefiles DESTINATION ${CMAKE_BINARY_DIR})
 endif()
 
-if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_BINARY_DIR}/compile_commands.json ${CMAKE_SOURCE_DIR}
-    )
-endif()
