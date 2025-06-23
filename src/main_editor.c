@@ -54,6 +54,6 @@ static int load_pc()
 
 int main()
 {
-    //return load_xbox();
-    return load_pc();
+    return load_xbox();
+    //return load_pc();
 }

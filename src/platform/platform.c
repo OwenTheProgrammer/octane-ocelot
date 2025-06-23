@@ -2,6 +2,8 @@
 #include "data/endian.h"
 #include "octane/ibuf/ibuf.pc.h"
 #include "octane/ibuf/ibuf.xbox.h"
+#include "octane/vbuf/vbuf.pc.h"
+#include "octane/vbuf/vbuf.xbox.h"
 #include <stdio.h>
 
 /* The current runtime platform target */
@@ -15,6 +17,10 @@ static const ocl_platformInfo _pinf_pc =
     .pfn_ibuf =
     {
         .get_index_count = pc_oct_ibuf_get_index_count
+    },
+    .pfn_vbuf =
+    {
+        .get_vert_element_type = pc_oct_vbuf_get_element_type
     }
 };
 
@@ -26,6 +32,10 @@ static const ocl_platformInfo _pinf_xbox360 =
     .pfn_ibuf =
     {
         .get_index_count = xb_oct_ibuf_get_index_count
+    },
+    .pfn_vbuf =
+    {
+        .get_vert_element_type = xb_oct_vbuf_get_element_type
     }
 };
 

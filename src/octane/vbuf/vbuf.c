@@ -1,8 +1,8 @@
 #include "data/dbuf.h"
 #include "octane/oct/atoms.h"
 #include "octane/oct/enums.h"
-#include "octane/oct/scene.h"
-#include "octane/vbuf.h"
+#include "octane/oct/scene_descriptor.h"
+#include "octane/vbuf/vbuf.h"
 #include <stddef.h>
 #include <stdint.h>
 #include <stdlib.h>
@@ -19,14 +19,14 @@ static uint32_t _find_element_of_type(oct_vertexStreamAtom vstream, ocl_vertexEl
 }
 
 
-oct_vertexBuffer oct_decode_vertex_buffer(oct_sceneDescriptor scene, uint32_t vstream_index)
+oct_vertexBuffer oct_load_vertex_buffer(oct_sceneDescriptor scene, uint32_t index)
 {
     oct_vertexBuffer v = (oct_vertexBuffer){0};
 
     dbuf* vbuf = &scene.vbuf_file;
 
     //Get the VertexStream
-    oct_vertexStreamAtom vstream_atom = scene.vstream_pool[vstream_index];
+    oct_vertexStreamAtom vstream_atom = scene.vstream_pool[index];
 
     //Capture the vertex count
     v.vertex_count = vstream_atom.length;

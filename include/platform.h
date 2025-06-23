@@ -1,5 +1,6 @@
 #pragma once
 #include "data/endian.h"
+#include "octane/oct/enums.h"
 #include <stdint.h>
 
 #ifndef __cplusplus
@@ -30,6 +31,12 @@ struct ocl_platformInfo
         uint32_t (*get_index_count)(uint32_t,uint32_t);
 
     } pfn_ibuf;
+
+    struct
+    {
+        /* `oct_vbuf_get_element_type` implementation */
+        oct_elementType (*get_vert_element_type)(uint32_t);
+    } pfn_vbuf;
 };
 
 /* The global runtime platform */

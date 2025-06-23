@@ -89,6 +89,7 @@ enum oct_sceneLightType
 
 enum oct_elementType
 {
+    OCT_ELEMENT_TYPE_UNKNOWN,
     OCT_ELEMENT_TYPE_FLOAT_ONE,
     OCT_ELEMENT_TYPE_FLOAT_TWO,
     OCT_ELEMENT_TYPE_FLOAT_THREE,
