@@ -1,4 +1,5 @@
 #include "internal.h"
+#include "io/filepath.h"
 #include "octane/oct/oct.h"
 #include "octane/oct/atoms.h"
 #include "octane/oct/scene_descriptor.h"
@@ -210,14 +211,13 @@ static void _oct_load_externals(oct_sceneDescriptor* const scene, oct_file oct)
         fprintf(stderr, "Oct file has no vertex buffer (.vbuf) reference.\n");
     }
 
-    // TODO: Implement relative path searching here
+    filepath_t ibuf_path = fs_path_concat(oct.world_path, "%s", oct.string_table[ibuf_atom.file_name].data);
+    filepath_t vbuf_path = fs_path_concat(oct.world_path, "%s", oct.string_table[vbuf_atom.file_name].data);
 
-    //scene->ibuf_file = dbuf_load(oct.string_table[ibuf_atom.file_name].data);
-    scene->ibuf_file = dbuf_load("bin/gamefiles/pc/worlds/oilrig/oilrig_0.ibuf");
+    scene->ibuf_file = dbuf_load(ibuf_path.path);
     scene->ibuf_stride = ibuf_atom.width;
 
-    //scene->vbuf_file = dbuf_load(oct.string_table[vbuf_atom.file_name].data);
-    scene->vbuf_file = dbuf_load("bin/gamefiles/pc/worlds/oilrig/oilrig_0.vbuf");
+    scene->vbuf_file = dbuf_load(vbuf_path.path);
 }
 
 oct_sceneDescriptor oct_parse_scene_tree(oct_file oct)

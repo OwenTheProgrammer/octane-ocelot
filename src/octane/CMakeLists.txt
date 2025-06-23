@@ -10,11 +10,11 @@ add_subdirectory(ibuf)
 
 target_link_libraries(${PROJECT_NAME}
     PUBLIC
-        dbuf
+        dbuf filepath
 )
 
 add_dependencies(${PROJECT_NAME}
-    dbuf
+    dbuf filepath
 )
 
 target_include_directories(${PROJECT_NAME}

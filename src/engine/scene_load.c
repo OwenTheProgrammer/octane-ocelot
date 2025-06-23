@@ -2,7 +2,7 @@
 #include "ocelot/engine/scene.h"
 #include "octane/oct/oct.h"
 #include "octane/oct/atoms.h"
-#include "octane/oct/scene.h"
+#include "octane/oct/scene_descriptor.h"
 #include "types/crc.h"
 #include <stdbool.h>
 #include <stdint.h>

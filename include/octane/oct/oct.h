@@ -1,4 +1,5 @@
 #pragma once
+#include "io/filepath.h"
 #include "octane/oct/enums.h"
 #include "data/endian.h"
 #include "data/dbuf.h"
@@ -80,6 +81,8 @@ struct oct_fileHeader
 
 struct oct_file
 {
+    filepath_t world_path;
+
     oct_fileHeader header;
 
     uint32_t string_table_length;
@@ -96,7 +99,7 @@ ocl_nodeType ocl_parse_atom_node_type(oct_atomHeader header);
 
 oct_file oct_load_buffer(dbuf buffer);
 
-oct_file oct_load_file(const char* filepath);
+oct_file oct_load_file(const char* world_path);
 
 
 dbuf oct_store_buffer(oct_file oct);

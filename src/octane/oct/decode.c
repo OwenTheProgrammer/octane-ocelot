@@ -4,6 +4,7 @@
 #include "data/dbuf.h"
 #include "data/endian.h"
 #include "ocelot/print_utils.h"
+#include "io/filepath.h"
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -238,9 +239,14 @@ oct_file oct_load_buffer(dbuf buffer)
     return oct;
 }
 
-oct_file oct_load_file(const char* filepath)
+oct_file oct_load_file(const char* world_path)
 {
-    dbuf data = dbuf_load(filepath);
+    filepath_t root_path = fs_path_create(world_path);
+    filepath_t world_name = fs_path_top_dirname(root_path);
+
+    filepath_t oct_path = fs_path_concat(root_path, "%s.oct", world_name.path);
+
+    dbuf data = dbuf_load(oct_path.path);
     if(data.size == 0)
         return (oct_file){0};
 
@@ -248,5 +254,6 @@ oct_file oct_load_file(const char* filepath)
 
     dbuf_free(&data);
 
+    oct.world_path = root_path;
     return oct;
 }
