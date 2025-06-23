@@ -2,18 +2,19 @@
 project(octane LANGUAGES C)
 
 add_library(${PROJECT_NAME} STATIC
-    ibuf.c vbuf.c
+    vbuf.c print_utils.c
 )
 
 add_subdirectory(oct)
+add_subdirectory(ibuf)
 
 target_link_libraries(${PROJECT_NAME}
     PUBLIC
-        dbuf platform
+        dbuf
 )
 
 add_dependencies(${PROJECT_NAME}
-    dbuf platform
+    dbuf
 )
 
 target_include_directories(${PROJECT_NAME}

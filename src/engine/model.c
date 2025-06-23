@@ -1,6 +1,6 @@
 #include "ocelot/engine/model.h"
-#include "octane/ibuf.h"
-#include "octane/oct/scene.h"
+#include "octane/ibuf/ibuf.h"
+#include "octane/oct/scene_descriptor.h"
 #include "octane/vbuf.h"
 #include <stdlib.h>
 
@@ -15,7 +15,7 @@ oce_model oce_load_octane_model(oct_sceneDescriptor scene, uint32_t vstream_inde
     //model.vertex_positions = oct_vbuf.positions;
 
 
-    oct_indexBuffer oct_ibuf = oct_decode_index_buffer(scene, istream_index);
+    oct_indexBuffer oct_ibuf = oct_load_index_buffer(scene, istream_index);
 
     model.index_count = oct_ibuf.index_count;
 

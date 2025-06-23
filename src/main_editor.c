@@ -1,44 +1,61 @@
-/*
 #include "data/endian.h"
-#include "ocelot/engine/scene.h"
-#include "octane/format/oct/oct.h"
-#include "octane/oct_scene.h"
-*/
 #include "octane/oct/oct.h"
+#include "octane/oct/scene.h"
+#include "octane/oct/scene_descriptor.h"
 #include "platform.h"
 #include <stdlib.h>
 
-int main()
+static int load_xbox()
 {
     //Load the oct file
     ocl_set_platform(OCL_PLATFORM_TARGET_XBOX);
     oct_file oct = oct_load_file("bin/gamefiles/xbox360/worlds/oilrig/oilrig.oct");
 
+    if(oct.header.endian == ENDIAN_UNKNOWN)
+        return EXIT_FAILURE;
+
+    //Serialize the oct file
+    oct_sceneDescriptor desc = oct_parse_scene_tree(oct);
+
+    //Load the scene data
+    oct_sceneData scene = oct_load_scene_data(desc);
+
     //Unload the octane file data
+    oct_free_scene_data(&scene);
+    oct_free_scene_descriptor(&desc);
     oct_file_free(&oct);
 
-    /*
+    return EXIT_SUCCESS;
+}
+
+static int load_pc()
+{
     //Load the oct file
-    oct_file oct = oct_load_file("bin/gamefiles/xbox360/worlds/oilrig/oilrig.oct");
+    ocl_set_platform(OCL_PLATFORM_TARGET_PC);
+    oct_file oct = oct_load_file("bin/gamefiles/pc/worlds/oilrig/oilrig.oct");
 
     if(oct.header.endian == ENDIAN_UNKNOWN)
         return EXIT_FAILURE;
 
-    oct_rawDataDescriptor raw_scene = oct_parse_raw_data_descriptor(oct);
+    //Serialize the oct file
+    oct_sceneDescriptor desc = oct_parse_scene_tree(oct);
 
-    endian_set_current(ENDIAN_BIG);
-    endian_set_target(ENDIAN_LITTLE);
+    //Load the scene data itself
+    oct_sceneData scene = oct_load_scene_data(desc);
 
-    //Load the scene
-    ocl_scene scene = ocl_load_oct_scene(raw_scene, oct);
-
-    //Unload the octane file stuff
-    oct_free_raw_data_descriptor(&raw_scene);
+    //Unload the octane file data
+    oct_free_scene_data(&scene);
+    oct_free_scene_descriptor(&desc);
     oct_file_free(&oct);
 
-    ocl_unload_scene(&scene);
-
-    */
-
     return EXIT_SUCCESS;
+}
+
+
+int main()
+{
+    // WARN: Remember to change the ibuf and vbuf file references
+
+    //return load_xbox();
+    return load_pc();
 }

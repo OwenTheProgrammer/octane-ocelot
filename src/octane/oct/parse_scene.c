@@ -1,269 +1,51 @@
-#include "internal.h"
-#include "octane/oct/oct.h"
-#include "octane/oct/atoms.h"
+#include "octane/ibuf/ibuf.h"
 #include "octane/oct/scene.h"
-#include "octane/oct/name_bindings.h"
-#include "data/dbuf.h"
-#include <stdbool.h>
+#include "octane/oct/scene_descriptor.h"
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdint.h>
-#include <string.h>
 
-
-/* Finds the index of the first node in the data tree with the type `key` */
-static uint32_t _find_index_of_node(oct_file oct, uint16_t key)
+static void _load_index_buffers(oct_sceneData* const data, oct_sceneDescriptor scene)
 {
-    if(key == 0)
-        return 0;
+    //printf("Loading %u index streams..\n", scene.istream_pool_size);
+    data->index_stream_count = scene.istream_pool_size;
 
-    for(uint32_t i = 0; i < oct.data_tree_length; i++)
+    data->index_streams = calloc(scene.istream_pool_size, sizeof(oct_indexBuffer));
+    for(uint32_t i = 0; i < scene.istream_pool_size; i++)
     {
-        if(oct.data_tree[i].st_key == key)
-            return i;
+        data->index_streams[i] = oct_load_index_buffer(scene, i);
+        
+        printf("[%u]: Loaded %u indices. (off: %u)\n", i, 
+               data->index_streams[i].index_count,
+               scene.istream_pool[i].buffer_offset
+        );
+        
     }
 
-    return 0;
+    printf("Loaded %u index streams.\n", data->index_stream_count);
 }
 
-/* Preloads the target node type positions within an atom array */
-uint32_t* _load_cache_hierarchy_indexed(uint32_t start_idx, uint16_t target_node, uint32_t* const node_count, oct_file oct)
+oct_sceneData oct_load_scene_data(oct_sceneDescriptor scene)
 {
-    //The hierarchy level we want to stop at when we see again
-    uint32_t pool_level = oct.data_tree[start_idx++].header.tree_level;
+    oct_sceneData data = (oct_sceneData){0};
 
-    //Allocate a table with much more than needed (max amount possible)
-    uint32_t* node_cache = calloc(UINT16_MAX, sizeof(uint32_t));
-    uint32_t count = 0;
+    //Load the index buffers
+    _load_index_buffers(&data, scene);
 
-    //Keep going until we read a node thats outside the root nodes level
-    while(oct.data_tree[start_idx].header.tree_level > pool_level)
-    {
-        oct_atomNode node = oct.data_tree[start_idx];
-
-        //Add the node to the cache if its the target
-        if(node.st_key == target_node)
-            node_cache[count++] = start_idx;
-
-        start_idx++;
-    }
-
-    //Return the amount of target node occurances found
-    *node_count = count;
-
-    //Add the read ending as a delim for the last node
-    node_cache[count++] = start_idx;
-    node_cache = realloc(node_cache, count * sizeof(uint32_t));
-
-    return node_cache;
+    return data;
 }
 
-
-uint32_t* _load_cache_hierarchy_named(uint16_t root_node, uint16_t target_node, uint32_t* const node_count, oct_file oct)
-{
-    //Find the root node
-    uint32_t pool_index = _find_index_of_node(oct, root_node);
-    return _load_cache_hierarchy_indexed(pool_index, target_node, node_count, oct);
-}
-
-
-
-/* Reads the entries of VertexBufferPool */
-static void _oct_parse_vertex_buffer_pool(oct_sceneDescriptor* const scene, oct_file oct)
-{
-    //Load the hierarchy of the VertexBufferPool
-    uint32_t* stream_table = _load_cache_hierarchy_named(
-        _oct_ant.VertexBufferPool._header,
-        _oct_ant.VertexBufferPool.VertexBuffer._header,
-        &scene->vbuf_pool_size, oct
-    );
-
-    scene->vbuf_pool = calloc(scene->vbuf_pool_size, sizeof(oct_vertexBufferAtom));
-
-    //Read the nodes at the cache positions
-    for(uint32_t i = 0; i < scene->vbuf_pool_size; i++)
-    {
-        scene->vbuf_pool[i] = _oct_atom_read_vertex_buffer(oct, stream_table[i], stream_table[i+1]);
-    }
-
-    free(stream_table);
-}
-
-/* Reads the entries of IndexBufferPool */
-static void _oct_parse_index_buffer_pool(oct_sceneDescriptor* const scene, oct_file oct)
-{
-    //Load the hierarchy of the IndexBufferPool
-    uint32_t* stream_table = _load_cache_hierarchy_named(
-        _oct_ant.IndexBufferPool._header,
-        _oct_ant.IndexBufferPool.IndexBuffer._header,
-        &scene->ibuf_pool_size, oct
-    );
-
-    scene->ibuf_pool = calloc(scene->ibuf_pool_size, sizeof(oct_indexBufferAtom));
-
-    //Read the nodes at the cache positions
-    for(uint32_t i = 0; i < scene->ibuf_pool_size; i++)
-    {
-        scene->ibuf_pool[i] = _oct_atom_read_index_buffer(oct, stream_table[i], stream_table[i+1]);
-    }
-
-    free(stream_table);
-}
-
-/* Reads the entries of IndexStreamPool */
-static void _oct_parse_index_stream_pool(oct_sceneDescriptor* const scene, oct_file oct)
-{
-    //Load the hierarchy of the IndexStreamPool
-    uint32_t* stream_table = _load_cache_hierarchy_named(
-        _oct_ant.IndexStreamPool._header,
-        _oct_ant.IndexStreamPool.IndexStream._header,
-        &scene->istream_pool_size, oct
-    );
-
-    scene->istream_pool = calloc(scene->istream_pool_size, sizeof(oct_indexStreamAtom));
-
-    // Read the nodes at the cache positions
-    for(uint32_t i = 0; i < scene->istream_pool_size; i++)
-    {
-        scene->istream_pool[i] = _oct_atom_read_index_stream(oct, stream_table[i], stream_table[i+1]);
-    }
-
-    free(stream_table);
-}
-
-
-static void _oct_parse_vertex_stream_pool(oct_sceneDescriptor* const scene, oct_file oct)
-{
-    //Load the hierarchy of the VertexStreamPool
-    uint32_t* stream_table = _load_cache_hierarchy_named(
-        _oct_ant.VertexStreamPool._header,
-        _oct_ant.VertexStreamPool.VertexStream._header,
-        &scene->vstream_pool_size, oct
-    );
-
-    scene->vstream_pool = calloc(scene->vstream_pool_size, sizeof(oct_vertexStreamAtom));
-
-    //Read the nodes at the cache positions
-    for(uint32_t i = 0; i < scene->vstream_pool_size; i++)
-    {
-        scene->vstream_pool[i] = _oct_atom_read_vertex_stream(oct, stream_table[i], stream_table[i+1]);
-    }
-
-    free(stream_table);
-}
-
-static void _oct_parse_scene_tree_node_pool(oct_sceneDescriptor* const scene, oct_file oct)
-{
-    uint32_t* stream_table = _load_cache_hierarchy_named(
-        _oct_ant.SceneTreeNodePool._header,
-        _oct_ant.SceneTreeNodePool.Node._header,
-        &scene->scene_tree_pool_size, oct
-    );
-
-    scene->scene_tree_node_pool = calloc(scene->scene_tree_pool_size, sizeof(oct_sceneTreeNodeAtom));
-
-    //Read the nodes at the cache positions
-    for(uint32_t i = 0; i < scene->scene_tree_pool_size; i++)
-    {
-        scene->scene_tree_node_pool[i] = _oct_atom_read_scene_tree_node(oct, stream_table[i], stream_table[i+1]);
-    }
-
-    free(stream_table);
-}
-
-static void _oct_load_externals(oct_sceneDescriptor* const scene, oct_file oct)
-{
-    oct_indexBufferAtom ibuf_atom = (oct_indexBufferAtom){0};
-    oct_vertexBufferAtom vbuf_atom = (oct_vertexBufferAtom){0};
-
-    //Find the index buffer containing the .ibuf file metadata
-    for(uint32_t i = 0; i < scene->ibuf_pool_size; i++)
-    {
-        oct_indexBufferAtom atom = scene->ibuf_pool[i];
-
-        if(atom.file_name != 0)
-        {
-            ibuf_atom = atom;
-            break;
-        }
-    }
-
-    //Find the vertex buffer containing the .vbuf file metadata
-    for(uint32_t i = 0; i < scene->vbuf_pool_size; i++)
-    {
-        oct_vertexBufferAtom atom = scene->vbuf_pool[i];
-
-        if(atom.file_name != 0)
-        {
-            vbuf_atom = atom;
-            break;
-        }
-    }
-
-    if(ibuf_atom.file_name == 0)
-    {
-        fprintf(stderr, "Oct file has no index buffer (.ibuf) reference.\n");
-        return;
-    }
-    if(vbuf_atom.file_name == 0)
-    {
-        fprintf(stderr, "Oct file has no vertex buffer (.vbuf) reference.\n");
-    }
-
-    // TODO: Implement relative path searching here
-
-    //scene->ibuf_file = dbuf_load(oct.string_table[ibuf_atom.file_name].data);
-    scene->ibuf_file = dbuf_load("bin/xbfiles/oilrig/oilrig_0.ibuf");
-    scene->ibuf_stride = ibuf_atom.width;
-
-    //scene->vbuf_file = dbuf_load(oct.string_table[vbuf_atom.file_name].data);
-    scene->vbuf_file = dbuf_load("bin/xbfiles/oilrig/oilrig_0.vbuf");
-}
-
-oct_sceneDescriptor oct_parse_raw_data_descriptor(oct_file oct)
-{
-    oct_sceneDescriptor scene = (oct_sceneDescriptor){0};
-
-    oct_load_name_bindings(oct);
-
-    _oct_parse_vertex_buffer_pool(&scene, oct);
-
-    _oct_parse_index_buffer_pool(&scene, oct);
-
-    _oct_parse_index_stream_pool(&scene, oct);
-
-    _oct_parse_vertex_stream_pool(&scene, oct);
-
-    _oct_parse_scene_tree_node_pool(&scene, oct);
-
-    _oct_load_externals(&scene, oct);
-
-    return scene;
-}
-
-
-void oct_free_raw_data_descriptor(oct_sceneDescriptor* const scene)
+void oct_free_scene_data(oct_sceneData* const scene)
 {
     if(scene != NULL)
     {
-        free(scene->vbuf_pool);
-
-        free(scene->ibuf_pool);
-
-        free(scene->istream_pool);
-
-        for(uint32_t i = 0; i < scene->vstream_pool_size; i++)
+        for(uint32_t i = 0; i < scene->index_stream_count; i++)
         {
-            free(scene->vstream_pool[i].elements);
+            oct_free_index_buffer(&scene->index_streams[i]);
         }
-        free(scene->vstream_pool);
 
-        free(scene->scene_tree_node_pool);
+        free(scene->index_streams);
 
-        dbuf_free(&scene->ibuf_file);
-
-        dbuf_free(&scene->vbuf_file);
-
-        *scene = (oct_sceneDescriptor){0};
+        *scene = (oct_sceneData){0};
     }
 }

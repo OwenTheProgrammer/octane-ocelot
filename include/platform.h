@@ -1,5 +1,6 @@
 #pragma once
 #include "data/endian.h"
+#include <stdint.h>
 
 #ifndef __cplusplus
 typedef enum ocl_platformTarget ocl_platformTarget;
@@ -22,6 +23,13 @@ struct ocl_platformInfo
 
     /* The endianness of the target platform */
     endian_t endian;
+
+    struct
+    {
+        /* `oct_ibuf_get_index_count` implementation */
+        uint32_t (*get_index_count)(uint32_t,uint32_t);
+
+    } pfn_ibuf;
 };
 
 /* The global runtime platform */

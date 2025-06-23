@@ -7,11 +7,11 @@ add_library(${PROJECT_NAME} STATIC
 
 target_link_libraries(${PROJECT_NAME}
     PUBLIC
-        dbuf
+        dbuf octane
 )
 
 add_dependencies(${PROJECT_NAME}
-    dbuf
+    dbuf octane
 )
 
 target_include_directories(${PROJECT_NAME}

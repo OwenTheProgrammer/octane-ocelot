@@ -103,7 +103,8 @@ uint32_t* dbuf_read_uvar_array(dbuf* const buffer, size_t count, unsigned int st
 
     for(size_t i = 0; i < count; i++)
     {
-        uint32_t value = *(uint32_t*)dbuf_pos(buffer);
+        uint32_t value = 0;
+        memcpy(&value, dbuf_pos(buffer), stride);
         result[i] = endian_swap_uvar(value, stride);
 
         dbuf_advance(buffer, stride);
@@ -121,7 +122,8 @@ int32_t* dbuf_read_svar_array(dbuf* const buffer, size_t count, unsigned int str
 
     for(size_t i = 0; i < count; i++)
     {
-        uint32_t value = *(uint32_t*)dbuf_pos(buffer);
+        uint32_t value = 0;
+        memcpy(&value, dbuf_pos(buffer), stride);
         result[i] = endian_load_svar(value, stride);
 
         dbuf_advance(buffer, stride);

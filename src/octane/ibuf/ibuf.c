@@ -1,11 +1,12 @@
-#include "octane/ibuf.h"
+#include "octane/ibuf/ibuf.h"
 #include "data/dbuf.h"
+#include "internal.h"
 #include "octane/oct/atoms.h"
-#include "octane/oct/scene.h"
+#include "octane/oct/scene_descriptor.h"
 #include <stdlib.h>
 
 
-oct_indexBuffer oct_decode_index_buffer(oct_sceneDescriptor scene, uint32_t index)
+oct_indexBuffer oct_load_index_buffer(oct_sceneDescriptor scene, uint32_t index)
 {
     oct_indexBuffer buf = (oct_indexBuffer){0};
 
@@ -13,7 +14,7 @@ oct_indexBuffer oct_decode_index_buffer(oct_sceneDescriptor scene, uint32_t inde
     oct_indexStreamAtom istream_atom = scene.istream_pool[index];
 
     //Evaluate the amount of indices for this IndexStream
-    buf.index_count = istream_atom.length * (sizeof(uint32_t) / scene.ibuf_stride);
+    buf.index_count = _oct_ibuf_get_index_count(istream_atom.length, scene.ibuf_stride);
 
     //Seek to the buffer position
     scene.ibuf_file.ptr = istream_atom.buffer_offset;
