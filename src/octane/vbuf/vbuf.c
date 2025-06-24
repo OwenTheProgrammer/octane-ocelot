@@ -1,4 +1,5 @@
 #include "data/dbuf.h"
+#include "internal.h"
 #include "octane/oct/atoms.h"
 #include "octane/oct/enums.h"
 #include "octane/oct/scene_descriptor.h"
@@ -6,6 +7,8 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <stdlib.h>
+
+
 
 static uint32_t _find_element_of_type(oct_vertexStreamAtom vstream, ocl_vertexElementType elem_type)
 {
@@ -16,6 +19,51 @@ static uint32_t _find_element_of_type(oct_vertexStreamAtom vstream, ocl_vertexEl
     }
 
     return UINT32_MAX;
+}
+
+static void _load_vertex_element(dbuf* const vbuf, oct_elementType type, float* const dst)
+{
+    switch(type)
+    {
+        case OCT_ELEMENT_TYPE_FLOAT_ONE:
+            _oct_vload_float(vbuf, 1, dst);
+            break;
+
+        case OCT_ELEMENT_TYPE_FLOAT_TWO:
+            _oct_vload_float(vbuf, 2, dst);
+            break;
+
+        case OCT_ELEMENT_TYPE_FLOAT_THREE:
+            _oct_vload_float(vbuf, 3, dst);
+            break;
+
+        case OCT_ELEMENT_TYPE_FLOAT_FOUR:
+            _oct_vload_float(vbuf, 4, dst);
+            break;
+
+        case OCT_ELEMENT_TYPE_SHORT_TWO_NORM:
+            _oct_vload_short2n(vbuf, dst);
+            break;
+
+        case OCT_ELEMENT_TYPE_SHORT_FOUR_NORM:
+            _oct_vload_short4n(vbuf, dst);
+            break;
+
+        case OCT_ELEMENT_TYPE_PVEC_THREE:
+            _oct_vload_pvec3(vbuf, dst);
+            break;
+
+        case OCT_ELEMENT_TYPE_HALF_TWO:
+            _oct_vload_half2(vbuf, dst);
+            break;
+
+        case OCT_ELEMENT_TYPE_HALF_FOUR:
+            _oct_vload_half4(vbuf, dst);
+            break;
+
+        default:
+            return;
+    }
 }
 
 
@@ -30,42 +78,61 @@ oct_vertexBuffer oct_load_vertex_buffer(oct_sceneDescriptor scene, uint32_t inde
 
     //Capture the vertex count
     v.vertex_count = vstream_atom.length;
+    v.vertices = calloc(v.vertex_count, sizeof(oct_vertex));
 
-    //Seek to the position
-    vbuf->ptr = vstream_atom.buffer_offset;
-
-
-    if(vstream_atom.element_flags & OCL_VERTEX_ELEMENT_TYPE_POSITION)
+    //Load each vertex
+    for(uint32_t i = 0; i < v.vertex_count; i++)
     {
-        uint32_t pos_idx = _find_element_of_type(vstream_atom, OCL_VERTEX_ELEMENT_TYPE_POSITION);
-        vbuf->ptr += vstream_atom.elements[pos_idx].offset;
-        uint32_t stride = vstream_atom.width;
+        //Seek to the beginning of the current vertex
+        uint32_t base_offset = vstream_atom.buffer_offset + i * vstream_atom.width;
 
-        static const size_t POSITION_STRIDE = sizeof(float) * 3;
+        oct_vertex vert = (oct_vertex){0};
 
-        v.positions = calloc(v.vertex_count, POSITION_STRIDE);
-
-        uint32_t jump = stride - POSITION_STRIDE;
-
-        //Load each vertex position
-        for(uint32_t i = 0; i < v.vertex_count; i++)
+        for(uint32_t j = 0; j < vstream_atom.element_count; j++)
         {
-            uint32_t raw;
+            oct_vstreamElementAtom element = vstream_atom.elements[j];
 
-            raw = dbuf_read_u32(vbuf);
-            v.positions[i*3 + 0] = *(float*)&raw;
+            //Seek to the element
+            vbuf->ptr = base_offset + element.offset;
 
-            raw = dbuf_read_u32(vbuf);
-            v.positions[i*3 + 1] = *(float*)&raw;
+            //Get the attribute type
+            ocl_vertexElementType ve_type = element.attribute_type;
 
-            raw = dbuf_read_u32(vbuf);
-            v.positions[i*3 + 2] = *(float*)&raw;
+            //Get the element type
+            oct_elementType data_type = element.type;
 
-            vbuf->ptr += (size_t)jump;
+            switch(ve_type)
+            {
+                case OCL_VERTEX_ELEMENT_TYPE_POSITION:
+                    _load_vertex_element(vbuf, data_type, vert.position);
+                    break;
+
+                case OCL_VERTEX_ELEMENT_TYPE_UV1:
+                    _load_vertex_element(vbuf, data_type, vert.uv1);
+                    break;
+
+                case OCL_VERTEX_ELEMENT_TYPE_TANGENT:
+                    _load_vertex_element(vbuf, data_type, vert.tangent);
+                    break;
+
+                case OCL_VERTEX_ELEMENT_TYPE_NORMAL:
+                    _load_vertex_element(vbuf, data_type, vert.normal);
+                    break;
+
+                case OCL_VERTEX_ELEMENT_TYPE_BINORMAL:
+                    _load_vertex_element(vbuf, data_type, vert.binormal);
+                    break;
+
+                case OCL_VERTEX_ELEMENT_TYPE_LIGHTMAP_UV:
+                    _load_vertex_element(vbuf, data_type, vert.lightmap_uv);
+                    break;
+
+                default:
+                    break;
+            }
+
+            v.element_flags |= data_type;
         }
-
-        //Reset the pointer back to the start of the buffer
-        vbuf->ptr = vstream_atom.buffer_offset;
     }
 
     return v;
@@ -76,6 +143,6 @@ void oct_free_vertex_buffer(oct_vertexBuffer* const vbuf)
 {
     if(vbuf != NULL)
     {
-        free(vbuf->positions);
+        free(vbuf->vertices);
     }
 }
