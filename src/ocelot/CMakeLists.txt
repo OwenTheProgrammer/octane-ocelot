@@ -8,13 +8,15 @@ add_library(${PROJECT_NAME} STATIC
     file_bmp.c
 )
 
+add_subdirectory(scene)
+
 target_link_libraries(${PROJECT_NAME}
     PUBLIC
-        dbuf platform
+        dbuf octane filepath platform
 )
 
 add_dependencies(${PROJECT_NAME}
-    dbuf platform
+    dbuf filepath platform
 )
 
 target_include_directories(${PROJECT_NAME}

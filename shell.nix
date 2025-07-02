@@ -11,8 +11,8 @@ pkgs.mkShell
     packages =
     [
         pkgs.gcc
-        pkgs.gnumake
         pkgs.cmake
+        pkgs.libffi
     ];
 
     # Include the packages that glfw uses

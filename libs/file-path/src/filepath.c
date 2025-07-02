@@ -31,6 +31,21 @@ filepath_t fs_path_create(const char* path)
     return fp;
 }
 
+filepath_t fs_path_get_directory(filepath_t path)
+{
+    char* ptr = strrchr(path.path, _TARGET_DS);
+    path.length = (uint32_t)(ptr - path.path);
+    memset(ptr, '\0', path.length);
+    return path;
+}
+
+filepath_t fs_path_cwd_from_argv(const char* argv)
+{
+    filepath_t path = fs_path_create_absolute(argv);
+    return fs_path_get_directory(path);
+}
+
+
 static filepath_t _path_concat(filepath_t lhs, const char* rhs)
 {
     //Add the rhs buffer onto the end
@@ -74,7 +89,7 @@ filepath_t _fs_path_concat(filepath_t path, const char* format, ...)
     return _path_concat(path, ext);
 }
 
-filepath_t fs_path_top_dirname(filepath_t path)
+filepath_t fs_path_top_filename(filepath_t path)
 {
     uint32_t end_len = path.length;
     end_len -= path.path[path.length-1] == _TARGET_DS;
@@ -102,4 +117,27 @@ filepath_t fs_path_top_dirname(filepath_t path)
     memcpy(result.path, start, result.length);
 
     return result;
+}
+
+filepath_t fs_path_combine(filepath_t lhs, filepath_t rhs)
+{
+    int ldir_end = lhs.path[lhs.length-1] == _TARGET_DS;
+    int rdir_end = rhs.path[0] == _TARGET_DS;
+
+    int count = ldir_end + rdir_end;
+
+    if(count == 0)
+    {
+        lhs.path[lhs.length++] = _TARGET_DS;
+    }
+    else if(count > 1)
+    {
+        lhs.path[lhs.length-1] = '\0';
+        lhs.length--;
+    }
+
+    strncat(lhs.path, rhs.path, FS_FILEPATH_MAX - lhs.length);
+    lhs.length = strnlen(lhs.path, FS_FILEPATH_MAX);
+
+    return lhs;
 }

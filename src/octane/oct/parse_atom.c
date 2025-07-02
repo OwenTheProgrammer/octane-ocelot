@@ -1,7 +1,9 @@
 #include "internal.h"
+#include "octane/oct/enums.h"
 #include "octane/oct/oct.h"
 #include "octane/oct/atoms.h"
 #include "octane/oct/name_bindings.h"
+#include "octane/vbuf/vbuf.h"
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
@@ -129,7 +131,8 @@ static uint32_t _atom_load_elements_table(uint32_t start_idx, oct_vertexStreamAt
     for(uint32_t i = 0; i < atom_dst->element_count; i++)
     {
         atom_dst->elements[i] = _oct_atom_read_vstream_element(oct, stream_table[i], stream_table[i+1]);
-        atom_dst->element_flags |= atom_dst->elements[i].attribute_type;
+        ocl_vertexElementFlag flags = oct_velement_type_to_flag(atom_dst->elements[i].attribute_type);
+        atom_dst->element_flags |= flags;
     }
 
     //Return the pointer to the end of the tree

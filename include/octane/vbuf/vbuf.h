@@ -1,4 +1,5 @@
 #pragma once
+#include "data/dbuf.h"
 #include "octane/oct/enums.h"
 #include "octane/oct/scene_descriptor.h"
 #include <stdint.h>
@@ -10,7 +11,7 @@ struct oct_vertexBuffer
 {
     uint32_t vertex_count;
 
-    ocl_vertexElementType element_flags;
+    ocl_vertexElementFlag element_flags;
 
     oct_vertex* vertices;
 };
@@ -36,7 +37,10 @@ struct oct_vertex
     uint8_t vertex_baked[4];
 };
 
-oct_vertexBuffer oct_load_vertex_buffer(oct_sceneDescriptor scene, uint32_t index);
+ocl_vertexElementFlag oct_velement_type_to_flag(ocl_vertexElementType type);
 
+oct_vertexBuffer oct_load_vertex_buffer(dbuf* const vbuf, oct_sceneDescriptor scene, uint32_t index);
+
+uint32_t oct_get_vertex_buffer_stride(ocl_vertexElementFlag flags);
 
 void oct_free_vertex_buffer(oct_vertexBuffer* const vbuf);

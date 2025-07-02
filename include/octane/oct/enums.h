@@ -18,6 +18,7 @@ typedef enum oct_primitiveType  oct_primitiveType;
 
 typedef enum ocl_nodeType           ocl_nodeType;
 typedef enum ocl_vertexElementType  ocl_vertexElementType;
+typedef enum ocl_vertexElementFlag  ocl_vertexElementFlag;
 
 #endif
 
@@ -107,17 +108,36 @@ enum oct_elementType
 enum ocl_vertexElementType
 {
     OCL_VERTEX_ELEMENT_TYPE_NONE            = 0,
-    OCL_VERTEX_ELEMENT_TYPE_POSITION        = 1<<0,
-    OCL_VERTEX_ELEMENT_TYPE_UV1             = 1<<1,
-    OCL_VERTEX_ELEMENT_TYPE_TANGENT         = 1<<2,
-    OCL_VERTEX_ELEMENT_TYPE_NORMAL          = 1<<3,
-    OCL_VERTEX_ELEMENT_TYPE_BINORMAL        = 1<<4,
-    OCL_VERTEX_ELEMENT_TYPE_LIGHTMAP_UV     = 1<<5,
-    OCL_VERTEX_ELEMENT_TYPE_COLOR_ADD       = 1<<6,
-    OCL_VERTEX_ELEMENT_TYPE_COLOR_OCCL      = 1<<7,
-    OCL_VERTEX_ELEMENT_TYPE_VERTEX_BAKED    = 1<<8,
-    OCL_VERTEX_ELEMENT_TYPE_MAX             = 10
+    OCL_VERTEX_ELEMENT_TYPE_POSITION        = 1,
+    OCL_VERTEX_ELEMENT_TYPE_UV1             = 2,
+    OCL_VERTEX_ELEMENT_TYPE_TANGENT         = 3,
+    OCL_VERTEX_ELEMENT_TYPE_NORMAL          = 4,
+    OCL_VERTEX_ELEMENT_TYPE_BINORMAL        = 5,
+    OCL_VERTEX_ELEMENT_TYPE_LIGHTMAP_UV     = 6,
+    OCL_VERTEX_ELEMENT_TYPE_COLOR_ADD       = 7,
+    OCL_VERTEX_ELEMENT_TYPE_COLOR_OCCL      = 8,
+    OCL_VERTEX_ELEMENT_TYPE_VERTEX_BAKED    = 9,
+    OCL_VERTEX_ELEMENT_TYPE_MAX
 };
+
+#define SETFLAG(TYPE) OCL_VERTEX_ELEMENT_FLAG_##TYPE = (1 << ((unsigned int)(OCL_VERTEX_ELEMENT_TYPE_##TYPE)-1))
+
+enum ocl_vertexElementFlag
+{
+    OCL_VERTEX_ELEMENT_FLAG_NONE = 0,
+    SETFLAG(POSITION),
+    SETFLAG(UV1),
+    SETFLAG(TANGENT),
+    SETFLAG(NORMAL),
+    SETFLAG(BINORMAL),
+    SETFLAG(LIGHTMAP_UV),
+    SETFLAG(COLOR_ADD),
+    SETFLAG(COLOR_OCCL),
+    SETFLAG(VERTEX_BAKED),
+    OCL_VERTEX_ELEMENT_FLAG_MAX = OCL_VERTEX_ELEMENT_TYPE_MAX
+};
+
+#undef SETFLAG
 
 enum oct_primitiveType
 {

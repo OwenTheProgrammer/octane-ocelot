@@ -67,11 +67,45 @@ static void _load_vertex_element(dbuf* const vbuf, oct_elementType type, float* 
 }
 
 
-oct_vertexBuffer oct_load_vertex_buffer(oct_sceneDescriptor scene, uint32_t index)
+ocl_vertexElementFlag oct_velement_type_to_flag(ocl_vertexElementType type)
+{
+    switch(type)
+    {
+        case OCL_VERTEX_ELEMENT_TYPE_NONE:
+            return OCL_VERTEX_ELEMENT_FLAG_NONE;
+
+        case OCL_VERTEX_ELEMENT_TYPE_POSITION:
+            return OCL_VERTEX_ELEMENT_FLAG_POSITION;
+
+        case OCL_VERTEX_ELEMENT_TYPE_UV1:
+            return OCL_VERTEX_ELEMENT_FLAG_UV1;
+
+        case OCL_VERTEX_ELEMENT_TYPE_TANGENT:
+            return OCL_VERTEX_ELEMENT_FLAG_TANGENT;
+
+        case OCL_VERTEX_ELEMENT_TYPE_NORMAL:
+            return OCL_VERTEX_ELEMENT_FLAG_NORMAL;
+
+        case OCL_VERTEX_ELEMENT_TYPE_BINORMAL:
+            return OCL_VERTEX_ELEMENT_FLAG_BINORMAL;
+
+        case OCL_VERTEX_ELEMENT_TYPE_LIGHTMAP_UV:
+            return OCL_VERTEX_ELEMENT_FLAG_LIGHTMAP_UV;
+
+        case OCL_VERTEX_ELEMENT_TYPE_COLOR_ADD:
+            return OCL_VERTEX_ELEMENT_FLAG_COLOR_ADD;
+
+        case OCL_VERTEX_ELEMENT_TYPE_COLOR_OCCL:
+            return OCL_VERTEX_ELEMENT_FLAG_COLOR_OCCL;
+
+        default:
+            return OCL_VERTEX_ELEMENT_FLAG_NONE;
+    }
+}
+
+oct_vertexBuffer oct_load_vertex_buffer(dbuf* const vbuf, oct_sceneDescriptor scene, uint32_t index)
 {
     oct_vertexBuffer v = (oct_vertexBuffer){0};
-
-    dbuf* vbuf = &scene.vbuf_file;
 
     //Get the VertexStream
     oct_vertexStreamAtom vstream_atom = scene.vstream_pool[index];
@@ -130,12 +164,48 @@ oct_vertexBuffer oct_load_vertex_buffer(oct_sceneDescriptor scene, uint32_t inde
                 default:
                     break;
             }
-
-            v.element_flags |= data_type;
         }
+
+        v.vertices[i] = vert;
     }
 
+    v.element_flags = vstream_atom.element_flags;
+
     return v;
+}
+
+uint32_t oct_get_vertex_buffer_stride(ocl_vertexElementFlag flags)
+{
+    uint32_t size = 0;
+
+    if(flags & OCL_VERTEX_ELEMENT_FLAG_POSITION)
+        size += sizeof(float) * 3;
+
+    if(flags & OCL_VERTEX_ELEMENT_FLAG_UV1)
+        size += sizeof(float) * 2;
+
+    if(flags & OCL_VERTEX_ELEMENT_FLAG_TANGENT)
+        size += sizeof(float) * 3;
+
+    if(flags & OCL_VERTEX_ELEMENT_FLAG_NORMAL)
+        size += sizeof(float) * 3;
+
+    if(flags & OCL_VERTEX_ELEMENT_FLAG_BINORMAL)
+        size += sizeof(float) * 3;
+
+    if(flags & OCL_VERTEX_ELEMENT_FLAG_LIGHTMAP_UV)
+        size += sizeof(float) * 2;
+
+    if(flags & OCL_VERTEX_ELEMENT_FLAG_COLOR_ADD)
+        size += sizeof(uint8_t) * 4;
+
+    if(flags & OCL_VERTEX_ELEMENT_FLAG_COLOR_OCCL)
+        size += sizeof(uint8_t) * 4;
+
+    if(flags & OCL_VERTEX_ELEMENT_FLAG_VERTEX_BAKED)
+        size += sizeof(uint8_t) * 4;
+
+    return size;
 }
 
 

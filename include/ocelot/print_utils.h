@@ -1,7 +1,7 @@
 #pragma once
 #include "octane/oct/oct.h"
 #include "octane/oct/name_bindings.h"
-#include "octane/oct/scene.h"
+#include "octane/oct/scene_descriptor.h"
 #include <stdint.h>
 
 /* == GLOBAL STRING TABLES == */

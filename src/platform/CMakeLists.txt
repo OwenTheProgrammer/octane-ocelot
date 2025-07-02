@@ -11,7 +11,7 @@ target_link_libraries(${PROJECT_NAME}
 )
 
 add_dependencies(${PROJECT_NAME}
-    dbuf octane
+    dbuf
 )
 
 target_include_directories(${PROJECT_NAME}

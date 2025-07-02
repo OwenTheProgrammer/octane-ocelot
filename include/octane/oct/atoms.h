@@ -84,7 +84,7 @@ struct oct_vertexStreamAtom
     uint32_t element_count;
 
     /* Bitflags for each element this vertex stream contains */
-    ocl_vertexElementType element_flags;
+    ocl_vertexElementFlag element_flags;
 
     /* Array of elements for this vertex stream */
     oct_vstreamElementAtom* elements;

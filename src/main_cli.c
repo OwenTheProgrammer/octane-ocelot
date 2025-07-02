@@ -58,7 +58,7 @@ int main(int argc, const char* argv[])
     //oct_store_file(oct, "bin/output.oct");
     oct_store_file(oct, output_file);
 
-    oct_file_free(&oct);
+    oct_free_file(&oct);
 
     return EXIT_SUCCESS;
 }

@@ -1,11 +1,14 @@
 
 #include "data/dbuf.h"
 #include "data/endian.h"
+#include "io/filepath.h"
 #include "types/file_bmp.h"
 #include "types/texture.h"
 #include <stdbool.h>
 #include <stdint.h>
+#include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 
 static void _export_uv_bmp()
@@ -76,15 +79,20 @@ static int _export_tstream()
 }
 
 
-int main()
+int main(int argc, const char* argv[])
 {
+    filepath_t path = fs_path_cwd_from_argv(argv[0]);
+
+    printf("path: \"%s\"\n", path.path);
+
+    printf("%u vs %zu\n", path.length, strlen(path.path));
 
     //_export_uv_bmp();
 
     //_export_bc1_bmp();
 
-    return _export_tstream();
+    //return _export_tstream();
 
-    //return 0;
+    return 0;
 }
 

@@ -54,7 +54,7 @@ dbuf dbuf_load(const char* filepath)
     // Close the file handle
     fclose(file);
 
-    printf("Loaded \"%s\" (%zu bytes)\n", filepath, buffer.size);
+    printf("[dbuf]: Loaded \"%s\" (%zu bytes)\n", filepath, buffer.size);
 
     return buffer;
 }
@@ -84,7 +84,7 @@ void dbuf_write(dbuf buffer, const char* filepath)
     FILE* file = fopen(filepath, "wb");
     if(file == NULL)
     {
-        fprintf(stderr, "Failed to write file \"%s\"\n", filepath);
+        fprintf(stderr, "[dbuf]: Failed to write file \"%s\"\n", filepath);
         return;
     }
 
@@ -92,7 +92,7 @@ void dbuf_write(dbuf buffer, const char* filepath)
     fflush(file);
     fclose(file);
 
-    printf("Write %zu bytes to \"%s\" successfully.\n", buffer.size, filepath);
+    printf("[dbuf]: Wrote %zu bytes to \"%s\" successfully.\n", buffer.size, filepath);
 }
 
 
@@ -109,6 +109,7 @@ void dbuf_ensure_capacity(dbuf* const buffer, size_t bytes)
     {
         //buffer->data = reallocarray(buffer->data, region_size, sizeof(char));
         buffer->data = realloc(buffer->data, region_size * sizeof(char));
+        memset(buffer->data + buffer->size, 0, region_size - buffer->size);
         buffer->size = region_size;
     }
 }

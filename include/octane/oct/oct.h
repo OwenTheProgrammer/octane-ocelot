@@ -107,4 +107,4 @@ dbuf oct_store_buffer(oct_file oct);
 void oct_store_file(oct_file oct, const char* filepath);
 
 
-void oct_file_free(oct_file* const oct);
+void oct_free_file(oct_file* const oct);

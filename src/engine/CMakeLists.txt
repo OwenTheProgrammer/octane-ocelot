@@ -2,16 +2,32 @@
 project(engine LANGUAGES C)
 
 add_library(${PROJECT_NAME} STATIC
-    camera.c model.c state.c window.c
-    scene.c scene_load.c
+    internal.h init.c
 )
 
-target_link_libraries(${PROJECT_NAME}
-    PUBLIC
-        octane ocelot cglm glfw glad
-)
+add_subdirectory(runtime)
+add_subdirectory(graphics)
+add_subdirectory(scene)
+
 
 target_compile_definitions(${PROJECT_NAME}
     PRIVATE
         GLFW_INCLUDE_NONE
 )
+
+target_link_libraries(${PROJECT_NAME}
+    PUBLIC
+        octane ocelot filepath glfw glad cglm
+)
+
+add_dependencies(${PROJECT_NAME}
+    octane ocelot filepath glfw glad cglm
+)
+
+target_include_directories(${PROJECT_NAME}
+    PUBLIC
+        "${CMAKE_SOURCE_DIR}/include"
+    PRIVATE
+        "${CMAKE_SOURCE_DIR}/src/engine"
+)
+

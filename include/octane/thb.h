@@ -1,5 +1,0 @@
-/**
- * Texture Header Body (.thb)
- */
-
-

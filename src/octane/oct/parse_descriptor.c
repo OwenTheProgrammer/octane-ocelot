@@ -172,6 +172,7 @@ static void _oct_parse_scene_tree_node_pool(oct_sceneDescriptor* const scene, oc
     free(stream_table);
 }
 
+/*
 static void _oct_load_externals(oct_sceneDescriptor* const scene, oct_file oct)
 {
     oct_indexBufferAtom ibuf_atom = (oct_indexBufferAtom){0};
@@ -219,6 +220,7 @@ static void _oct_load_externals(oct_sceneDescriptor* const scene, oct_file oct)
 
     scene->vbuf_file = dbuf_load(vbuf_path.path);
 }
+*/
 
 oct_sceneDescriptor oct_parse_scene_tree(oct_file oct)
 {
@@ -236,7 +238,7 @@ oct_sceneDescriptor oct_parse_scene_tree(oct_file oct)
 
     _oct_parse_scene_tree_node_pool(&scene, oct);
 
-    _oct_load_externals(&scene, oct);
+    //_oct_load_externals(&scene, oct);
 
     return scene;
 }
@@ -260,9 +262,9 @@ void oct_free_scene_descriptor(oct_sceneDescriptor* const scene)
 
         free(scene->scene_tree_node_pool);
 
-        dbuf_free(&scene->ibuf_file);
+        //dbuf_free(&scene->ibuf_file);
 
-        dbuf_free(&scene->vbuf_file);
+        //dbuf_free(&scene->vbuf_file);
 
         *scene = (oct_sceneDescriptor){0};
     }

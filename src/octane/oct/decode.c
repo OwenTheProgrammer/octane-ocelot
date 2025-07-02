@@ -136,7 +136,7 @@ static oct_fileHeader _read_header(oct_file oct, dbuf* const buffer)
     uint32_t version_raw = dbuf_read_u32(buffer);
     header.version = *(float*)&version_raw;
 
-    printf("Reading oct file V%.2f (Endian: %s -> %s)\n",
+    printf("[Octane]: Reading oct file V%.2f (Endian: %s -> %s)\n",
            header.version,
            endian_current_to_string(),
            endian_target_to_string()
@@ -242,7 +242,7 @@ oct_file oct_load_buffer(dbuf buffer)
 oct_file oct_load_file(const char* world_path)
 {
     filepath_t root_path = fs_path_create(world_path);
-    filepath_t world_name = fs_path_top_dirname(root_path);
+    filepath_t world_name = fs_path_top_filename(root_path);
 
     filepath_t oct_path = fs_path_concat(root_path, "%s.oct", world_name.path);
 

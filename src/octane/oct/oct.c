@@ -61,7 +61,7 @@ uint32_t _oct_endian_to_magic(endian_t endian)
 }
 
 
-void oct_file_free(oct_file* const oct)
+void oct_free_file(oct_file* const oct)
 {
     if(oct == NULL)
         return;

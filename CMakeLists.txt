@@ -14,9 +14,12 @@ endif()
 set(CGLM_SHARED OFF CACHE BOOL "Build static libraries" FORCE)
 set(CGLM_STATIC ON CACHE BOOL "Static build" FORCE)
 
+set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
+set(GLFW_INSTALL OFF CACHE BOOL "" FORCE)
+
 # GLFW cmake options
-set(GLFW_BUILD_DOCS OFF CACHE BOOL "Build the GLFW documentation" FORCE)
-set(GLFW_INSTALL OFF CACHE BOOL "Generate installation target" FORCE)
+#set(GLFW_BUILD_DOCS OFF CACHE BOOL "Build the GLFW documentation" FORCE)
+#set(GLFW_INSTALL OFF CACHE BOOL "Generate installation target" FORCE)
 
 # Ocelot cmake options
 option(OCELOT_BUILD_CLI "Build the command line interface tool" ON)
@@ -39,8 +42,8 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
         -Wno-unused-variable
     )
 
-    add_compile_options(-fsanitize=address)
-    add_link_options(-fsanitize=address)
+    #add_compile_options(-fsanitize=address)
+    #add_link_options(-fsanitize=address)
 else()
     set(OCELOT_BUILD_TESTING False)
 endif()
@@ -84,6 +87,7 @@ if(OCELOT_BUILD_EDITOR)
     add_subdirectory(deps/glad)
     add_subdirectory(deps/cglm)
     add_subdirectory(deps/glfw)
+#add_subdirectory(src/engine/_old)
     add_subdirectory(src/engine)
 
     add_executable(${PROJECT_NAME} src/main_editor.c)
