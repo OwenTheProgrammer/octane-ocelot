@@ -100,6 +100,7 @@ void oce_gui_loop()
 {
 
     oce_shader shader_unlit = oce_shader_load_vf("unlit");
+    oce_shader shader_uv1 = oce_shader_load_vf("editor/wireframe_unlit");
 
     oce_model_load_shader(&_rt.loaded_scene.model_table[1590], shader_unlit);
     oce_model loaded_model = _rt.loaded_scene.model_table[1590];
@@ -114,13 +115,15 @@ void oce_gui_loop()
 
     glfwSetTime(0);
 
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
     while(!glfwWindowShouldClose(_rt.gui.window))
     {
 
         glfwPollEvents();
         double _time = glfwGetTime();
 
-        glClearColor(0.2f, 0.2f, 0.3f, 1.0f);
+        glClearColor(0.1f, 0.1f, 0.11f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
         float dist = -(float)_time;
@@ -132,16 +135,24 @@ void oce_gui_loop()
 
         glm_lookat(_rt.viewport_camera.position_ws, GLM_VEC3_ZERO, GLM_YUP, _rt.viewport_camera.view_matrix);
 
-        glUseProgram(shader_unlit.program);
+        glUseProgram(shader_uv1.program);
 
-        GLuint view_loc = glGetUniformLocation(shader_unlit.program, "view");
-        GLuint proj_loc = glGetUniformLocation(shader_unlit.program, "proj");
+        GLuint view_loc = glGetUniformLocation(shader_uv1.program, "view");
+        GLuint proj_loc = glGetUniformLocation(shader_uv1.program, "proj");
 
         glUniformMatrix4fv(view_loc, 1, GL_FALSE, _rt.viewport_camera.view_matrix[0]);
         glUniformMatrix4fv(proj_loc, 1, GL_FALSE, _rt.viewport_camera.perspective_matrix[0]);
 
-        glBindVertexArray(loaded_model.gl_vertArray);
-        glDrawElements(GL_TRIANGLES, loaded_model.index.count, GL_UNSIGNED_INT, 0);
+        for(uint32_t i = 0; i < _rt.loaded_scene.model_count; i++)
+        {
+            oce_model model = _rt.loaded_scene.model_table[i];
+            if(model.gl_vertArray == 0 || model.vertex.gl_buffer == 0 || model.index.gl_buffer == 0)
+                continue;
+
+            glBindVertexArray(model.gl_vertArray);
+            glDrawElements(GL_TRIANGLES, model.index.count, GL_UNSIGNED_INT, 0);
+        }
+
 
         //glBindVertexArray(0);
 
@@ -150,6 +161,7 @@ void oce_gui_loop()
         glfwSwapBuffers(_rt.gui.window);
     }
 
+    oce_shader_free(&shader_uv1);
     oce_shader_free(&shader_unlit);
 }
 

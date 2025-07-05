@@ -23,6 +23,9 @@ struct _attribInfo
 
     /* The OpenGL attribute component count per attribute */
     GLuint component_count;
+
+    /* The OpenGL attribute layout location in the shader */
+    GLuint layout_location;
 };
 
 extern const struct _attribInfo _ATTRIBUTE_INFO[OCL_VERTEX_ELEMENT_TYPE_MAX];

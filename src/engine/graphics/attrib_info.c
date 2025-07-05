@@ -13,6 +13,7 @@ const struct _attribInfo _ATTRIBUTE_INFO[OCL_VERTEX_ELEMENT_TYPE_MAX] =
         .src_offset = offsetof(oct_vertex, position),
         .component_type = GL_FLOAT,
         .component_count = 3,
+        .layout_location = 0,
     },
     (struct _attribInfo)
     {
@@ -22,6 +23,7 @@ const struct _attribInfo _ATTRIBUTE_INFO[OCL_VERTEX_ELEMENT_TYPE_MAX] =
         .src_offset = offsetof(oct_vertex, uv1),
         .component_type = GL_FLOAT,
         .component_count = 2,
+        .layout_location = 1,
     },
     (struct _attribInfo)
     {
@@ -31,6 +33,7 @@ const struct _attribInfo _ATTRIBUTE_INFO[OCL_VERTEX_ELEMENT_TYPE_MAX] =
         .src_offset = offsetof(oct_vertex, tangent),
         .component_type = GL_FLOAT,
         .component_count = 3,
+        .layout_location = 4,
     },
     (struct _attribInfo)
     {
@@ -40,6 +43,7 @@ const struct _attribInfo _ATTRIBUTE_INFO[OCL_VERTEX_ELEMENT_TYPE_MAX] =
         .src_offset = offsetof(oct_vertex, normal),
         .component_type = GL_FLOAT,
         .component_count = 3,
+        .layout_location = 2,
     },
     (struct _attribInfo)
     {
@@ -49,6 +53,7 @@ const struct _attribInfo _ATTRIBUTE_INFO[OCL_VERTEX_ELEMENT_TYPE_MAX] =
         .src_offset = offsetof(oct_vertex, binormal),
         .component_type = GL_FLOAT,
         .component_count = 3,
+        .layout_location = 3,
     },
     (struct _attribInfo)
     {
@@ -58,6 +63,7 @@ const struct _attribInfo _ATTRIBUTE_INFO[OCL_VERTEX_ELEMENT_TYPE_MAX] =
         .src_offset = offsetof(oct_vertex, lightmap_uv),
         .component_type = GL_FLOAT,
         .component_count = 2,
+        .layout_location = 5,
     },
     (struct _attribInfo)
     {
@@ -67,6 +73,7 @@ const struct _attribInfo _ATTRIBUTE_INFO[OCL_VERTEX_ELEMENT_TYPE_MAX] =
         .src_offset = offsetof(oct_vertex, color_add),
         .component_type = GL_UNSIGNED_BYTE,
         .component_count = 4,
+        .layout_location = 7,
     },
     (struct _attribInfo)
     {
@@ -76,6 +83,7 @@ const struct _attribInfo _ATTRIBUTE_INFO[OCL_VERTEX_ELEMENT_TYPE_MAX] =
         .src_offset = offsetof(oct_vertex, color_occlusion),
         .component_type = GL_UNSIGNED_BYTE,
         .component_count = 4,
+        .layout_location = 8,
     },
     (struct _attribInfo)
     {
@@ -85,5 +93,6 @@ const struct _attribInfo _ATTRIBUTE_INFO[OCL_VERTEX_ELEMENT_TYPE_MAX] =
         .src_offset = offsetof(oct_vertex, vertex_baked),
         .component_type = GL_UNSIGNED_BYTE,
         .component_count = 4,
+        .layout_location = 6,
     }
 };

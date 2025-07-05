@@ -11,9 +11,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-static const ocl_vertexElementFlag _ELEMENT_TYPE_SUPPORT = \
-    OCL_VERTEX_ELEMENT_FLAG_POSITION;
-
+static const ocl_vertexElementFlag _ELEMENT_TYPE_SUPPORT = OCL_VERTEX_ELEMENT_FLAG_NONE
+    | OCL_VERTEX_ELEMENT_FLAG_POSITION
+//    | OCL_VERTEX_ELEMENT_FLAG_UV1
+;
 
 void oce_model_load_streams(oce_model* const model, ocl_sceneData* const data)
 {
@@ -138,16 +139,18 @@ void oce_model_load_oct_vertex_buffer(oce_model* const target, ocl_sceneData* co
     if(element.stride == 0 || element.count == 0)
         return;
 
+    printf(" Element: %u count with %u stride\n", element.count, element.stride);
+
     //Construct the buffer to present to OpenGL
-    void* data_buf = calloc(element.count, element.stride);
+    char* data_buf = calloc(element.count * element.stride, sizeof(char));
 
     // Write each element
     for(uint32_t i = 0; i < attr_count; i++)
     {
         struct attribute attr = attr_stack[i];
 
-        void* src_base_ptr = attr.src_ptr;
-        void* dst_base_ptr = data_buf + attr.dst_offset;
+        char* src_base_ptr = (char*)attr.src_ptr;
+        char* dst_base_ptr = data_buf + attr.dst_offset;
 
         // Write all the vertex elements of the current type
         for(uint32_t j = 0; j < element.count; j++)
@@ -206,7 +209,7 @@ void oce_model_gen_va(oce_model* const model)
             // We found a flag thats present
             // Define the layout
             glVertexAttribPointer(
-                i,
+                info.layout_location,
                 info.component_count,
                 info.component_type,
                 GL_FALSE,
@@ -214,7 +217,7 @@ void oce_model_gen_va(oce_model* const model)
                 (void*)((size_t)info.src_offset)
             );
             // Enable the attribute
-            glEnableVertexAttribArray(i);
+            glEnableVertexAttribArray(info.layout_location);
         }
     }
 

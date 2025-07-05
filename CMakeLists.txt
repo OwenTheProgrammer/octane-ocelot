@@ -25,13 +25,12 @@ set(GLFW_INSTALL OFF CACHE BOOL "" FORCE)
 option(OCELOT_BUILD_CLI "Build the command line interface tool" ON)
 option(OCELOT_BUILD_EDITOR "Build the GUI based editor tool" ON)
 
+# Generate clangd index file
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     # build debug testing
     set(OCELOT_BUILD_TESTING True)
-
-    # Generate clangd index file
-    set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
     add_compile_options(
         -Wall
@@ -46,6 +45,12 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     #add_link_options(-fsanitize=address)
 else()
     set(OCELOT_BUILD_TESTING False)
+
+    add_compile_options(
+        -std=gnu17
+        -O3
+        -Wno-unused-result
+    )
 endif()
 
 message(STATUS "Build Type: ${CMAKE_BUILD_TYPE}")
@@ -66,6 +71,14 @@ add_subdirectory(libs/file-path)
 add_subdirectory(src/ocelot)
 add_subdirectory(src/octane)
 add_subdirectory(src/platform)
+
+#add_custom_target(asset_copy ALL)
+#add_custom_command(
+#    TARGET asset_copy POST_BUILD
+#    COMMAND ${CMAKE_COMMAND} -E copy_directory
+#    ${CMAKE_SOURCE_DIR}/assets ${CMAKE_BINARY_DIR}/assets
+#    COMMENT "Copying assets directory"
+#)
 
 if(OCELOT_BUILD_CLI)
 
@@ -97,6 +110,11 @@ if(OCELOT_BUILD_EDITOR)
             engine
     )
 
+    #add_custom_command(
+    #    TARGET ${PROJECT_NAME} POST_BUILD
+    #    COMMAND ${CMAKE_COMMAND} -E copy_directory
+    #    ${CMAKE_SOURCE_DIR}/assets ${CMAKE_BINARY_DIR}/assets
+    #)
     file(COPY ${CMAKE_SOURCE_DIR}/assets DESTINATION ${CMAKE_BINARY_DIR})
 
 endif()
