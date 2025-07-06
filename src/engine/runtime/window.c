@@ -2,6 +2,7 @@
 #include "cglm/cam.h"
 #include "cglm/mat4.h"
 #include "cglm/util.h"
+#include "engine/core/controls.h"
 #include "engine/core/runtime.h"
 #include "engine/graphics/camera.h"
 #include "engine/graphics/model.h"
@@ -124,21 +125,32 @@ void oce_gui_loop()
 
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
+    double delta_time = 0;
+    double last_frame = 0;
+
     while(!glfwWindowShouldClose(_rt.gui.window))
     {
 
         glfwPollEvents();
+
         double _time = glfwGetTime();
+
+        delta_time = _time - last_frame;
+        last_frame = _time;
 
         glClearColor(0.1f, 0.1f, 0.11f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        float dist = -(float)_time;
-        float pos[3] = {dist, dist, dist};
-        glm_vec3_make(pos, _rt.viewport_camera.position_ws);
+        oce_process_input(delta_time);
+
+        //float dist = -(float)_time;
+        //float pos[3] = {dist, dist, dist};
+        //glm_vec3_make(pos, _rt.viewport_camera.position_ws);
 
         //glm_mat4_identity(_rt.viewport_camera.view_matrix);
         //glm_mat4_make(pos, _rt.viewport_camera.view_matrix);
+
+        //glm_mat4_identity(_rt.viewport_camera.view_matrix);
 
         glm_lookat(_rt.viewport_camera.position_ws, GLM_VEC3_ZERO, GLM_YUP, _rt.viewport_camera.view_matrix);
 

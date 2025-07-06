@@ -1,6 +1,6 @@
 
 target_sources(${PROJECT_NAME}
     PRIVATE
-        window.c
+        window.c controls.c
 )
 
