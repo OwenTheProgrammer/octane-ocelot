@@ -10,10 +10,12 @@
 
 #include <glad/glad.h>
 #include "GLFW/glfw3.h"
+#include "engine/internal.h"
 
 static void _error_callback(int error, const char* msg)
 {
-    fprintf(stderr, "[GLFW]: Error %i\n\t%s\n", error, msg);
+    LOG_API_FATAL("glfw", "Error %i\n\t%s\n", error, msg);
+    //fprintf(stderr, "[GLFW]: Error %i\n\t%s\n", error, msg);
 }
 
 static void _key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
@@ -24,12 +26,13 @@ static void _key_callback(GLFWwindow* window, int key, int scancode, int action,
 
 static void _window_iconify_callback(GLFWwindow* window, int iconified)
 {
-    printf("icon: %i\n", iconified);
+    //printf("icon: %i\n", iconified);
 }
 
 static void _fb_resize_callback(GLFWwindow* window, int width, int height)
 {
-    printf("[glfw]: Resized.\n");
+    LOG_API_INFO("glfw", "Resized framebuffer (%i x %i)\n", width, height);
+    //printf("[glfw]: Resized.\n");
     oce_camera_update_size(&_rt.viewport_camera, (unsigned int)width, (unsigned int)height);
     glViewport(0, 0, width, height);
 }
@@ -81,16 +84,19 @@ int _oce_init_glfw()
     glfwSetFramebufferSizeCallback(_rt.gui.window, _fb_resize_callback);
     glfwSetWindowIconifyCallback(_rt.gui.window, _window_iconify_callback);
 
-    printf("[engine]: Set editor window context.\n");
+    LOG_INFO("Set editor window context.\n");
+    //printf("[engine]: Set editor window context.\n");
 
     if(!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
-        fprintf(stderr, "[glad]: Failed to initialize.\n");
+        LOG_API_FATAL("glad", "Failed to initialize.\n");
+        //fprintf(stderr, "[glad]: Failed to initialize.\n");
         glfwTerminate();
         return 0;
     }
 
-    printf("[engine]: Initialized glad loader.\n");
+    LOG_API_INFO("glad", "Initialized loader successfully.\n");
+    //printf("[engine]: Initialized glad loader.\n");
 
     return 1;
 }
@@ -105,7 +111,8 @@ void oce_gui_loop()
     oce_model_load_shader(&_rt.loaded_scene.model_table[1590], shader_unlit);
     oce_model loaded_model = _rt.loaded_scene.model_table[1590];
 
-    printf("Loading model %u\n", loaded_model.attribute_flags);
+    LOG_INFO("Loading model %u\n", loaded_model.attribute_flags);
+    //printf("Loading model %u\n", loaded_model.attribute_flags);
 
     //Vsync
     glfwSwapInterval(1);

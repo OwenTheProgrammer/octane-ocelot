@@ -1,5 +1,6 @@
 #include "engine/graphics/model.h"
-#include "internal.h"
+#include "engine/internal.h"
+#include "engine/graphics/internal.h"
 #include "ocelot/scene/data.h"
 #include "octane/ibuf/ibuf.h"
 #include "octane/oct/enums.h"
@@ -22,11 +23,15 @@ void oce_model_load_streams(oce_model* const model, ocl_sceneData* const data)
     oce_model_load_oct_vertex_buffer(model, data);
     oce_model_gen_va(model);
 
-    printf("[engine]: Loaded model %u with %u triangles (%u)\n",
-           model->gl_vertArray,
-           model->index.count/3,
-           model->attribute_flags
-    );
+    LOG_INFO("Loaded model %u with %u triangles (%u)\n",
+             model->gl_vertArray,
+             model->index.count/3,
+             model->attribute_flags);
+    //printf("[engine]: Loaded model %u with %u triangles (%u)\n",
+    //       model->gl_vertArray,
+    //       model->index.count/3,
+    //       model->attribute_flags
+    //);
 }
 
 
@@ -93,7 +98,8 @@ void oce_model_load_oct_vertex_buffer(oce_model* const target, ocl_sceneData* co
 
         if(target->attribute_flags & supported)
         {
-            fprintf(stderr, "[engine]: Overlapping attributes found in vertex buffer.\n");
+            LOG_WARN("Overlapping attributes found in vertex buffer.\n");
+            //fprintf(stderr, "[engine]: Overlapping attributes found in vertex buffer.\n");
             return;
         }
 
@@ -139,7 +145,8 @@ void oce_model_load_oct_vertex_buffer(oce_model* const target, ocl_sceneData* co
     if(element.stride == 0 || element.count == 0)
         return;
 
-    printf(" Element: %u count with %u stride\n", element.count, element.stride);
+    LOG_INFO("Element: %u count with %u stride\n", element.count, element.stride);
+    //printf(" Element: %u count with %u stride\n", element.count, element.stride);
 
     //Construct the buffer to present to OpenGL
     char* data_buf = calloc(element.count * element.stride, sizeof(char));

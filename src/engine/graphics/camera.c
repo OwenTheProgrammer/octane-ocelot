@@ -2,6 +2,7 @@
 #include "cglm/cam.h"
 #include "cglm/mat4.h"
 #include "cglm/quat.h"
+#include "engine/internal.h"
 #include <stdio.h>
 
 
@@ -49,11 +50,13 @@ void oce_camera_update_size(oce_camera* const cam, unsigned int width, unsigned 
                 cam->perspective_matrix
             );
 
-            printf("[engine]: Reinitialized camera perspective matrix.\n");
+            LOG_INFO("Reinitialized camera perspective matrix.\n");
+            //printf("[engine]: Reinitialized camera perspective matrix.\n");
         }
         else
         {
-            printf("[engine]: Resized camera perspective matrix.\n");
+            LOG_INFO("Resized camera perspective matrix.\n");
+            //printf("[engine]: Resized camera perspective matrix.\n");
             glm_perspective_resize(
                 (float)aspect,
                 cam->perspective_matrix
@@ -62,7 +65,8 @@ void oce_camera_update_size(oce_camera* const cam, unsigned int width, unsigned 
     }
     else
     {
-        printf("[engine]: Unloaded camera perspective matrix.\n");
+        LOG_INFO("Unloaded camera perspective matrix.\n");
+        //printf("[engine]: Unloaded camera perspective matrix.\n");
         glm_mat4_identity(cam->perspective_matrix);
     }
 }

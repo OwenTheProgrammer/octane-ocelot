@@ -3,6 +3,8 @@
 #include "engine/core/runtime.h"
 #include "io/filepath.h"
 #include "octane/vbuf/vbuf.h"
+#include "engine/internal.h"
+#include "console/log.h"
 #include <alloca.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -14,7 +16,8 @@ static GLuint _compile_shader_stage(filepath_t path, GLuint stage)
 
     if(!dbuf_is_valid(&file))
     {
-        fprintf(stderr, "[Engine]: Failed to load shader \"%s\"\n", path.path);
+        LOG_FATAL("Failed to load shader " OCL_FILEPATH_FMT "\n", path.path);
+        //fprintf(stderr, "[Engine]: Failed to load shader \"%s\"\n", path.path);
         return -1;
     }
 
@@ -36,7 +39,8 @@ static GLuint _compile_shader_stage(filepath_t path, GLuint stage)
         GLchar* log = alloca(maxlen * sizeof(GLchar));
         glGetShaderInfoLog(shader, maxlen, &maxlen, log);
 
-        fprintf(stderr, "[OpenGL]: Error compiling \"%s\"\n\t\"%s\"\n", path.path, log);
+        LOG_API_FATAL("openGL", "Error compiling " OCL_FILEPATH_FMT "\n\t\"%s\"\n", path.path, log);
+        //fprintf(stderr, "[OpenGL]: Error compiling \"%s\"\n\t\"%s\"\n", path.path, log);
 
         glDeleteShader(shader);
         return -1;
@@ -64,7 +68,8 @@ static GLuint _link_shader_stages(GLuint vert, GLuint frag)
         GLchar* log = alloca(maxlen * sizeof(GLchar));
         glGetProgramInfoLog(program, maxlen, &maxlen, log);
 
-        fprintf(stderr, "[OpenGL]: Linker error.\n\t%s\n", log);
+        LOG_API_FATAL("openGL", "Linker error.\n\t%s\n", log);
+        //fprintf(stderr, "[OpenGL]: Linker error.\n\t%s\n", log);
 
         glDeleteProgram(program);
         glDeleteShader(vert);
@@ -84,7 +89,8 @@ static GLuint _link_shader_stages(GLuint vert, GLuint frag)
         GLchar* log = alloca(maxlen * sizeof(GLchar));
         glGetProgramInfoLog(program, maxlen, &maxlen, log);
 
-        fprintf(stderr, "[OpenGL]: Invalid shader program.\n\t%s\n", log);
+        LOG_API_FATAL("openGL", "Invalid shader program.\n\t%s\n", log);
+        //fprintf(stderr, "[OpenGL]: Invalid shader program.\n\t%s\n", log);
 
         // TODO: Create a backup shader for this failure case
 
@@ -127,7 +133,8 @@ oce_shader oce_shader_load_vf(const char* shader_name)
 
     shader.program = _link_shader_stages(vert_id, frag_id);
 
-    printf("[Engine]: Loaded shader \"%s\"\n", shader_name);
+    LOG_INFO("Loaded shader " OCL_FILEPATH_FMT "\n", shader_name);
+    //printf("[Engine]: Loaded shader \"%s\"\n", shader_name);
 
     return shader;
 }

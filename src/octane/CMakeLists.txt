@@ -11,11 +11,11 @@ add_subdirectory(vbuf)
 
 target_link_libraries(${PROJECT_NAME}
     PUBLIC
-        dbuf filepath platform
+        dbuf filepath platform console
 )
 
 add_dependencies(${PROJECT_NAME}
-    dbuf filepath platform
+    dbuf filepath platform console
 )
 
 target_include_directories(${PROJECT_NAME}

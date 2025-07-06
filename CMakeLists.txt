@@ -67,6 +67,7 @@ endif()
 
 add_subdirectory(libs/dbuf)
 add_subdirectory(libs/file-path)
+add_subdirectory(libs/console)
 
 add_subdirectory(src/ocelot)
 add_subdirectory(src/octane)

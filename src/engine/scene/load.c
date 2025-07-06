@@ -7,8 +7,8 @@
 #include "octane/oct/atoms.h"
 #include "octane/oct/enums.h"
 #include "octane/oct/oct.h"
+#include "engine/internal.h"
 #include <stdint.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -156,7 +156,8 @@ oce_scene oce_load_scene(ocl_sceneData* const data)
     scene.node_table = realloc(scene.node_table, scene.node_count * sizeof(oce_sceneNode));
     scene.model_table = realloc(scene.model_table, scene.model_count * sizeof(oce_model));
 
-    printf("[engine]: Loaded %u nodes %u models\n", scene.node_count, scene.model_count);
+    LOG_INFO("Loaded %u nodes %u models\n", scene.node_count, scene.model_count);
+    //printf("[engine]: Loaded %u nodes %u models\n", scene.node_count, scene.model_count);
 
     return scene;
 }

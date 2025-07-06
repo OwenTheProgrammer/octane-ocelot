@@ -3,7 +3,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
+#include "console/log.h"
 
+#define LOG_INFO(_FMT, ...) OCL_LOG(LOG_SEVERITY_INFO, "dbuf", _FMT, ##__VA_ARGS__)
+#define LOG_ERROR(_FMT, ...) OCL_LOG(LOG_SEVERITY_ERROR, "dbuf", _FMT, ##__VA_ARGS__)
+#define LOG_FATAL(_FMT, ...) OCL_LOG(LOG_SEVERITY_FATAL, "dbuf", _FMT, ##__VA_ARGS__)
 
 dbuf dbuf_create(size_t size, void* const data)
 {
@@ -30,7 +34,8 @@ dbuf dbuf_load(const char* filepath)
 
     if(filepath == NULL)
     {
-        fprintf(stderr, "Invalid filepath.\n");
+        LOG_ERROR("Invalid filepath (null).\n");
+        //fprintf(stderr, "Invalid filepath.\n");
         return buffer;
     }
 
@@ -38,7 +43,8 @@ dbuf dbuf_load(const char* filepath)
 
     if(file == NULL)
     {
-        fprintf(stderr, "Failed to read file \"%s\".\n", filepath);
+        LOG_ERROR("Failed to read file \"%s\".\n", filepath);
+        //fprintf(stderr, "Failed to read file \"%s\".\n", filepath);
         return buffer;
     }
 
@@ -54,7 +60,8 @@ dbuf dbuf_load(const char* filepath)
     // Close the file handle
     fclose(file);
 
-    printf("[dbuf]: Loaded \"%s\" (%zu bytes)\n", filepath, buffer.size);
+    LOG_INFO("Loaded \x1b[34m\"%s\"\x1b[0m (%zu bytes)\n", filepath, buffer.size);
+    //printf("[dbuf]: Loaded \"%s\" (%zu bytes)\n", filepath, buffer.size);
 
     return buffer;
 }
@@ -71,20 +78,23 @@ void dbuf_write(dbuf buffer, const char* filepath)
 {
     if(buffer.data == NULL || buffer.size == 0)
     {
-        fprintf(stderr, "Invalid data buffer.\n");
+        LOG_ERROR("Invalid data buffer.\n");
+        //fprintf(stderr, "Invalid data buffer.\n");
         return;
     }
 
     if(filepath == NULL)
     {
-        fprintf(stderr, "Invalid filepath.\n");
+        LOG_ERROR("Invalid filepath.\n");
+        //fprintf(stderr, "Invalid filepath.\n");
         return;
     }
 
     FILE* file = fopen(filepath, "wb");
     if(file == NULL)
     {
-        fprintf(stderr, "[dbuf]: Failed to write file \"%s\"\n", filepath);
+        LOG_ERROR("Failed to write file \"%s\"\n", filepath);
+        //fprintf(stderr, "[dbuf]: Failed to write file \"%s\"\n", filepath);
         return;
     }
 
@@ -92,7 +102,8 @@ void dbuf_write(dbuf buffer, const char* filepath)
     fflush(file);
     fclose(file);
 
-    printf("[dbuf]: Wrote %zu bytes to \"%s\" successfully.\n", buffer.size, filepath);
+    LOG_INFO("Wrote %zu bytes to \"%s\" successfully.\n", buffer.size, filepath);
+    //printf("[dbuf]: Wrote %zu bytes to \"%s\" successfully.\n", buffer.size, filepath);
 }
 
 

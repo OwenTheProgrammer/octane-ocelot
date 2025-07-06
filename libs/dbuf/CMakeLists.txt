@@ -7,6 +7,14 @@ add_library(${PROJECT_NAME} STATIC
     src/dbuf.c  src/dbuf_rw.c
 )
 
+target_link_libraries(${PROJECT_NAME}
+    PUBLIC
+        console
+)
+
+add_dependencies(${PROJECT_NAME}
+    console
+)
 
 target_include_directories(${PROJECT_NAME}
     PUBLIC

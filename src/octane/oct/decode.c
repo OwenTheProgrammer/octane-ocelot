@@ -17,7 +17,8 @@ static uint32_t _get_atom_array_size(dbuf* const buffer, uint32_t stride)
 {
     if(stride > 4)
     {
-        fprintf(stderr, "Atom array stride (%u) can not be greater than 4.\n", stride);
+        LOG_ERROR("Atom array stride (%u) can not be greater than 4.\n", stride)
+        //fprintf(stderr, "Atom array stride (%u) can not be greater than 4.\n", stride);
         return 0;
     }
 
@@ -121,7 +122,8 @@ static oct_fileHeader _read_header(oct_file oct, dbuf* const buffer)
 
     if(magic_endian == ENDIAN_UNKNOWN)
     {
-        fprintf(stderr, "Invalid magic!\n");
+        LOG_FATAL("Invalid magic!\n")
+        //fprintf(stderr, "Invalid magic!\n");
         return header;
     }
 
@@ -136,11 +138,16 @@ static oct_fileHeader _read_header(oct_file oct, dbuf* const buffer)
     uint32_t version_raw = dbuf_read_u32(buffer);
     header.version = *(float*)&version_raw;
 
-    printf("[Octane]: Reading oct file V%.2f (Endian: %s -> %s)\n",
-           header.version,
-           endian_current_to_string(),
-           endian_target_to_string()
-    );
+    LOG_INFO("Reading oct file V%.2f (Endian: %s -> %s)\n",
+        header.version,
+        endian_current_to_string(),
+        endian_target_to_string()
+    )
+    //printf("[Octane]: Reading oct file V%.2f (Endian: %s -> %s)\n",
+    //       header.version,
+    //       endian_current_to_string(),
+    //       endian_target_to_string()
+    //);
 
     // Ignore the padding bytes
     dbuf_advance(buffer, 4);
@@ -187,7 +194,8 @@ static void _read_string_table(oct_file* const oct, dbuf* const buffer)
     // Shrink the string table to the amount of strings loaded
     //oct->string_table = reallocarray(oct->string_table, oct->string_table_length, sizeof(oct_string));
     oct->string_table = realloc(oct->string_table, oct->string_table_length * sizeof(oct_string));
-    printf("StringTable: Loaded %u strings.\n", oct->string_table_length);
+    LOG_INFO("Loaded %u strings to the string table.\n", oct->string_table_length);
+    //printf("StringTable: Loaded %u strings.\n", oct->string_table_length);
 }
 
 static void _read_data_tree(oct_file* const oct, dbuf* const buffer)
@@ -210,7 +218,8 @@ static void _read_data_tree(oct_file* const oct, dbuf* const buffer)
 
     //oct->data_tree = reallocarray(oct->data_tree, oct->data_tree_length, sizeof(oct_atomNode));
     oct->data_tree = realloc(oct->data_tree, oct->data_tree_length * sizeof(oct_atomNode));
-    printf("DataTree: Loaded %u atoms.\n", oct->data_tree_length);
+    LOG_INFO("Loaded %u atoms to the data tree.\n", oct->data_tree_length)
+    //printf("DataTree: Loaded %u atoms.\n", oct->data_tree_length);
 }
 
 

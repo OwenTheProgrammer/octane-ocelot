@@ -1,5 +1,6 @@
 #pragma once
 #include "data/endian.h"
+#include "console/log.h"
 #include "octane/oct/atoms.h"
 #include "octane/oct/enums.h"
 #include "octane/oct/oct.h"
@@ -7,6 +8,11 @@
 
 /* Mask `_N` bits from `_V` */
 #define NMASK(_V, _N) ( (_V) & ((1 << (_N))-1) )
+
+#define LOG_INFO(_FMT, ...) OCL_LOG(LOG_SEVERITY_INFO, "octane", _FMT, ##__VA_ARGS__)
+#define LOG_ERROR(_FMT, ...) OCL_LOG(LOG_SEVERITY_ERROR, "octane", _FMT, ##__VA_ARGS__)
+#define LOG_FATAL(_FMT, ...) OCL_LOG(LOG_SEVERITY_FATAL, "octane", _FMT, ##__VA_ARGS__)
+
 
 extern const uint32_t _OCT_MAGIC_SIZE;
 extern const uint32_t _OCT_HEADER_SIZE;

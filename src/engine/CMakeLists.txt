@@ -28,6 +28,6 @@ target_include_directories(${PROJECT_NAME}
     PUBLIC
         "${CMAKE_SOURCE_DIR}/include"
     PRIVATE
-        "${CMAKE_SOURCE_DIR}/src/engine"
+        "${CMAKE_SOURCE_DIR}/src"
 )
 

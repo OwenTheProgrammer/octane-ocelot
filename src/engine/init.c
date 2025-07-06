@@ -5,18 +5,21 @@
 #include "ocelot/scene/data.h"
 #include "octane/oct/oct.h"
 #include "octane/oct/scene_descriptor.h"
-#include "internal.h"
-#include <stdio.h>
+#include "engine/internal.h"
+#include "console/log.h"
 
 oce_engineRuntime _rt = (oce_engineRuntime){0};
 
 static void _init_filepaths(const char* argv)
 {
     _rt.path.work_dir = fs_path_cwd_from_argv(argv);
-    printf("[engine]: Work directory: \"%s\"\n", _rt.path.work_dir.path);
+
+    LOG_INFO("Work directory: " OCL_FILEPATH_FMT "\n", _rt.path.work_dir.path);
+    //printf("[engine]: Work directory: \"%s\"\n", _rt.path.work_dir.path);
 
     _rt.path.assets_dir = fs_path_combine(_rt.path.work_dir, fs_path_create("assets"));
-    printf("[engine]: Assets directory: \"%s\"\n", _rt.path.assets_dir.path);
+    //printf("[engine]: Assets directory: \"%s\"\n", _rt.path.assets_dir.path);
+    LOG_INFO("Assets directory: " OCL_FILEPATH_FMT "\n", _rt.path.assets_dir.path);
 }
 
 
@@ -38,7 +41,8 @@ void oce_load(const char* assets_dir)
     filepath_t asset_path = fs_path_create(assets_dir);
     _rt.path.game_dir = fs_path_combine(_rt.path.work_dir, asset_path);
 
-    printf("[Engine]: Loading assets from \"%s\"\n", _rt.path.game_dir.path);
+    LOG_INFO("Loading assets from " OCL_FILEPATH_FMT "\n", _rt.path.game_dir.path);
+    //printf("[Engine]: Loading assets from \"%s\"\n", _rt.path.game_dir.path);
 
     //Load the oct file
     oct_file oct = oct_load_file(_rt.path.game_dir.path);

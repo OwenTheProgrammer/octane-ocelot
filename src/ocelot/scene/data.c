@@ -1,3 +1,4 @@
+#include "internal.h"
 #include "ocelot/scene/data.h"
 #include "data/dbuf.h"
 #include "io/filepath.h"
@@ -29,7 +30,8 @@ static void _load_vbuf_file(ocl_sceneData* const data)
 
     if(vba == NULL)
     {
-        fprintf(stderr, "[Ocelot]: Failed to find the .vbuf file.\n");
+        LOG_ERROR("Failed to find the .vbuf file\n");
+        //fprintf(stderr, "[Ocelot]: Failed to find the .vbuf file.\n");
         return;
     }
 
@@ -58,7 +60,8 @@ static void _load_ibuf_file(ocl_sceneData* const data)
 
     if(iba == NULL)
     {
-        fprintf(stderr, "[Ocelot]: Failed to fine the .ibuf file.\n");
+        LOG_ERROR("Failed to find the .ibuf file.\n");
+        //fprintf(stderr, "[Ocelot]: Failed to fine the .ibuf file.\n");
         return;
     }
 
@@ -84,7 +87,8 @@ static void _load_index_buffers(ocl_sceneData* const data)
         data->index_buffers[i] = oct_load_index_buffer(&data->ibuf_file, *desc, data->ibuf_stride, i);
     }
 
-    printf("[ocelot]: Loaded %u index buffers.\n", data->index_buffer_count);
+    LOG_INFO("Loaded %u index buffers.\n", data->index_buffer_count);
+    //printf("[ocelot]: Loaded %u index buffers.\n", data->index_buffer_count);
 }
 
 static void _load_vertex_buffers(ocl_sceneData* const data)
@@ -99,7 +103,8 @@ static void _load_vertex_buffers(ocl_sceneData* const data)
         data->vertex_buffers[i] = oct_load_vertex_buffer(&data->vbuf_file, *desc, i);
     }
 
-    printf("[ocelot]: Loaded %u vertex buffers.\n", data->vertex_buffer_count);
+    LOG_INFO("Loaded %u vertex buffers.\n", data->vertex_buffer_count);
+    //printf("[ocelot]: Loaded %u vertex buffers.\n", data->vertex_buffer_count);
 }
 
 ocl_sceneData ocl_load_scene_data(oct_sceneDescriptor* const scene, oct_file* const oct)
