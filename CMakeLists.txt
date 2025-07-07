@@ -68,18 +68,19 @@ endif()
 add_subdirectory(libs/dbuf)
 add_subdirectory(libs/file-path)
 add_subdirectory(libs/console)
+add_subdirectory(libs/model-io)
 
 add_subdirectory(src/ocelot)
 add_subdirectory(src/octane)
 add_subdirectory(src/platform)
 
-#add_custom_target(asset_copy ALL)
-#add_custom_command(
-#    TARGET asset_copy POST_BUILD
-#    COMMAND ${CMAKE_COMMAND} -E copy_directory
-#    ${CMAKE_SOURCE_DIR}/assets ${CMAKE_BINARY_DIR}/assets
-#    COMMENT "Copying assets directory"
-#)
+add_custom_target(asset_copy ALL)
+add_custom_command(
+    TARGET asset_copy POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+    ${CMAKE_SOURCE_DIR}/assets ${CMAKE_BINARY_DIR}/assets
+    COMMENT "Copying assets directory"
+)
 
 if(OCELOT_BUILD_CLI)
 
@@ -116,7 +117,7 @@ if(OCELOT_BUILD_EDITOR)
     #    COMMAND ${CMAKE_COMMAND} -E copy_directory
     #    ${CMAKE_SOURCE_DIR}/assets ${CMAKE_BINARY_DIR}/assets
     #)
-    file(COPY ${CMAKE_SOURCE_DIR}/assets DESTINATION ${CMAKE_BINARY_DIR})
+    #file(COPY ${CMAKE_SOURCE_DIR}/assets DESTINATION ${CMAKE_BINARY_DIR})
 
 endif()
 
@@ -128,7 +129,7 @@ if(OCELOT_BUILD_TESTING)
 
     target_link_libraries(${PROJECT_NAME}
         PRIVATE
-            octane ocelot
+            octane ocelot modelio
     )
 
 endif()

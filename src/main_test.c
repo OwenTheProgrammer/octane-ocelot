@@ -4,6 +4,7 @@
 #include "io/filepath.h"
 #include "types/file_bmp.h"
 #include "types/texture.h"
+#include "model/obj.h"
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -85,7 +86,13 @@ int main(int argc, const char* argv[])
 
     printf("path: \"%s\"\n", path.path);
 
-    printf("%u vs %zu\n", path.length, strlen(path.path));
+    //printf("%u vs %zu\n", path.length, strlen(path.path));
+
+    filepath_t obj_path = fs_path_combine(path, fs_path_create("assets/primitives/cube.obj"));
+
+    mdl_obj obj = mdl_obj_load_file(obj_path.path);
+
+    mdl_free_obj(&obj);
 
     //_export_uv_bmp();
 

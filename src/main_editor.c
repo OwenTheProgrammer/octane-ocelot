@@ -9,7 +9,8 @@ int main(int argc, const char* argv[])
     if(!_rt.initialized)
         return EXIT_FAILURE;
 
-    oce_load("gamefiles/xbox360/worlds/oilrig");
+    //oce_load("gamefiles/pc/worlds/testing");
+    //oce_load("gamefiles/xbox360/worlds/oilrig");
 
     oce_gui_loop();
 

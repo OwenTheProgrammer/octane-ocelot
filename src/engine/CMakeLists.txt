@@ -17,11 +17,11 @@ target_compile_definitions(${PROJECT_NAME}
 
 target_link_libraries(${PROJECT_NAME}
     PUBLIC
-        octane ocelot filepath glfw glad cglm
+        octane ocelot filepath modelio glfw glad cglm
 )
 
 add_dependencies(${PROJECT_NAME}
-    octane ocelot filepath glfw glad cglm
+    octane ocelot filepath modelio glfw glad cglm
 )
 
 target_include_directories(${PROJECT_NAME}
